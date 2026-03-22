@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke-and-build:
+    runs-on: ubuntu-latest
+    env:
+      PUBLIC_STRAPI_URL: ${{ vars.PUBLIC_STRAPI_URL || secrets.PUBLIC_STRAPI_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Validate PUBLIC_STRAPI_URL
+        run: |
+          if [ -z "${PUBLIC_STRAPI_URL}" ]; then
+            echo "PUBLIC_STRAPI_URL is required for CI smoke tests and build."
+            echo "Set it as a GitHub Actions variable or secret, for example: https://your-strapi-domain/api"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Smoke test required Strapi endpoints
+        run: npm run smoke:endpoints
+
+      - name: Build Astro site
+        run: npm run build

@@ -1,0 +1,31 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import SectionRenderer from "../components/SectionRenderer.astro";
+import { getHomePage, getSiteSetting } from "../lib/api";
+
+const [page, siteSetting] = await Promise.all([getHomePage(), getSiteSetting()]);
+---
+
+<MainLayout
+  title={page?.seo?.metaTitle ?? siteSetting?.siteName ?? "CONC"}
+  seo={page?.seo}
+  siteSetting={siteSetting}
+>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <section style="padding: 6rem 0;">
+      <div style="max-width: 40rem;">
+        <div style="text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-size: 0.75rem;">
+          Frontend Ready
+        </div>
+        <h1 style="font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; margin: 0.5rem 0 1rem;">
+          Connect `conc-website` to the Strapi DTO endpoints
+        </h1>
+        <p style="color: var(--muted); font-size: 1.1rem; line-height: 1.8;">
+          The frontend theme is in place, but the home page API could not be reached during render. Start the Strapi app and reload this page.
+        </p>
+      </div>
+    </section>
+  )}
+</MainLayout>

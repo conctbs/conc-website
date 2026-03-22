@@ -1,0 +1,141 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { getProjectBySlug, getProjectSlugs, getSiteSetting } from '../../lib/api';
+
+export async function getStaticPaths() {
+  const slugs = await getProjectSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = '' } = Astro.params;
+const [project, siteSetting] = await Promise.all([getProjectBySlug(slug), getSiteSetting()]);
+
+if (!project) {
+  Astro.response.status = 404;
+}
+
+function formatDate(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).format(date);
+}
+
+const completedDate = formatDate(project?.completedDate ?? null);
+const pageTitle = project?.seo?.metaTitle ?? project?.title ?? siteSetting?.siteName ?? 'Project';
+const pageDescription = project?.seo?.metaDescription ?? project?.summary ?? siteSetting?.siteDescription ?? null;
+---
+
+<MainLayout title={pageTitle} seo={project?.seo} siteSetting={siteSetting}>
+  {project ? (
+    <article class="detail-page">
+      <a class="back-link" href="/projects">Back to projects</a>
+      <header class="detail-hero">
+        <div class="detail-copy">
+          <div class="eyebrow">Project Detail</div>
+          <h1>{project.title}</h1>
+          {pageDescription && <p class="lead">{pageDescription}</p>}
+          <div class="meta-row">
+            {project.clientName && <span>{project.clientName}</span>}
+            {completedDate && <span>{completedDate}</span>}
+          </div>
+          {project.services.length > 0 && (
+            <div class="tag-row">
+              {project.services.map((service) => <span class="tag">{service.name}</span>)}
+            </div>
+          )}
+        </div>
+        <div class="detail-panel">
+          {project.coverImage?.url ? (
+            <img src={project.coverImage.url} alt={project.coverImage.alternativeText ?? project.title} loading="eager" />
+          ) : (
+            <div class="placeholder hero-placeholder">
+              <div class="placeholder-kicker">Project Visual</div>
+              <strong>{project.title}</strong>
+              <p>Upload a cover image in Strapi to turn this detail header into a media-led case study.</p>
+            </div>
+          )}
+        </div>
+      </header>
+      {project.content && (
+        <section class="content-card prose-block">
+          <div set:html={project.content}></div>
+        </section>
+      )}
+      {project.gallery.length > 0 && (
+        <section class="gallery-section">
+          <div class="section-head">
+            <div class="eyebrow">Project Gallery</div>
+            <h2>Selected visuals</h2>
+          </div>
+          <div class="gallery-grid">
+            {project.gallery.map((image, index) => (
+              <figure class="gallery-card">
+                {image?.url ? (
+                  <img src={image.url} alt={image.alternativeText ?? `${project.title} image ${index + 1}`} loading="lazy" />
+                ) : (
+                  <div class="placeholder gallery-placeholder">
+                    <span>Image slot {index + 1}</span>
+                  </div>
+                )}
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+      <section class="action-card">
+        <div class="eyebrow">Next Step</div>
+        <h2>Looking for a similar delivery model?</h2>
+        <p>Use this case study as a starting point for discussing scope, architecture, and rollout priorities.</p>
+        <div class="action-row">
+          <a class="button primary" href="/contact">Start a Conversation</a>
+          <a class="button secondary" href="/services">Review Services</a>
+        </div>
+      </section>
+    </article>
+  ) : (
+    <section class="missing-state">
+      <div class="eyebrow">404</div>
+      <h1>Project not found</h1>
+      <p>The requested project slug is not available from Strapi.</p>
+      <a class="back-link" href="/projects">Back to projects</a>
+    </section>
+  )}
+</MainLayout>
+
+<style>
+  .detail-page,
+  .missing-state { padding: 4rem 0 5rem; }
+  .back-link { display: inline-flex; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-weight: 700; }
+  .detail-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr); gap: 2rem; align-items: start; }
+  .detail-copy h1, .missing-state h1 { margin: 0.35rem 0 1rem; font-size: clamp(3rem, 6vw, 4.8rem); line-height: 0.95; }
+  .eyebrow, .meta-row { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; }
+  .lead { max-width: 40rem; color: var(--muted); font-size: 1.1rem; line-height: 1.8; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+  .detail-panel, .content-card, .gallery-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .detail-panel { overflow: hidden; min-height: 22rem; }
+  .detail-panel img, .gallery-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .placeholder { min-height: 100%; display: grid; place-items: center; align-content: center; gap: 0.6rem; color: var(--muted); text-align: center; background: radial-gradient(circle at top left, rgba(185, 28, 28, 0.08), transparent 42%), #f8fafc; }
+  .placeholder-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; font-weight: 700; }
+  .hero-placeholder { padding: 2rem; }
+  .hero-placeholder p { margin: 0; max-width: 18rem; line-height: 1.7; }
+  .gallery-placeholder { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.16em; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.5rem; }
+  .tag { border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.75rem; font-size: 0.82rem; background: rgba(185, 28, 28, 0.08); }
+  .content-card, .gallery-section { margin-top: 2rem; }
+  .content-card { padding: 2rem; }
+  .action-card { margin-top: 2rem; padding: 2rem; background: #f3f4f6; border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .action-card h2 { margin: 0.35rem 0 0.75rem; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1; }
+  .action-card p { color: var(--muted); line-height: 1.8; max-width: 42rem; }
+  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; }
+  .button.primary { background: var(--accent); color: #fff; }
+  .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
+  .prose-block :global(p) { color: var(--muted); font-size: 1.05rem; line-height: 1.9; }
+  .section-head { max-width: 42rem; margin-bottom: 1.5rem; }
+  .section-head h2 { margin: 0.35rem 0 0; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .gallery-card { overflow: hidden; aspect-ratio: 1 / 1; }
+  .missing-state p { color: var(--muted); max-width: 32rem; }
+  @media (max-width: 900px) { .detail-hero, .gallery-grid { grid-template-columns: 1fr; } }
+</style>

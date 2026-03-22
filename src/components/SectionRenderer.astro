@@ -1,0 +1,640 @@
+---
+const { sections = [] } = Astro.props;
+
+function formatDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
+function excerpt(value, fallback = '') {
+  if (!value) return fallback;
+  const plain = value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  return plain.length > 170 ? `${plain.slice(0, 167)}...` : plain;
+}
+---
+
+{sections.map((section) => (
+  <>
+    {section.type === "hero" && (
+      <section class="hero section">
+        <div class="eyebrow">{section.eyebrow}</div>
+        <div class="hero-grid">
+          <div>
+            <h1>{section.title}</h1>
+            <p class="lead">{section.description}</p>
+            <div class="hero-actions">
+              {section.primaryButtonText && section.primaryButtonUrl && (
+                <a class="button primary" href={section.primaryButtonUrl}>
+                  {section.primaryButtonText}
+                </a>
+              )}
+              {section.secondaryButtonText && section.secondaryButtonUrl && (
+                <a class="button secondary" href={section.secondaryButtonUrl}>
+                  {section.secondaryButtonText}
+                </a>
+              )}
+            </div>
+          </div>
+          <div class="hero-panel">
+            <div class="hero-note">Reusable page sections powered by Strapi DTOs</div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {section.type === "services-list" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="card-grid three">
+          {section.services.map((service) => (
+            <article class="card">
+              <div class="meta-kicker">Service</div>
+              <h3><a class="card-link" href={`/services/${service.slug}`}>{service.name}</a></h3>
+              <p>{service.description}</p>
+            </article>
+          ))}
+        </div>
+        {section.viewAllText && section.viewAllUrl && (
+          <div class="section-actions">
+            <a class="button secondary" href={section.viewAllUrl}>
+              {section.viewAllText}
+            </a>
+          </div>
+        )}
+      </section>
+    )}
+
+    {section.type === "projects-list" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="project-list">
+          {section.projects.map((project) => (
+            <article class="project-card">
+              <div class="project-meta">
+                <span>{project.clientName}</span>
+                <span>{formatDate(project.completedDate)}</span>
+              </div>
+              <h3><a class="card-link" href={`/projects/${project.slug}`}>{project.title}</a></h3>
+              <p>{project.summary}</p>
+              <div class="tag-row">
+                {project.services.map((service) => <span class="tag">{service.name}</span>)}
+              </div>
+            </article>
+          ))}
+        </div>
+        {section.viewAllText && section.viewAllUrl && (
+          <div class="section-actions">
+            <a class="button secondary" href={section.viewAllUrl}>
+              {section.viewAllText}
+            </a>
+          </div>
+        )}
+      </section>
+    )}
+
+    {section.type === "stats" && (
+      <section class="section">
+        <div class="section-head centered">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="stats-grid">
+          {section.items.map((item) => (
+            <article class="stat-card">
+              <div class="stat-value">
+                {item.value}
+                {item.suffix}
+              </div>
+              <h3>{item.label}</h3>
+              <p>{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {section.type === "team" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="card-grid two">
+          {section.members.map((member) => (
+            <article class="card">
+              <h3>{member.name}</h3>
+              <div class="meta-kicker">{member.role}</div>
+              <p>{member.bio}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {section.type === "testimonial" && (
+      <section class="section">
+        <div class="section-head centered">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="card-grid two">
+          {section.items.map((item) => (
+            <article class="quote-card">
+              <blockquote>{item.quote}</blockquote>
+              <div class="quote-author">
+                <strong>{item.authorName}</strong>
+                <span>{item.authorRole}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {section.type === "faq" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="faq-list">
+          {section.items.map((item) => (
+            <details class="faq-item">
+              <summary>{item.question}</summary>
+              <div class="faq-answer" set:html={item.answer}></div>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {section.type === "news-list" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="card-grid three">
+          {section.newsEntries.map((entry) => (
+            <article class="card">
+              <div class="meta-kicker">{formatDate(entry.publishedDate)}</div>
+              <h3><a class="card-link" href={`/news/${entry.slug}`}>{entry.title}</a></h3>
+              <p>{entry.seo?.metaDescription ?? excerpt(entry.content, 'No summary available yet.')}</p>
+            </article>
+          ))}
+        </div>
+        {section.viewAllText && section.viewAllUrl && (
+          <div class="section-actions">
+            <a class="button secondary" href={section.viewAllUrl}>
+              {section.viewAllText}
+            </a>
+          </div>
+        )}
+      </section>
+    )}
+
+    {section.type === "programs-list" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        <div class="card-grid two">
+          {section.programs.map((program) => (
+            <article class="card">
+              <div class="project-meta">
+                <span>{program.format}</span>
+                <span>{program.dateLabel}</span>
+              </div>
+              <h3><a class="card-link" href={`/programs/${program.slug}`}>{program.title}</a></h3>
+              <p>{program.summary}</p>
+              <div class="tag-row">
+                <span class="tag">{program.location}</span>
+                <span class="tag">{program.fee}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+        {section.viewAllText && section.viewAllUrl && (
+          <div class="section-actions">
+            <a class="button secondary" href={section.viewAllUrl}>
+              {section.viewAllText}
+            </a>
+          </div>
+        )}
+      </section>
+    )}
+
+    {section.type === "gallery" && (
+      <section class="section">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+        </div>
+        {section.images.length > 0 ? (
+          <div class:list={["gallery-grid", section.layout === "mosaic" && "mosaic"]}>
+            {section.images.map((image, index) => (
+              <figure class="gallery-card">
+                {image?.url ? (
+                  <img
+                    src={image.url}
+                    alt={image.alternativeText ?? `${section.title ?? "Gallery"} image ${index + 1}`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="gallery-empty-tile">Image unavailable</div>
+                )}
+                {image?.caption && <figcaption>{image.caption}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <div class="gallery-empty-state">
+            <div class="gallery-empty-eyebrow">{section.layout ?? "grid"} layout ready</div>
+            <p>Connect images in Strapi to populate this section without changing the frontend code.</p>
+          </div>
+        )}
+      </section>
+    )}
+
+    {section.type === "call-to-action" && (
+      <section class="section">
+        <div class="cta-panel">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+          <p>{section.description}</p>
+          {section.buttonText && section.buttonUrl && (
+            <a class="button primary" href={section.buttonUrl}>
+              {section.buttonText}
+            </a>
+          )}
+        </div>
+      </section>
+    )}
+
+    {section.type === "rich-text" && (
+      <section class="section prose-block">
+        <div class="section-head">
+          <div class="eyebrow">{section.eyebrow}</div>
+          <h2>{section.title}</h2>
+        </div>
+        <div set:html={section.body}></div>
+      </section>
+    )}
+  </>
+))}
+
+<style>
+  .section {
+    padding: 5.5rem 0;
+  }
+
+  .hero {
+    padding-top: 4.5rem;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(3.2rem, 7vw, 5rem);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+  }
+
+  .lead {
+    max-width: 40rem;
+    color: var(--muted);
+    font-size: 1.125rem;
+  }
+
+  .hero-panel,
+  .cta-panel,
+  .project-card,
+  .card,
+  .quote-card,
+  .stat-card,
+  .gallery-placeholder {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .hero-panel {
+    padding: 2rem;
+    display: flex;
+    align-items: end;
+    min-height: 22rem;
+    background: #f3f4f6;
+  }
+
+  .hero-note {
+    font-size: 1.2rem;
+    line-height: 1.4;
+    max-width: 14rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .section-head {
+    max-width: 46rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-head.centered {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-head h2 {
+    margin: 0.25rem 0 0.75rem;
+    font-size: clamp(2.1rem, 4vw, 3.3rem);
+    line-height: 1;
+  }
+
+  .section-head p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .eyebrow,
+  .meta-kicker,
+  .project-meta,
+  .quote-author span {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+  }
+
+  .card-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .card-grid.three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card-grid.two,
+  .stats-grid,
+  .project-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .card,
+  .project-card,
+  .quote-card,
+  .stat-card {
+    padding: 1.5rem;
+  }
+
+  .card h3,
+  .project-card h3,
+  .stat-card h3 {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.45rem;
+  }
+
+  .card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-link:hover {
+    color: var(--accent);
+  }
+
+  .project-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1rem;
+  }
+
+  .tag {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.82rem;
+    background: rgba(185, 28, 28, 0.08);
+  }
+
+  .stat-value {
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: 0.9;
+    margin-bottom: 0.8rem;
+  }
+
+  .quote-card blockquote {
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+    line-height: 1.5;
+  }
+
+  .quote-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .faq-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--line);
+    padding: 1rem 0;
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    font-weight: 700;
+  }
+
+  .faq-answer {
+    color: var(--muted);
+    margin-top: 0.85rem;
+    max-width: 48rem;
+  }
+
+  .gallery-placeholder,
+  .cta-panel {
+    padding: 2rem;
+  }
+
+  .section-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .gallery-grid.mosaic .gallery-card:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .gallery-card,
+  .gallery-empty-state {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .gallery-card {
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    position: relative;
+  }
+
+  .gallery-card img,
+  .gallery-empty-tile {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .gallery-empty-tile {
+    display: grid;
+    place-items: center;
+    background: #f8fafc;
+    color: var(--muted);
+  }
+
+  .gallery-card figcaption {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    margin: 0;
+    padding: 0.7rem 0.85rem;
+    border-radius: 14px;
+    background: rgba(15, 15, 16, 0.72);
+    color: #fff;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .gallery-empty-state {
+    min-height: 14rem;
+    padding: 2rem;
+    display: grid;
+    align-content: center;
+    gap: 0.6rem;
+    color: var(--muted);
+    background:
+      radial-gradient(circle at top left, rgba(185, 28, 28, 0.08), transparent 40%),
+      linear-gradient(135deg, #ffffff, #f8fafc);
+  }
+
+  .gallery-empty-eyebrow {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .cta-panel {
+    text-align: center;
+    background: #f3f4f6;
+  }
+
+  .prose-block :global(p) {
+    color: var(--muted);
+    max-width: 48rem;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0 1.2rem;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 180ms ease, background-color 180ms ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button.primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .button.secondary {
+    border: 1px solid var(--line);
+    color: var(--text);
+    background: transparent;
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid,
+    .card-grid.three,
+    .card-grid.two,
+    .stats-grid,
+    .project-list,
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-grid.mosaic .gallery-card:first-child {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+</style>

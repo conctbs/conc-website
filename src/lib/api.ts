@@ -1,0 +1,503 @@
+import { fallbackContent } from "./fallback-content";
+
+const STRAPI_BASE_URL = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
+
+export type Media = {
+  id: number | null;
+  url: string | null;
+  alternativeText: string | null;
+  caption: string | null;
+  width: number | null;
+  height: number | null;
+  mime: string | null;
+} | null;
+
+export type Seo = {
+  metaTitle: string | null;
+  metaDescription: string | null;
+  canonicalUrl: string | null;
+  noIndex: boolean;
+  metaImage: Media;
+} | null;
+
+export type Service = {
+  id: number;
+  name: string;
+  slug: string;
+  description: string | null;
+  order: number | null;
+  seo?: Seo;
+  icon: Media;
+};
+
+export type Project = {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string | null;
+  clientName: string | null;
+  completedDate: string | null;
+  featured: boolean;
+  order: number | null;
+  seo: Seo;
+  coverImage: Media;
+  gallery: Media[];
+  services: Service[];
+};
+
+export type ProjectListItem = {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string | null;
+  clientName: string | null;
+  completedDate: string | null;
+  featured: boolean;
+  order: number | null;
+};
+
+export type NewsListItem = {
+  id: number;
+  title: string;
+  slug: string;
+  content: string | null;
+  publishedDate: string | null;
+};
+
+export type Program = {
+  id: number;
+  title: string;
+  slug: string;
+  category: string | null;
+  format: string | null;
+  dateLabel: string | null;
+  startsAt: string | null;
+  duration: string | null;
+  location: string | null;
+  fee: string | null;
+  audience: string | null;
+  summary: string | null;
+  overview: string[];
+  outcomes: string[];
+  seats: number | null;
+  registrationEnabled: boolean;
+  seo: Seo;
+};
+
+export type NewsEntry = {
+  id: number;
+  title: string;
+  slug: string;
+  content: string | null;
+  publishedDate: string | null;
+  seo: Seo;
+  coverImage: Media;
+};
+
+type Section =
+  | {
+      type: "hero";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      primaryButtonText: string | null;
+      primaryButtonUrl: string | null;
+      secondaryButtonText: string | null;
+      secondaryButtonUrl: string | null;
+      backgroundImage: Media;
+    }
+  | {
+      type: "services-list";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      limit: number | null;
+      viewAllText: string | null;
+      viewAllUrl: string | null;
+      services: Service[];
+    }
+  | {
+      type: "projects-list";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      limit: number | null;
+      viewAllText: string | null;
+      viewAllUrl: string | null;
+      projects: Project[];
+    }
+  | {
+      type: "stats";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      items: Array<{
+        id: number;
+        value: string | null;
+        suffix: string | null;
+        label: string | null;
+        description: string | null;
+      }>;
+    }
+  | {
+      type: "team";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      members: Array<{
+        id: number;
+        name: string | null;
+        role: string | null;
+        bio: string | null;
+        linkedinUrl: string | null;
+        email: string | null;
+        photo: Media;
+      }>;
+    }
+  | {
+      type: "testimonial";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      items: Array<{
+        id: number;
+        quote: string | null;
+        authorName: string | null;
+        authorRole: string | null;
+        authorCompany: string | null;
+        authorAvatar: Media;
+      }>;
+    }
+  | {
+      type: "faq";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      items: Array<{
+        id: number;
+        question: string | null;
+        answer: string | null;
+      }>;
+    }
+  | {
+      type: "news-list";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      limit: number | null;
+      viewAllText: string | null;
+      viewAllUrl: string | null;
+      newsEntries: NewsEntry[];
+    }
+  | {
+      type: "programs-list";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      limit: number | null;
+      viewAllText: string | null;
+      viewAllUrl: string | null;
+      programs: Program[];
+    }
+  | {
+      type: "gallery";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      layout: string | null;
+      images: Media[];
+    }
+  | {
+      type: "call-to-action";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      buttonText: string | null;
+      buttonUrl: string | null;
+      backgroundImage: Media;
+    }
+  | {
+      type: "rich-text";
+      id: number;
+      eyebrow: string | null;
+      title: string | null;
+      description: string | null;
+      body: string | null;
+    };
+
+export type PageDto = {
+  id: number;
+  slug: string;
+  title: string;
+  seo: Seo;
+  sections: Section[];
+};
+
+export type SiteSettingDto = {
+  id: number;
+  siteName: string | null;
+  siteDescription: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  address: string | null;
+  facebookUrl: string | null;
+  lineUrl: string | null;
+  youtubeUrl: string | null;
+  copyrightText: string | null;
+  logo: Media;
+};
+
+function resolveMediaUrl(url: string | null | undefined) {
+  if (!url) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  if (url.startsWith("/")) {
+    return `${STRAPI_ORIGIN}${url}`;
+  }
+
+  return `${STRAPI_ORIGIN}/${url}`;
+}
+
+function normalizeMedia(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeMedia(item));
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  const normalized = Object.fromEntries(
+    Object.entries(record).map(([key, item]) => [key, normalizeMedia(item)]),
+  );
+
+  if ("url" in normalized && ("mime" in normalized || "width" in normalized || "height" in normalized)) {
+    return {
+      ...normalized,
+      url: resolveMediaUrl(typeof normalized.url === "string" ? normalized.url : null),
+    };
+  }
+
+  return normalized;
+}
+
+function parseProgramTimestamp(program: Pick<Program, "startsAt" | "dateLabel">) {
+  if (program.startsAt) {
+    const timestamp = Date.parse(program.startsAt);
+    if (!Number.isNaN(timestamp)) {
+      return timestamp;
+    }
+  }
+
+  if (!program.dateLabel) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const match = program.dateLabel.match(/(\d{1,2})(?:\s*-\s*\d{1,2})?\s+([A-Za-z]+)\s+(\d{4})/);
+  if (!match) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const [, day, month, year] = match;
+  const timestamp = Date.parse(`${day} ${month} ${year}`);
+  return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
+}
+
+function getFallbackJson<T>(path: string): T | null {
+  if (path === "/pages/home") {
+    return fallbackContent.pages.home as T;
+  }
+
+  if (path.startsWith("/pages/by-slug/")) {
+    const slug = path.slice("/pages/by-slug/".length);
+    return (fallbackContent.pages[slug] ?? null) as T | null;
+  }
+
+  if (path === "/site-setting/global") {
+    return fallbackContent.siteSetting as T;
+  }
+
+  if (path.startsWith("/programs/by-slug/")) {
+    const slug = path.slice("/programs/by-slug/".length);
+    return (fallbackContent.programs.find((program) => program.slug === slug) ?? null) as T | null;
+  }
+
+  if (path.startsWith("/services/by-slug/")) {
+    const slug = path.slice("/services/by-slug/".length);
+    return (fallbackContent.services.find((service) => service.slug === slug) ?? null) as T | null;
+  }
+
+  if (path.startsWith("/projects/by-slug/")) {
+    const slug = path.slice("/projects/by-slug/".length);
+    return (fallbackContent.projects.find((project) => project.slug === slug) ?? null) as T | null;
+  }
+
+  if (path.startsWith("/news/by-slug/")) {
+    const slug = path.slice("/news/by-slug/".length);
+    return (fallbackContent.newsEntries.find((entry) => entry.slug === slug) ?? null) as T | null;
+  }
+
+  return null;
+}
+
+function getFallbackCollection<T>(path: string): T[] {
+  if (path.startsWith("/programs")) {
+    return [...fallbackContent.programs] as T[];
+  }
+
+  if (path.startsWith("/services")) {
+    return [...fallbackContent.services] as T[];
+  }
+
+  if (path.startsWith("/projects")) {
+    return [...fallbackContent.projectList] as T[];
+  }
+
+  if (path.startsWith("/news")) {
+    return [...fallbackContent.newsList] as T[];
+  }
+
+  return [];
+}
+
+async function fetchJson<T>(path: string): Promise<T | null> {
+  try {
+    const response = await fetch(`${STRAPI_BASE_URL}${path}`);
+
+    if (!response.ok) {
+      return getFallbackJson<T>(path);
+    }
+
+    const json = await response.json();
+    return normalizeMedia(json.data ?? null) as T | null;
+  } catch {
+    return getFallbackJson<T>(path);
+  }
+}
+
+async function fetchCollection<T>(path: string): Promise<T[]> {
+  try {
+    const response = await fetch(`${STRAPI_BASE_URL}${path}`);
+
+    if (!response.ok) {
+      return getFallbackCollection<T>(path);
+    }
+
+    const json = await response.json();
+    return Array.isArray(json.data) ? (normalizeMedia(json.data) as T[]) : [];
+  } catch {
+    return getFallbackCollection<T>(path);
+  }
+}
+
+function extractSlug(entry: Record<string, unknown>): string | null {
+  const directSlug = typeof entry.slug === "string" ? entry.slug : null;
+  if (directSlug) {
+    return directSlug;
+  }
+
+  const attributes = entry.attributes;
+  if (attributes && typeof attributes === "object" && "slug" in attributes) {
+    const nestedSlug = (attributes as { slug?: unknown }).slug;
+    return typeof nestedSlug === "string" ? nestedSlug : null;
+  }
+
+  return null;
+}
+
+async function getCollectionSlugs(collection: "services" | "projects" | "news" | "programs"): Promise<string[]> {
+  const entries = await fetchCollection<Record<string, unknown>>(
+    `/${collection}?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc`,
+  );
+
+  return entries
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
+}
+
+export async function getHomePage(): Promise<PageDto | null> {
+  return fetchJson<PageDto>("/pages/home");
+}
+
+export async function getPageBySlug(slug: string): Promise<PageDto | null> {
+  return fetchJson<PageDto>(`/pages/by-slug/${slug}`);
+}
+
+export async function getSiteSetting(): Promise<SiteSettingDto | null> {
+  return fetchJson<SiteSettingDto>("/site-setting/global");
+}
+
+export async function getPrograms(): Promise<Program[]> {
+  const programs = await fetchCollection<Program>("/programs?sort[0]=title:asc");
+  return programs.sort((left, right) => {
+    const dateDiff = parseProgramTimestamp(left) - parseProgramTimestamp(right);
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+
+    return left.title.localeCompare(right.title);
+  });
+}
+
+export async function getProgramBySlug(slug: string): Promise<Program | null> {
+  return fetchJson<Program>(`/programs/by-slug/${slug}`);
+}
+
+export async function getServices(): Promise<Service[]> {
+  return fetchCollection<Service>("/services?sort[0]=order:asc&sort[1]=name:asc");
+}
+
+export async function getServiceBySlug(slug: string): Promise<Service | null> {
+  return fetchJson<Service>(`/services/by-slug/${slug}`);
+}
+
+export async function getProjects(): Promise<ProjectListItem[]> {
+  return fetchCollection<ProjectListItem>("/projects?sort[0]=order:asc&sort[1]=completedDate:desc");
+}
+
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  return fetchJson<Project>(`/projects/by-slug/${slug}`);
+}
+
+export async function getNews(): Promise<NewsListItem[]> {
+  return fetchCollection<NewsListItem>("/news?sort[0]=publishedDate:desc&sort[1]=createdAt:desc");
+}
+
+export async function getNewsBySlug(slug: string): Promise<NewsEntry | null> {
+  return fetchJson<NewsEntry>(`/news/by-slug/${slug}`);
+}
+
+export async function getProgramSlugs(): Promise<string[]> {
+  return getCollectionSlugs("programs");
+}
+
+export async function getServiceSlugs(): Promise<string[]> {
+  return getCollectionSlugs("services");
+}
+
+export async function getProjectSlugs(): Promise<string[]> {
+  return getCollectionSlugs("projects");
+}
+
+export async function getNewsSlugs(): Promise<string[]> {
+  return getCollectionSlugs("news");
+}

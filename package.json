@@ -1,0 +1,17 @@
+{
+  "name": "conc-website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "smoke:local": "PUBLIC_STRAPI_URL=http://127.0.0.1:1338/api node ./scripts/smoke-endpoints.mjs",
+    "smoke:local:e2e": "bash ./scripts/smoke-local-e2e.sh",
+    "smoke:endpoints": "node ./scripts/smoke-endpoints.mjs"
+  },
+  "dependencies": {
+    "astro": "^6.0.8"
+  }
+}

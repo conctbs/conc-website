@@ -1,0 +1,189 @@
+<style>
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 18px 30px;
+    backdrop-filter: blur(18px);
+    background: rgba(255, 255, 255, 0.88);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .brand img {
+    display: block;
+    width: auto;
+    width: 46px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 999px;
+  }
+
+  .nav-shell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  .menu-toggle {
+    display: none;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .menu-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 999px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .menu-toggle .bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+
+  nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 900px) {
+    nav {
+      align-items: stretch;
+      flex-direction: column;
+      padding: 14px 20px;
+    }
+
+    .nav-shell {
+      width: 100%;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      margin-left: 0;
+    }
+
+    nav[data-open="true"] .nav-links {
+      display: flex;
+    }
+
+    nav[data-open="true"] .menu-toggle span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    nav[data-open="true"] .menu-toggle span:nth-child(2) {
+      opacity: 0;
+    }
+
+    nav[data-open="true"] .menu-toggle span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+  }
+</style>
+
+<nav data-open="false" id="site-nav">
+  <div class="nav-shell">
+    <a class="brand" href="/" aria-label="CONC home">
+      <img src="/conc-logo.svg" alt="CONC Thammasat Business School logo" />
+    </a>
+
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">
+      <span class="bars">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </div>
+
+  <div class="nav-links" id="primary-nav">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/services">Services</a>
+    <a href="/programs">Programs</a>
+    <a href="/projects">Projects</a>
+    <a href="/news">News</a>
+    <a href="/contact">Contact</a>
+  </div>
+</nav>
+
+<script is:inline>
+  const nav = document.getElementById('site-nav');
+  const toggle = document.getElementById('menu-toggle');
+  const links = document.querySelectorAll('#primary-nav a');
+
+  function setOpen(nextOpen) {
+    if (!nav || !toggle) return;
+    nav.dataset.open = nextOpen ? 'true' : 'false';
+    toggle.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  }
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.dataset.open === 'true';
+    setOpen(!isOpen);
+  });
+
+  links.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) {
+        setOpen(false);
+      }
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      setOpen(false);
+    }
+  });
+</script>

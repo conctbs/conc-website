@@ -1,0 +1,238 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../../lib/api';
+
+export async function getStaticPaths() {
+  const slugs = await getProgramSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = '' } = Astro.params;
+const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
+const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID ?? '';
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1338/api';
+
+if (!program) {
+  Astro.response.status = 404;
+}
+---
+
+<MainLayout title={program ? `Register | ${program.title}` : 'Register'} siteSetting={siteSetting}>
+  {program ? (
+    <section class="register-page">
+      <div class="section-head">
+        <div class="eyebrow">Registration</div>
+        <h1>ลงทะเบียนแบบย่อสำหรับ {program.title}</h1>
+        <p>
+          {program.registrationEnabled
+            ? 'Fill the short form manually or use a Google account to prefill name and email before sending the registration into Strapi.'
+            : 'Registration is currently closed for this program. You can still review the details or contact the team for the next intake.'}
+        </p>
+      </div>
+
+      <div class="register-grid">
+        <aside class="program-card">
+          <div class="meta-kicker">Program Summary</div>
+          <h2>{program.title}</h2>
+          <p>{program.summary}</p>
+          <div class="detail-row"><span>{program.dateLabel}</span><span>{program.fee}</span></div>
+          <div class="detail-row"><span>{program.location}</span><span>{program.format}</span></div>
+          <div class="detail-row"><span>Starts</span><span>{program.startsAt ?? 'TBC'}</span></div>
+        </aside>
+
+        <div class="form-card">
+          {program.registrationEnabled ? (
+            <>
+              <form id="registration-form" class="register-form">
+                <input type="hidden" name="programSlug" value={program.slug} />
+                <label>
+                  Full name
+                  <input id="fullName" name="fullName" type="text" required />
+                </label>
+                <label>
+                  Email
+                  <input id="email" name="email" type="email" required />
+                </label>
+                <label>
+                  Phone
+                  <input name="phone" type="tel" required />
+                </label>
+                <label>
+                  Organization
+                  <input name="organization" type="text" />
+                </label>
+                <label>
+                  What do you want to solve?
+                  <textarea name="goal" rows="4" placeholder="Briefly describe your training objective"></textarea>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" name="consent" required />
+                  I agree to share my details for this registration.
+                </label>
+
+                <div class="google-block">
+                  <div class="meta-kicker">Google Account</div>
+                  {googleClientId ? (
+                    <>
+                      <div id="google-signin-button"></div>
+                      <div id="google-account-state" class="google-state" hidden></div>
+                    </>
+                  ) : (
+                    <p class="google-note">Set <code>PUBLIC_GOOGLE_CLIENT_ID</code> to enable Google registration.</p>
+                  )}
+                </div>
+
+                <button class="button primary" type="submit">ส่งใบสมัคร</button>
+              </form>
+
+              <div id="form-error" class="error-state" hidden></div>
+
+              <div id="success-state" class="success-state" hidden>
+                <div class="meta-kicker">Submitted</div>
+                <h2>ส่งข้อมูลเรียบร้อย</h2>
+                <p>Your registration has been sent to the Strapi backend and is ready for review in the admin.</p>
+                <a class="button secondary" href={`/programs/${program.slug}`}>กลับไปหน้าหลักสูตร</a>
+              </div>
+            </>
+          ) : (
+            <div class="closed-state">
+              <div class="meta-kicker">Closed</div>
+              <h2>ปิดรับลงทะเบียนชั่วคราว</h2>
+              <p>Please contact the team if you want to join the next cohort or need a private session for your organization.</p>
+              <div class="closed-actions">
+                <a class="button primary" href="/contact">ติดต่อทีมงาน</a>
+                <a class="button secondary" href={`/programs/${program.slug}`}>กลับไปหน้าหลักสูตร</a>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {program.registrationEnabled && (
+        <script is:inline define:vars={{ googleClientId, programTitle: program.title, strapiBaseUrl }}>
+        const form = document.getElementById('registration-form');
+        const successState = document.getElementById('success-state');
+        const errorState = document.getElementById('form-error');
+        const submitButton = form?.querySelector('button[type="submit"]');
+        const nameInput = document.getElementById('fullName');
+        const emailInput = document.getElementById('email');
+        const googleState = document.getElementById('google-account-state');
+        let googleProfile = null;
+
+        function parseJwt(token) {
+          const payload = token.split('.')[1];
+          const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+          return JSON.parse(decodeURIComponent(atob(base64).split('').map((char) => `%${(`00${char.charCodeAt(0).toString(16)}`).slice(-2)}`).join('')));
+        }
+
+        window.handleGoogleCredential = (response) => {
+          if (!response?.credential) return;
+          const profile = parseJwt(response.credential);
+          googleProfile = profile;
+          if (profile.name) nameInput.value = profile.name;
+          if (profile.email) emailInput.value = profile.email;
+          if (googleState) {
+            googleState.hidden = false;
+            googleState.textContent = `Connected Google account: ${profile.email || profile.name || 'Google user'}`;
+          }
+        };
+
+        if (googleClientId) {
+          const script = document.createElement('script');
+          script.src = 'https://accounts.google.com/gsi/client';
+          script.async = true;
+          script.defer = true;
+          script.onload = () => {
+            if (!window.google?.accounts?.id) return;
+            window.google.accounts.id.initialize({
+              client_id: googleClientId,
+              callback: window.handleGoogleCredential,
+            });
+            window.google.accounts.id.renderButton(document.getElementById('google-signin-button'), {
+              theme: 'outline',
+              size: 'large',
+              text: 'signin_with',
+              shape: 'pill',
+              width: 280,
+            });
+          };
+          document.head.appendChild(script);
+        }
+
+        form?.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (errorState) {
+            errorState.hidden = true;
+            errorState.textContent = '';
+          }
+          if (submitButton) submitButton.disabled = true;
+
+          const formData = new FormData(form);
+          const payload = Object.fromEntries(formData.entries());
+          payload.programTitle = programTitle;
+          payload.googleEmail = googleProfile?.email || '';
+
+          try {
+            const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/program-registrations/public`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ data: payload }),
+            });
+
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) {
+              throw new Error(result?.error?.message || result?.message || 'Registration failed');
+            }
+
+            form.hidden = true;
+            successState.hidden = false;
+          } catch (error) {
+            if (errorState) {
+              errorState.hidden = false;
+              errorState.textContent = error instanceof Error ? error.message : 'Registration failed';
+            }
+          } finally {
+            if (submitButton) submitButton.disabled = false;
+          }
+        });
+        </script>
+      )}
+    </section>
+  ) : (
+    <section class="missing-state">
+      <div class="eyebrow">404</div>
+      <h1>Registration page not found</h1>
+      <p>The requested program is not available.</p>
+    </section>
+  )}
+</MainLayout>
+
+<style>
+  .register-page, .missing-state { padding: 4rem 0 5rem; }
+  .section-head { max-width: 56rem; margin-bottom: 2rem; }
+  .eyebrow, .meta-kicker, .detail-row { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; }
+  h1 { margin: 0.35rem 0 1rem; font-size: clamp(2.8rem, 6vw, 4.5rem); line-height: 0.95; }
+  .section-head p, .program-card p, .google-note, .missing-state p { color: var(--muted); line-height: 1.8; }
+  .register-grid { display: grid; grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr); gap: 1.25rem; }
+  .program-card, .form-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .program-card, .form-card { padding: 1.5rem; }
+  .program-card h2, .success-state h2, .closed-state h2 { margin: 0.5rem 0 0.75rem; font-size: 1.8rem; }
+  .detail-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+  .register-form { display: grid; gap: 1rem; }
+  label { display: grid; gap: 0.45rem; font-weight: 700; }
+  input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 0.9rem 1rem; font: inherit; background: #fff; color: var(--text); box-sizing: border-box; }
+  textarea { resize: vertical; }
+  .checkbox-row { display: flex; align-items: center; gap: 0.75rem; font-weight: 500; }
+  .checkbox-row input { width: auto; }
+  .google-block { border: 1px dashed var(--line); border-radius: 16px; padding: 1rem; }
+  .google-state { margin-top: 0.85rem; color: var(--accent); font-weight: 700; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; border: 0; cursor: pointer; }
+  .button.primary { background: var(--accent); color: #fff; }
+  .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
+  .error-state { margin-bottom: 1rem; border: 1px solid #ef4444; background: #fef2f2; color: #991b1b; border-radius: 16px; padding: 0.9rem 1rem; }
+  .success-state, .closed-state { display: grid; gap: 0.75rem; }
+  .closed-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  @media (max-width: 900px) { .register-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,108 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { getNewsBySlug, getNewsSlugs, getSiteSetting } from '../../lib/api';
+
+export async function getStaticPaths() {
+  const slugs = await getNewsSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = '' } = Astro.params;
+const [entry, siteSetting] = await Promise.all([getNewsBySlug(slug), getSiteSetting()]);
+
+if (!entry) {
+  Astro.response.status = 404;
+}
+
+function formatDate(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).format(date);
+}
+
+const publishedDate = formatDate(entry?.publishedDate ?? null);
+const pageTitle = entry?.seo?.metaTitle ?? entry?.title ?? siteSetting?.siteName ?? 'News';
+const pageDescription = entry?.seo?.metaDescription ?? siteSetting?.siteDescription ?? null;
+---
+
+<MainLayout title={pageTitle} seo={entry?.seo} siteSetting={siteSetting}>
+  {entry ? (
+    <article class="detail-page">
+      <a class="back-link" href="/news">Back to news</a>
+      <header class="detail-hero">
+        <div class="detail-copy">
+          <div class="eyebrow">News Update</div>
+          <h1>{entry.title}</h1>
+          {pageDescription && <p class="lead">{pageDescription}</p>}
+          {publishedDate && <div class="meta-chip">Published {publishedDate}</div>}
+        </div>
+        <div class="detail-panel">
+          {entry.coverImage?.url ? (
+            <img src={entry.coverImage.url} alt={entry.coverImage.alternativeText ?? entry.title} loading="eager" />
+          ) : (
+            <div class="placeholder">
+              <div class="placeholder-kicker">News Cover</div>
+              <strong>{entry.title}</strong>
+              <p>Attach a cover image in Strapi to give this article a stronger editorial lead.</p>
+            </div>
+          )}
+        </div>
+      </header>
+      {entry.content ? (
+        <section class="content-card prose-block">
+          <div set:html={entry.content}></div>
+        </section>
+      ) : (
+        <section class="content-card empty-card">
+          <p>No article body is available for this entry yet.</p>
+        </section>
+      )}
+      <section class="action-card">
+        <div class="eyebrow">Continue Exploring</div>
+        <h2>Need help applying this to your website?</h2>
+        <p>Move from editorial examples into implementation planning, content modeling, or frontend delivery work.</p>
+        <div class="action-row">
+          <a class="button primary" href="/contact">Contact Us</a>
+          <a class="button secondary" href="/projects">See Projects</a>
+        </div>
+      </section>
+    </article>
+  ) : (
+    <section class="missing-state">
+      <div class="eyebrow">404</div>
+      <h1>News article not found</h1>
+      <p>The requested news slug is not available from Strapi.</p>
+      <a class="back-link" href="/news">Back to news</a>
+    </section>
+  )}
+</MainLayout>
+
+<style>
+  .detail-page,
+  .missing-state { padding: 4rem 0 5rem; }
+  .back-link { display: inline-flex; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-weight: 700; }
+  .detail-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr); gap: 2rem; align-items: stretch; }
+  .detail-copy h1, .missing-state h1 { margin: 0.35rem 0 1rem; font-size: clamp(3rem, 6vw, 4.8rem); line-height: 0.95; }
+  .eyebrow, .meta-chip { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; }
+  .lead, .empty-card p, .missing-state p { color: var(--muted); line-height: 1.8; }
+  .lead { max-width: 40rem; font-size: 1.1rem; }
+  .meta-chip { margin-top: 1.5rem; }
+  .detail-panel, .content-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .detail-panel { overflow: hidden; min-height: 22rem; }
+  .detail-panel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .placeholder { min-height: 100%; display: grid; place-items: center; align-content: center; gap: 0.6rem; padding: 2rem; color: var(--muted); text-align: center; background: radial-gradient(circle at top left, rgba(185, 28, 28, 0.08), transparent 42%), #f8fafc; }
+  .placeholder-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; font-weight: 700; }
+  .placeholder p { margin: 0; max-width: 18rem; line-height: 1.7; }
+  .content-card { margin-top: 2rem; padding: 2rem; }
+  .action-card { margin-top: 2rem; padding: 2rem; background: #f3f4f6; border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .action-card h2 { margin: 0.35rem 0 0.75rem; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1; }
+  .action-card p { color: var(--muted); line-height: 1.8; max-width: 42rem; }
+  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; }
+  .button.primary { background: var(--accent); color: #fff; }
+  .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
+  .prose-block :global(p) { color: var(--muted); font-size: 1.05rem; line-height: 1.9; }
+  .empty-card p, .missing-state p { max-width: 36rem; }
+  @media (max-width: 900px) { .detail-hero { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,121 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../lib/api';
+
+export async function getStaticPaths() {
+  const slugs = await getProgramSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = '' } = Astro.params;
+const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
+
+if (!program) {
+  Astro.response.status = 404;
+}
+---
+
+<MainLayout title={program?.seo?.metaTitle ?? program?.title ?? 'Program'} seo={program?.seo} siteSetting={siteSetting}>
+  {program ? (
+    <article class="detail-page">
+      <a class="back-link" href="/programs">Back to programs</a>
+      <header class="detail-hero">
+        <div class="detail-copy">
+          <div class="eyebrow">{program.category}</div>
+          <h1>{program.title}</h1>
+          <p class="lead">{program.summary}</p>
+          <div class="meta-grid">
+            <div><span>Format</span><strong>{program.format}</strong></div>
+            <div><span>Date</span><strong>{program.dateLabel}</strong></div>
+            <div><span>Starts</span><strong>{program.startsAt ?? 'TBC'}</strong></div>
+            <div><span>Location</span><strong>{program.location}</strong></div>
+            <div><span>Fee</span><strong>{program.fee}</strong></div>
+          </div>
+          <div class="action-row">
+            {program.registrationEnabled ? (
+              <a class="button primary" href={`/programs/register/${program.slug}`}>ลงทะเบียน</a>
+            ) : (
+              <span class="status-chip">Registration closed</span>
+            )}
+            <a class="button secondary" href="/contact">สอบถามเพิ่มเติม</a>
+          </div>
+        </div>
+        <aside class="detail-panel">
+          <div class="panel-label">Best for</div>
+          <p>{program.audience}</p>
+          <div class="panel-label">Seats</div>
+          <p>{program.seats} seats</p>
+          <div class="panel-label">Duration</div>
+          <p>{program.duration}</p>
+        </aside>
+      </header>
+
+      <section class="content-grid">
+        <section class="content-card">
+          <div class="section-head">
+            <div class="eyebrow">Overview</div>
+            <h2>What participants will work through</h2>
+          </div>
+          {program.overview.map((paragraph) => <p>{paragraph}</p>)}
+        </section>
+        <section class="content-card">
+          <div class="section-head">
+            <div class="eyebrow">Outcomes</div>
+            <h2>Expected takeaways</h2>
+          </div>
+          <ul>
+            {program.outcomes.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      </section>
+      <section class="action-card">
+        <div class="eyebrow">Need A Custom Track?</div>
+        <h2>Bring this program into your team context</h2>
+        <p>Use the contact route if you need an in-house cohort, adjusted scope, or a program aligned to a specific delivery challenge.</p>
+        <div class="action-row">
+          {program.registrationEnabled ? (
+            <a class="button primary" href={`/programs/register/${program.slug}`}>ลงทะเบียน</a>
+          ) : (
+            <a class="button primary" href="/contact">Contact Us</a>
+          )}
+          <a class="button secondary" href="/programs">Back to programs</a>
+        </div>
+      </section>
+    </article>
+  ) : (
+    <section class="missing-state">
+      <div class="eyebrow">404</div>
+      <h1>Program not found</h1>
+      <p>The requested training program is not available.</p>
+    </section>
+  )}
+</MainLayout>
+
+<style>
+  .detail-page, .missing-state { padding: 4rem 0 5rem; }
+  .back-link { display: inline-flex; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-weight: 700; }
+  .detail-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr); gap: 2rem; align-items: start; }
+  .eyebrow, .meta-grid span, .panel-label, .status-chip { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; }
+  h1 { margin: 0.35rem 0 1rem; font-size: clamp(3rem, 6vw, 4.8rem); line-height: 0.95; }
+  .lead { color: var(--muted); line-height: 1.8; max-width: 44rem; }
+  .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .meta-grid div, .detail-panel, .content-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .meta-grid div { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .detail-panel { padding: 1.5rem; }
+  .detail-panel p { margin: 0.5rem 0 1.25rem; color: var(--muted); line-height: 1.8; }
+  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
+  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; }
+  .button.primary { background: var(--accent); color: #fff; }
+  .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
+  .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+  .content-card { padding: 1.5rem; }
+  .action-card { margin-top: 2rem; padding: 2rem; background: #f3f4f6; border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
+  .action-card h2 { margin: 0.35rem 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; }
+  .action-card p { color: var(--muted); line-height: 1.8; max-width: 42rem; }
+  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
+  .section-head { max-width: 40rem; margin-bottom: 1rem; }
+  .section-head h2 { margin: 0.35rem 0 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; }
+  .content-card p, .content-card li, .missing-state p { color: var(--muted); line-height: 1.8; }
+  ul { padding-left: 1.2rem; margin: 0; }
+  @media (max-width: 900px) { .detail-hero, .content-grid, .meta-grid { grid-template-columns: 1fr; } }
+</style>

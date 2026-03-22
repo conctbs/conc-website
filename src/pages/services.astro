@@ -1,0 +1,28 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
+import { getPageBySlug, getSiteSetting } from '../lib/api';
+
+const [page, siteSetting] = await Promise.all([getPageBySlug('services'), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'Services';
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <section style="padding: 6rem 0;">
+      <div style="max-width: 40rem;">
+        <div style="text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-size: 0.75rem;">
+          Services Page
+        </div>
+        <h1 style="font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; margin: 0.5rem 0 1rem;">
+          Services content is not available yet
+        </h1>
+        <p style="color: var(--muted); font-size: 1.1rem; line-height: 1.8;">
+          The frontend is ready to render the Strapi page with slug <code>services</code>. Add or publish that page in Strapi and reload.
+        </p>
+      </div>
+    </section>
+  )}
+</MainLayout>

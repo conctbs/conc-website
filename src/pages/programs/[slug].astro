@@ -35,11 +35,11 @@ if (!program) {
           </div>
           <div class="action-row">
             {program.registrationEnabled ? (
-              <a class="button primary" href={`/programs/register/${program.slug}`}>ลงทะเบียน</a>
+              <a class="button primary" href={`/programs/register/${program.slug}`}>Register</a>
             ) : (
               <span class="status-chip">Registration closed</span>
             )}
-            <a class="button secondary" href="/contact">สอบถามเพิ่มเติม</a>
+            <a class="button secondary" href="/contact">Contact Us</a>
           </div>
         </div>
         <aside class="detail-panel">
@@ -108,7 +108,7 @@ if (!program) {
         <p>Use the contact route if you need an in-house cohort, adjusted scope, or a program aligned to a specific delivery challenge.</p>
         <div class="action-row">
           {program.registrationEnabled ? (
-            <a class="button primary" href={`/programs/register/${program.slug}`}>ลงทะเบียน</a>
+            <a class="button primary" href={`/programs/register/${program.slug}`}>Register</a>
           ) : (
             <a class="button primary" href="/contact">Contact Us</a>
           )}

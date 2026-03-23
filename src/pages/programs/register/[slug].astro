@@ -22,7 +22,7 @@ if (!program) {
     <section class="register-page">
       <div class="section-head">
         <div class="eyebrow">Registration</div>
-        <h1>ลงทะเบียนแบบย่อสำหรับ {program.title}</h1>
+        <h1>Register for {program.title}</h1>
         <p>
           {program.registrationEnabled
             ? 'Fill the short form manually or use a Google account to prefill name and email before sending the registration into Strapi.'
@@ -82,26 +82,19 @@ if (!program) {
                   )}
                 </div>
 
-                <button class="button primary" type="submit">ส่งใบสมัคร</button>
+                <button class="button primary" type="submit">Submit registration</button>
               </form>
 
-              <div id="form-error" class="error-state" hidden></div>
-
-              <div id="success-state" class="success-state" hidden>
-                <div class="meta-kicker">Submitted</div>
-                <h2>ส่งข้อมูลเรียบร้อย</h2>
-                <p>Your registration has been sent to the Strapi backend and is ready for review in the admin.</p>
-                <a class="button secondary" href={`/programs/${program.slug}`}>กลับไปหน้าหลักสูตร</a>
-              </div>
+              <div id="form-notification" class="form-notification" hidden aria-live="polite"></div>
             </>
           ) : (
             <div class="closed-state">
               <div class="meta-kicker">Closed</div>
-              <h2>ปิดรับลงทะเบียนชั่วคราว</h2>
+              <h2>Registration is currently closed</h2>
               <p>Please contact the team if you want to join the next cohort or need a private session for your organization.</p>
               <div class="closed-actions">
-                <a class="button primary" href="/contact">ติดต่อทีมงาน</a>
-                <a class="button secondary" href={`/programs/${program.slug}`}>กลับไปหน้าหลักสูตร</a>
+                <a class="button primary" href="/contact">Contact the team</a>
+                <a class="button secondary" href={`/programs/${program.slug}`}>Back to program details</a>
               </div>
             </div>
           )}
@@ -109,15 +102,33 @@ if (!program) {
       </div>
 
       {program.registrationEnabled && (
-        <script is:inline define:vars={{ googleClientId, strapiBaseUrl }}>
+        <script is:inline define:vars={{ googleClientId, strapiBaseUrl, programSlug: program.slug }}>
         const form = document.getElementById('registration-form');
-        const successState = document.getElementById('success-state');
-        const errorState = document.getElementById('form-error');
+        const notification = document.getElementById('form-notification');
         const submitButton = form?.querySelector('button[type="submit"]');
         const nameInput = document.getElementById('fullName');
         const emailInput = document.getElementById('email');
         const googleState = document.getElementById('google-account-state');
         let googleProfile = null;
+        let notificationTimer = null;
+
+        function showNotification(message, type = 'success') {
+          if (!notification) return;
+          if (notificationTimer) {
+            window.clearTimeout(notificationTimer);
+          }
+
+          notification.hidden = false;
+          notification.textContent = message;
+          notification.dataset.type = type;
+          notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+          notificationTimer = window.setTimeout(() => {
+            notification.hidden = true;
+            notification.textContent = '';
+            delete notification.dataset.type;
+          }, 3200);
+        }
 
         function parseJwt(token) {
           const payload = token.split('.')[1];
@@ -161,11 +172,15 @@ if (!program) {
 
         form?.addEventListener('submit', async (event) => {
           event.preventDefault();
-          if (errorState) {
-            errorState.hidden = true;
-            errorState.textContent = '';
+          if (notification) {
+            notification.hidden = true;
+            notification.textContent = '';
+            delete notification.dataset.type;
           }
-          if (submitButton) submitButton.disabled = true;
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+          }
 
           const formData = new FormData(form);
           const payload = Object.fromEntries(formData.entries());
@@ -185,15 +200,23 @@ if (!program) {
               throw new Error(result?.error?.message || result?.message || 'Registration failed');
             }
 
-            form.hidden = true;
-            successState.hidden = false;
-          } catch (error) {
-            if (errorState) {
-              errorState.hidden = false;
-              errorState.textContent = error instanceof Error ? error.message : 'Registration failed';
+            form.reset();
+            googleProfile = null;
+            if (googleState) {
+              googleState.hidden = true;
+              googleState.textContent = '';
             }
+            showNotification('Registration submitted successfully. Redirecting you to the program page.', 'success');
+            window.setTimeout(() => {
+              window.location.href = `/programs/${programSlug}`;
+            }, 1400);
+          } catch (error) {
+            showNotification(error instanceof Error ? error.message : 'Registration failed', 'error');
           } finally {
-            if (submitButton) submitButton.disabled = false;
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.textContent = 'Submit registration';
+            }
           }
         });
         </script>
@@ -230,8 +253,32 @@ if (!program) {
   .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; border: 0; cursor: pointer; }
   .button.primary { background: var(--accent); color: #fff; }
   .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
-  .error-state { margin-bottom: 1rem; border: 1px solid #ef4444; background: #fef2f2; color: #991b1b; border-radius: 16px; padding: 0.9rem 1rem; }
-  .success-state, .closed-state { display: grid; gap: 0.75rem; }
+  .form-notification {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 40;
+    max-width: min(28rem, calc(100vw - 2rem));
+    border-radius: 16px;
+    padding: 0.95rem 1rem;
+    box-shadow: 0 18px 40px rgba(15, 15, 16, 0.18);
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ffffff;
+    background: #166534;
+  }
+  .form-notification[data-type="error"] {
+    background: #b91c1c;
+  }
+  .closed-state { display: grid; gap: 0.75rem; }
   .closed-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-  @media (max-width: 900px) { .register-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) {
+    .register-grid { grid-template-columns: 1fr; }
+    .form-notification {
+      top: 1rem;
+      right: 1rem;
+      left: 1rem;
+      max-width: none;
+    }
+  }
 </style>

@@ -1,7 +1,6 @@
 <svg width="768" height="768" viewBox="0 0 768 768" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="384" cy="384" r="384" fill="#ED1C24"/>
-  <text x="384" y="350" text-anchor="middle" fill="white" font-family="Sarabun, Arial, sans-serif" font-size="160" font-weight="800" letter-spacing="2">CONC</text>
-  <line x1="160" y1="392" x2="608" y2="392" stroke="white" stroke-width="5"/>
-  <text x="384" y="468" text-anchor="middle" fill="white" font-family="Sarabun, Arial, sans-serif" font-size="60" font-weight="700" letter-spacing="5">THAMMASAT</text>
-  <text x="384" y="532" text-anchor="middle" fill="white" font-family="Sarabun, Arial, sans-serif" font-size="44" font-weight="500" letter-spacing="1.5">BUSINESS SCHOOL</text>
+  <text x="384" y="292" text-anchor="middle" fill="#FFFFFF" font-family="Sarabun, Arial, sans-serif" font-size="164" font-weight="800" letter-spacing="10">CONC</text>
+  <line x1="148" y1="356" x2="620" y2="356" stroke="#FFFFFF" stroke-width="5"/>
+  <text x="384" y="456" text-anchor="middle" fill="#FFFFFF" font-family="Sarabun, Arial, sans-serif" font-size="62" font-weight="700" letter-spacing="10">THAMMASAT</text>
+  <text x="384" y="542" text-anchor="middle" fill="#FFFFFF" font-family="Sarabun, Arial, sans-serif" font-size="42" font-weight="500" letter-spacing="3">BUSINESS SCHOOL</text>
 </svg>

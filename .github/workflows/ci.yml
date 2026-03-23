@@ -11,7 +11,8 @@ jobs:
   smoke-and-build:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_STRAPI_URL: ${{ vars.PUBLIC_STRAPI_URL || secrets.PUBLIC_STRAPI_URL }}
+       PUBLIC_STRAPI_URL: https://cms.example.com/api
+       PUBLIC_STRAPI_URL: ${{ vars.PUBLIC_STRAPI_URL || secrets.PUBLIC_STRAPI_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

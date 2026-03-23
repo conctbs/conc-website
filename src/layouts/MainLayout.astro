@@ -11,6 +11,8 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 {seo?.metaDescription && <meta name="description" content={seo.metaDescription} />}
 {seo?.canonicalUrl && <link rel="canonical" href={seo.canonicalUrl} />}
 {seo?.noIndex && <meta name="robots" content="noindex,nofollow" />}
+<link rel="icon" type="image/svg+xml" href="/conc-logo.svg" />
+<link rel="shortcut icon" href="/conc-logo.svg" />
 
 <style>
   :root {

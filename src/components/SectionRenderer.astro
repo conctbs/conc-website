@@ -221,16 +221,34 @@ function excerpt(value, fallback = '') {
         </div>
         <div class="card-grid two">
           {section.programs.map((program) => (
-            <article class="card">
+            <article class="card program-card">
               <div class="project-meta">
                 <span>{program.format}</span>
                 <span>{program.dateLabel}</span>
               </div>
+              <div class="program-status-row">
+                <span class:list={["status-tag", program.registrationEnabled ? "is-open" : "is-closed"]}>
+                  {program.registrationEnabled ? "Registration Open" : "Registration Closed"}
+                </span>
+                {program.duration && <span class="status-tag">{program.duration}</span>}
+              </div>
               <h3><a class="card-link" href={`/programs/${program.slug}`}>{program.title}</a></h3>
               <p>{program.summary}</p>
+              {program.audience && (
+                <p class="program-audience">
+                  Best for: {program.audience}
+                </p>
+              )}
+              <div class="program-facts">
+                {program.location && <span class="tag">{program.location}</span>}
+                {program.fee && <span class="tag">{program.fee}</span>}
+                {program.seats && <span class="tag">{program.seats} seats</span>}
+              </div>
               <div class="tag-row">
-                <span class="tag">{program.location}</span>
-                <span class="tag">{program.fee}</span>
+                <a class="button secondary small" href={`/programs/${program.slug}`}>View details</a>
+                {program.registrationEnabled && (
+                  <a class="button primary small" href={`/programs/register/${program.slug}`}>Register</a>
+                )}
               </div>
             </article>
           ))}
@@ -453,12 +471,60 @@ function excerpt(value, fallback = '') {
     margin-top: 1rem;
   }
 
+  .program-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .program-status-row,
+  .program-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.85rem;
+  }
+
+  .program-audience {
+    margin: 0.25rem 0 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
   .tag {
     border: 1px solid var(--line);
     border-radius: 999px;
     padding: 0.45rem 0.75rem;
     font-size: 0.82rem;
     background: rgba(185, 28, 28, 0.08);
+  }
+
+  .status-tag {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.38rem 0.72rem;
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: #fff;
+  }
+
+  .status-tag.is-open {
+    border-color: rgba(22, 101, 52, 0.22);
+    background: rgba(22, 163, 74, 0.1);
+    color: #166534;
+  }
+
+  .status-tag.is-closed {
+    border-color: rgba(185, 28, 28, 0.15);
+    background: rgba(185, 28, 28, 0.08);
+    color: var(--accent);
+  }
+
+  .button.small {
+    min-height: 2.55rem;
+    padding: 0 1rem;
+    font-size: 0.92rem;
   }
 
   .stat-value {

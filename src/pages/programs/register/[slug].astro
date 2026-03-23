@@ -109,7 +109,7 @@ if (!program) {
       </div>
 
       {program.registrationEnabled && (
-        <script is:inline define:vars={{ googleClientId, programTitle: program.title, strapiBaseUrl }}>
+        <script is:inline define:vars={{ googleClientId, strapiBaseUrl }}>
         const form = document.getElementById('registration-form');
         const successState = document.getElementById('success-state');
         const errorState = document.getElementById('form-error');
@@ -169,7 +169,6 @@ if (!program) {
 
           const formData = new FormData(form);
           const payload = Object.fromEntries(formData.entries());
-          payload.programTitle = programTitle;
           payload.googleEmail = googleProfile?.email || '';
 
           try {

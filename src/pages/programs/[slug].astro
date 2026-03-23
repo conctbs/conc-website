@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../lib/api';
+import { programDetailContent } from '../../lib/program-detail-content';
 
 export async function getStaticPaths() {
   const slugs = await getProgramSlugs();
@@ -9,6 +10,7 @@ export async function getStaticPaths() {
 
 const { slug = '' } = Astro.params;
 const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
+const sampleContent = program ? programDetailContent[program.slug] ?? null : null;
 
 if (!program) {
   Astro.response.status = 404;
@@ -68,6 +70,38 @@ if (!program) {
           </ul>
         </section>
       </section>
+
+      {sampleContent && (
+        <section class="content-grid extra-grid">
+          <section class="content-card">
+            <div class="section-head">
+              <div class="eyebrow">Highlights</div>
+              <h2>{sampleContent.highlightTitle}</h2>
+            </div>
+            <ul>
+              {sampleContent.highlights.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+          <section class="content-card">
+            <div class="section-head">
+              <div class="eyebrow">Agenda</div>
+              <h2>{sampleContent.agendaTitle}</h2>
+            </div>
+            <ul>
+              {sampleContent.agenda.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+          <section class="content-card full-span">
+            <div class="section-head">
+              <div class="eyebrow">Deliverables</div>
+              <h2>{sampleContent.deliverablesTitle}</h2>
+            </div>
+            <ul>
+              {sampleContent.deliverables.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+        </section>
+      )}
       <section class="action-card">
         <div class="eyebrow">Need A Custom Track?</div>
         <h2>Bring this program into your team context</h2>
@@ -108,7 +142,9 @@ if (!program) {
   .button.primary { background: var(--accent); color: #fff; }
   .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
   .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+  .extra-grid { margin-top: 1.25rem; }
   .content-card { padding: 1.5rem; }
+  .full-span { grid-column: 1 / -1; }
   .action-card { margin-top: 2rem; padding: 2rem; background: #f3f4f6; border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
   .action-card h2 { margin: 0.35rem 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; }
   .action-card p { color: var(--muted); line-height: 1.8; max-width: 42rem; }

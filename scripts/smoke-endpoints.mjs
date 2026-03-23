@@ -76,7 +76,6 @@ async function assertClosedProgramRegistration() {
   const registrationPayload = {
     data: {
       programSlug: closedProgramSlug,
-      programTitle: detailData.title || "Closed Program",
       fullName: "Smoke Test",
       email: "smoke.closed@example.com",
       phone: "0800000000",

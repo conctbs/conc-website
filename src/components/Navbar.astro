@@ -102,6 +102,19 @@
     align-items: center;
   }
 
+  .nav-item-shell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .nav-parent-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
   .nav-trigger,
   nav a {
     color: #ffffff;
@@ -113,10 +126,13 @@
   .nav-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
     padding: 0;
-    border: 0;
-    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
     cursor: pointer;
     font: inherit;
   }
@@ -142,10 +158,10 @@
     display: grid;
     min-width: 220px;
     padding: 0.8rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(15, 15, 16, 0.08);
     border-radius: 18px;
-    background: rgba(127, 29, 29, 0.98);
-    box-shadow: 0 20px 40px rgba(15, 15, 16, 0.18);
+    background: rgba(243, 244, 246, 0.98);
+    box-shadow: 0 20px 40px rgba(15, 15, 16, 0.12);
     opacity: 0;
     pointer-events: none;
     transform: translateY(8px);
@@ -156,11 +172,18 @@
     padding: 0.7rem 0.85rem;
     border-radius: 12px;
     font-size: 0.92rem;
+    color: var(--text);
   }
 
   .submenu a:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
+    background: rgba(185, 28, 28, 0.08);
+    color: var(--accent-2);
+  }
+
+  .nav-parent-link:hover,
+  .nav-trigger:hover,
+  .nav-trigger:focus-visible {
+    color: rgba(255, 255, 255, 0.82);
   }
 
   .nav-item.has-submenu:hover .submenu,
@@ -219,12 +242,28 @@
       align-items: stretch;
     }
 
-    .nav-trigger,
+    .nav-item-shell,
+    .nav-parent-link,
     .nav-links > a {
       display: flex;
       align-items: center;
+    }
+
+    .nav-item-shell,
+    .nav-links > a {
       justify-content: space-between;
       padding: 0.2rem 0;
+    }
+
+    .nav-parent-link {
+      flex: 1;
+      padding: 0.2rem 0;
+    }
+
+    .nav-trigger {
+      width: 2rem;
+      height: 2rem;
+      flex-shrink: 0;
     }
 
     .submenu {
@@ -288,15 +327,20 @@
   <div class="nav-links" id="primary-nav">
     <a href="/">Home</a>
     <div class="nav-item has-submenu" data-submenu-open="false">
-      <button
-        class="nav-trigger"
-        type="button"
-        aria-expanded="false"
-        aria-controls="about-submenu"
-      >
-        About Us
-      </button>
+      <div class="nav-item-shell">
+        <a class="nav-parent-link" href="/about">About Us</a>
+        <button
+          class="nav-trigger"
+          type="button"
+          aria-expanded="false"
+          aria-controls="about-submenu"
+          aria-label="Toggle About Us menu"
+        >
+          <span class="sr-only">Open About Us submenu</span>
+        </button>
+      </div>
       <div class="submenu" id="about-submenu">
+        <a href="/about">Overview</a>
         <a href="/about/philosophy">Philosophy</a>
         <a href="/about/executive">Executive</a>
         <a href="/about/facilities">Facilities</a>

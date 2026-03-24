@@ -1,0 +1,30 @@
+---
+import InfoPage from "../components/InfoPage.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import { getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+---
+
+<MainLayout title="Privacy Policy | CONC" siteSetting={siteSetting}>
+  <InfoPage
+    eyebrow="About Us"
+    title="Privacy Policy"
+    intro="This website collects only the information required to respond to inquiries, process program registrations, and maintain reliable site operations. Personal data is handled with reasonable safeguards and limited to legitimate operational use."
+    lastUpdated="March 24, 2026"
+    sections={[
+      {
+        title: "Information We Collect",
+        body: "Information submitted through contact and registration forms may include names, email addresses, phone numbers, organizational details, and any message content provided by the user.",
+      },
+      {
+        title: "How Information Is Used",
+        body: "Submitted information is used to respond to requests, evaluate registration eligibility, coordinate services, and maintain records necessary for program delivery and follow-up communication.",
+      },
+      {
+        title: "Retention and Access",
+        body: "Information is retained only as long as needed for operational, academic, or compliance purposes. Access is limited to personnel and authorized collaborators who require it to perform their duties.",
+      },
+    ]}
+  />
+</MainLayout>

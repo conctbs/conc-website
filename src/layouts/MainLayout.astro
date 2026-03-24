@@ -58,6 +58,56 @@ const { title, seo = null, siteSetting = null } = Astro.props;
     background:#111111;
     color:#ffffff;
   }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .footer-title {
+    margin: 0 0 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .footer-copy {
+    margin: 0;
+    max-width: 34rem;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.8;
+  }
+
+  .footer-links {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .footer-links a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .footer-links a:hover {
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  .footer-bottom {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  @media (max-width: 900px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,7 +125,36 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 
 <footer>
   <div class="container">
-    {siteSetting?.copyrightText ?? "© 2026 CONC"}
+    <div class="footer-grid">
+      <div>
+        <div class="footer-title">CONC</div>
+        <p class="footer-copy">
+          Thammasat Consulting Networking and Coaching Center provides consulting, coaching, and capability-building programs for leaders, teams, and organizations.
+        </p>
+      </div>
+
+      <div>
+        <div class="footer-title">About Us</div>
+        <div class="footer-links">
+          <a href="/about/philosophy">Philosophy</a>
+          <a href="/about/executive">Executive</a>
+          <a href="/about/facilities">Facilities</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-title">Reference</div>
+        <div class="footer-links">
+          <a href="/sitemap">Sitemap</a>
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      {siteSetting?.copyrightText ?? "© 2026 CONC"}
+    </div>
   </div>
 </footer>
 

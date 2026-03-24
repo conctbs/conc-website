@@ -1,0 +1,46 @@
+---
+import InfoPage from "../components/InfoPage.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import { getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+---
+
+<MainLayout title="Sitemap | CONC" siteSetting={siteSetting}>
+  <InfoPage
+    eyebrow="About Us"
+    title="Sitemap"
+    intro="A quick reference for the main public sections of the CONC website."
+    sections={[
+      {
+        title: "Main Pages",
+        body: "Home, About, Services, Programs, Projects, News, and Contact provide the primary public navigation experience across the site.",
+      },
+      {
+        title: "About Us",
+        body: "Philosophy, Executive, Facilities, Sitemap, and Privacy Policy are grouped under About Us for institutional information and public reference material.",
+      },
+      {
+        title: "Program and Content Detail Pages",
+        body: "The site also includes generated detail pages for individual services, programs, projects, news articles, and program registration flows.",
+      },
+    ]}
+  />
+
+  <section style="padding: 0 0 4rem;">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
+      <a href="/" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Home</a>
+      <a href="/about" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">About</a>
+      <a href="/about/philosophy" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Philosophy</a>
+      <a href="/about/executive" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Executive</a>
+      <a href="/about/facilities" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Facilities</a>
+      <a href="/services" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Services</a>
+      <a href="/programs" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Programs</a>
+      <a href="/projects" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Projects</a>
+      <a href="/news" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">News</a>
+      <a href="/contact" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Contact</a>
+      <a href="/sitemap" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Sitemap</a>
+      <a href="/privacy-policy" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Privacy Policy</a>
+    </div>
+  </section>
+</MainLayout>

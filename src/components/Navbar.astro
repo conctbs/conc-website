@@ -1,4 +1,16 @@
 <style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   nav {
     position: sticky;
     top: 0;
@@ -84,6 +96,13 @@
     margin-left: auto;
   }
 
+  .nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-trigger,
   nav a {
     color: #ffffff;
     text-decoration: none;
@@ -91,8 +110,71 @@
     font-size: 0.95rem;
   }
 
+  .nav-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .nav-trigger::after {
+    content: "";
+    width: 0.55rem;
+    height: 0.55rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-1px);
+    transition: transform 0.2s ease;
+  }
+
   nav a:hover {
     color: rgba(255, 255, 255, 0.82);
+  }
+
+  .submenu {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    display: grid;
+    min-width: 220px;
+    padding: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    background: rgba(127, 29, 29, 0.98);
+    box-shadow: 0 20px 40px rgba(15, 15, 16, 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .submenu a {
+    padding: 0.7rem 0.85rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+  }
+
+  .submenu a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+  }
+
+  .nav-item.has-submenu:hover .submenu,
+  .nav-item.has-submenu:focus-within .submenu,
+  .nav-item.has-submenu[data-submenu-open="true"] .submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .nav-item.has-submenu[data-submenu-open="true"] .nav-trigger::after,
+  .nav-item.has-submenu:hover .nav-trigger::after,
+  .nav-item.has-submenu:focus-within .nav-trigger::after {
+    transform: rotate(225deg) translateY(-1px);
   }
 
   @media (max-width: 900px) {
@@ -132,8 +214,45 @@
       margin-left: 0;
     }
 
+    .nav-item {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .nav-trigger,
+    .nav-links > a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.2rem 0;
+    }
+
+    .submenu {
+      position: static;
+      min-width: 0;
+      margin-top: 0.5rem;
+      padding: 0 0 0 1rem;
+      border: 0;
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+      display: none;
+    }
+
+    .submenu a {
+      padding: 0.55rem 0;
+    }
+
     nav[data-open="true"] .nav-links {
       display: flex;
+    }
+
+    .nav-item.has-submenu[data-submenu-open="true"] .submenu {
+      display: grid;
     }
 
     nav[data-open="true"] .menu-toggle span:nth-child(1) {
@@ -168,7 +287,23 @@
 
   <div class="nav-links" id="primary-nav">
     <a href="/">Home</a>
-    <a href="/about">About</a>
+    <div class="nav-item has-submenu" data-submenu-open="false">
+      <button
+        class="nav-trigger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="about-submenu"
+      >
+        About Us
+      </button>
+      <div class="submenu" id="about-submenu">
+        <a href="/about/philosophy">Philosophy</a>
+        <a href="/about/executive">Executive</a>
+        <a href="/about/facilities">Facilities</a>
+        <a href="/sitemap">Sitemap</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+      </div>
+    </div>
     <a href="/services">Services</a>
     <a href="/programs">Programs</a>
     <a href="/projects">Projects</a>
@@ -181,6 +316,8 @@
   const nav = document.getElementById('site-nav');
   const toggle = document.getElementById('menu-toggle');
   const links = document.querySelectorAll('#primary-nav a');
+  const submenuItem = document.querySelector('.nav-item.has-submenu');
+  const submenuTrigger = submenuItem?.querySelector('.nav-trigger');
 
   function setOpen(nextOpen) {
     if (!nav || !toggle) return;
@@ -188,13 +325,25 @@
     toggle.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
   }
 
+  function setSubmenuOpen(nextOpen) {
+    if (!submenuItem || !submenuTrigger) return;
+    submenuItem.dataset.submenuOpen = nextOpen ? 'true' : 'false';
+    submenuTrigger.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  }
+
   toggle?.addEventListener('click', () => {
     const isOpen = nav?.dataset.open === 'true';
     setOpen(!isOpen);
   });
 
+  submenuTrigger?.addEventListener('click', () => {
+    const isOpen = submenuItem?.dataset.submenuOpen === 'true';
+    setSubmenuOpen(!isOpen);
+  });
+
   links.forEach((link) => {
     link.addEventListener('click', () => {
+      setSubmenuOpen(false);
       if (window.innerWidth <= 900) {
         setOpen(false);
       }
@@ -204,6 +353,14 @@
   window.addEventListener('resize', () => {
     if (window.innerWidth > 900) {
       setOpen(false);
+      setSubmenuOpen(false);
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!submenuItem) return;
+    if (!submenuItem.contains(event.target)) {
+      setSubmenuOpen(false);
     }
   });
 </script>

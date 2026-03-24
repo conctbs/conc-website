@@ -1,0 +1,29 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getSiteSetting } from "../../lib/api";
+
+const siteSetting = await getSiteSetting();
+---
+
+<MainLayout title="Philosophy | CONC" siteSetting={siteSetting}>
+  <InfoPage
+    eyebrow="About Us"
+    title="Philosophy"
+    intro="CONC works as a university-linked consulting and coaching center that values disciplined thinking, practical execution, and measurable development for leaders, teams, and organizations."
+    sections={[
+      {
+        title: "Learning Through Practice",
+        body: "Programs are designed around real organizational challenges so participants can translate frameworks into decisions, communication, and delivery habits that hold up in actual work.",
+      },
+      {
+        title: "Evidence Before Assumption",
+        body: "We favor structured diagnosis, stakeholder listening, and clear success criteria before recommending interventions, content strategy, or executive coaching pathways.",
+      },
+      {
+        title: "Growth With Accountability",
+        body: "Coaching and consulting are paired with explicit outcomes, follow-through checkpoints, and operational clarity so development work does not stop at inspiration.",
+      },
+    ]}
+  />
+</MainLayout>

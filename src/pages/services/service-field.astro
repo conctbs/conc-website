@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("service-field"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Service Field | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Consulting Service"
+      title="Service Field"
+      intro="CONC supports consulting work across strategy, organizational capability, communication, and implementation design with an emphasis on practical decisions and structured delivery."
+      sections={[
+        {
+          title: "Strategic Communication",
+          body: "We help teams clarify positioning, executive messaging, and stakeholder communication structures that can support business, academic, and institutional goals.",
+        },
+        {
+          title: "Capability Development",
+          body: "Programs combine consulting and learning design to strengthen leadership practice, team operating rhythms, and project execution across changing environments.",
+        },
+        {
+          title: "Transformation Support",
+          body: "The center advises on service design, content operations, and implementation planning so organizations can move from abstract goals to workable operating models.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

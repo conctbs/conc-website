@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("class-observation"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Class Observation | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Life Long Learning"
+      title="Class Observation"
+      intro="Class observation creates learning value by allowing participants to watch teaching, facilitation, and discussion design in action, then reflect on what makes those formats effective."
+      sections={[
+        {
+          title: "Observe Practice in Context",
+          body: "Participants can study how instructors frame problems, guide discussion, and manage participation instead of learning those techniques only in abstract form.",
+        },
+        {
+          title: "Reflection After Observation",
+          body: "Observation works best when paired with structured debriefs that clarify what was intentional, what constraints were present, and what can be adapted elsewhere.",
+        },
+        {
+          title: "Transfer to Professional Use",
+          body: "The format helps leaders, facilitators, and educators bring stronger design choices into their own classrooms, workshops, and organizational learning settings.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

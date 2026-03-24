@@ -4,7 +4,10 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND_DIR="${BACKEND_DIR:-/home/saton/my-strapi-concwebsite}"
-BACKEND_URL="${PUBLIC_STRAPI_URL:-http://127.0.0.1:1338/api}"
+BACKEND_HOST="${BACKEND_HOST:-127.0.0.1}"
+BACKEND_PORT="${BACKEND_PORT:-1339}"
+BACKEND_DB_FILE="${BACKEND_DB_FILE:-.tmp/smoke-e2e-data.db}"
+BACKEND_URL="${PUBLIC_STRAPI_URL:-http://${BACKEND_HOST}:${BACKEND_PORT}/api}"
 HEALTH_URL="${BACKEND_URL%/api}/api/pages/home"
 BACKEND_LOG="${ROOT_DIR}/.smoke-backend.log"
 
@@ -25,7 +28,7 @@ trap cleanup EXIT INT TERM
 echo "Starting Strapi smoke instance from $BACKEND_DIR"
 (
   cd "$BACKEND_DIR"
-  npm run smoke:start >"$BACKEND_LOG" 2>&1
+  HOST="$BACKEND_HOST" PORT="$BACKEND_PORT" DATABASE_FILENAME="$BACKEND_DB_FILE" npm run smoke:start >"$BACKEND_LOG" 2>&1
 ) &
 BACKEND_PID=$!
 

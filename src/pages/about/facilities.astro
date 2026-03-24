@@ -1,29 +1,35 @@
 ---
 import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getSiteSetting } from "../../lib/api";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
-const siteSetting = await getSiteSetting();
+const [page, siteSetting] = await Promise.all([getPageBySlug("facilities"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Facilities | CONC";
 ---
 
-<MainLayout title="Facilities | CONC" siteSetting={siteSetting}>
-  <InfoPage
-    eyebrow="About Us"
-    title="Facilities"
-    intro="The center supports workshops, coaching, and executive engagement with spaces and formats that can accommodate focused discussion, collaborative sessions, and hybrid delivery."
-    sections={[
-      {
-        title: "Training Rooms",
-        body: "Configured for seminars, capability workshops, and intensive short-format programs with layouts that support both instruction and group work.",
-      },
-      {
-        title: "Executive Meeting Space",
-        body: "Used for coaching conversations, planning sessions, and partner consultations that require privacy, concentration, and a more formal setting.",
-      },
-      {
-        title: "Hybrid Session Support",
-        body: "Facilities can support blended participation models for organizations that need on-site facilitation combined with remote attendance and documentation workflows.",
-      },
-    ]}
-  />
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="About Us"
+      title="Facilities"
+      intro="The center supports workshops, coaching, and executive engagement with spaces and formats that can accommodate focused discussion, collaborative sessions, and hybrid delivery."
+      sections={[
+        {
+          title: "Training Rooms",
+          body: "Configured for seminars, capability workshops, and intensive short-format programs with layouts that support both instruction and group work.",
+        },
+        {
+          title: "Executive Meeting Space",
+          body: "Used for coaching conversations, planning sessions, and partner consultations that require privacy, concentration, and a more formal setting.",
+        },
+        {
+          title: "Hybrid Session Support",
+          body: "Facilities can support blended participation models for organizations that need on-site facilitation combined with remote attendance and documentation workflows.",
+        },
+      ]}
+    />
+  )}
 </MainLayout>

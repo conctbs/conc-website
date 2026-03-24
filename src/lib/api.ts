@@ -429,7 +429,15 @@ async function getCollectionSlugs(collection: "services" | "projects" | "news" |
     `/${collection}?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc`,
   );
 
-  return entries
+  const slugs = entries
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
+
+  if (slugs.length > 0) {
+    return slugs;
+  }
+
+  return getFallbackCollection<Record<string, unknown>>(`/${collection}`)
     .map((entry) => extractSlug(entry))
     .filter((slug): slug is string => Boolean(slug));
 }

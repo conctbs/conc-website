@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("past-conc-thammasat-forum"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Past CONC Thammasat Forum | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Life Long Learning"
+      title="Past CONC Thammasat Forum"
+      intro="Past forum sessions can be archived here to document themes, speakers, and discussion topics that have shaped the center's continuing-education activity."
+      sections={[
+        {
+          title: "Session Archive",
+          body: "This section can present previous forum topics, dates, and thematic summaries so visitors can understand the scope and continuity of the initiative.",
+        },
+        {
+          title: "Speaker Highlights",
+          body: "Past contributors may be highlighted to show the range of expertise and institutional voices involved in forum conversations.",
+        },
+        {
+          title: "Learning Themes",
+          body: "Archived sessions can also reveal recurring concerns across leadership, communication, and capability development over time.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

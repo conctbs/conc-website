@@ -1,0 +1,35 @@
+---
+import InfoPage from "../components/InfoPage.astro";
+import SectionRenderer from "../components/SectionRenderer.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("announcement"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Announcement | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="News & Events"
+      title="Announcement"
+      intro="This page can be used for official announcements, public notices, registration windows, and important updates related to CONC activities and programs."
+      sections={[
+        {
+          title: "Public Notices",
+          body: "Announcements can cover opening and closing dates, participation requirements, venue updates, and service information that visitors should see quickly.",
+        },
+        {
+          title: "Program Updates",
+          body: "Use this section for schedule changes, new opportunities, speaker confirmations, or any update that directly affects participants and partners.",
+        },
+        {
+          title: "Institutional Communication",
+          body: "The page can also support formal communication from the center when information needs to remain visible outside the standard news feed format.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

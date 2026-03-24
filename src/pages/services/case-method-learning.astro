@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("case-method-learning"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Case Method Learning | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Consulting Service"
+      title="Case Method Learning"
+      intro="Case-based learning is used to connect strategic analysis with managerial judgment, giving participants a disciplined way to evaluate tradeoffs, context, and execution choices."
+      sections={[
+        {
+          title: "Decision-Focused Discussion",
+          body: "Sessions are structured around realistic decision points so participants practice diagnosing constraints, comparing options, and defending a course of action.",
+        },
+        {
+          title: "Applied Reflection",
+          body: "Case work is paired with facilitated reflection to help teams connect lessons from discussion back to their own operating realities and leadership behaviors.",
+        },
+        {
+          title: "Executive and Team Formats",
+          body: "The method can be adapted for executive briefings, management programs, and team-based workshops where judgment quality matters as much as technical skill.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

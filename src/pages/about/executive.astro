@@ -1,29 +1,35 @@
 ---
 import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getSiteSetting } from "../../lib/api";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
-const siteSetting = await getSiteSetting();
+const [page, siteSetting] = await Promise.all([getPageBySlug("executive"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Executive | CONC";
 ---
 
-<MainLayout title="Executive | CONC" siteSetting={siteSetting}>
-  <InfoPage
-    eyebrow="About Us"
-    title="Executive"
-    intro="CONC brings together academic credibility and market-facing experience to support executive development, strategic communication, and capability building across leadership teams."
-    sections={[
-      {
-        title: "Strategic Direction",
-        body: "Executive oversight focuses on keeping consulting, coaching, and learning services aligned with institutional goals and the practical needs of partner organizations.",
-      },
-      {
-        title: "Cross-Disciplinary Expertise",
-        body: "The center operates with a mix of academic, advisory, and operational perspectives so programs can address leadership, communication, and transformation work in one place.",
-      },
-      {
-        title: "Partnership Stewardship",
-        body: "Leadership maintains relationships with university stakeholders, industry partners, and client organizations to ensure quality, continuity, and long-term relevance.",
-      },
-    ]}
-  />
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="About Us"
+      title="Executive"
+      intro="CONC brings together academic credibility and market-facing experience to support executive development, strategic communication, and capability building across leadership teams."
+      sections={[
+        {
+          title: "Strategic Direction",
+          body: "Executive oversight focuses on keeping consulting, coaching, and learning services aligned with institutional goals and the practical needs of partner organizations.",
+        },
+        {
+          title: "Cross-Disciplinary Expertise",
+          body: "The center operates with a mix of academic, advisory, and operational perspectives so programs can address leadership, communication, and transformation work in one place.",
+        },
+        {
+          title: "Partnership Stewardship",
+          body: "Leadership maintains relationships with university stakeholders, industry partners, and client organizations to ensure quality, continuity, and long-term relevance.",
+        },
+      ]}
+    />
+  )}
 </MainLayout>

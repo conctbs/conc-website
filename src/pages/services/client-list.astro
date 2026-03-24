@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("client-list"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Client List | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Consulting Service"
+      title="Client List"
+      intro="CONC works with organizations that need a combination of advisory support, executive development, and applied learning formats. Public examples can be listed here as institutional approval allows."
+      sections={[
+        {
+          title: "Public Sector",
+          body: "Engagements may include leadership capability development, communication design, and advisory support for programs that require stakeholder alignment and structured delivery.",
+        },
+        {
+          title: "Private Sector",
+          body: "The center can support business teams with executive workshops, service strategy, and implementation-oriented consulting for communication and organizational effectiveness.",
+        },
+        {
+          title: "Academic and Institutional Partners",
+          body: "Partnerships may extend across universities, learning organizations, and mission-driven institutions that benefit from academic rigor combined with practical facilitation.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

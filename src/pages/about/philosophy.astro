@@ -1,29 +1,35 @@
 ---
 import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getSiteSetting } from "../../lib/api";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
-const siteSetting = await getSiteSetting();
+const [page, siteSetting] = await Promise.all([getPageBySlug("philosophy"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Philosophy | CONC";
 ---
 
-<MainLayout title="Philosophy | CONC" siteSetting={siteSetting}>
-  <InfoPage
-    eyebrow="About Us"
-    title="Philosophy"
-    intro="CONC works as a university-linked consulting and coaching center that values disciplined thinking, practical execution, and measurable development for leaders, teams, and organizations."
-    sections={[
-      {
-        title: "Learning Through Practice",
-        body: "Programs are designed around real organizational challenges so participants can translate frameworks into decisions, communication, and delivery habits that hold up in actual work.",
-      },
-      {
-        title: "Evidence Before Assumption",
-        body: "We favor structured diagnosis, stakeholder listening, and clear success criteria before recommending interventions, content strategy, or executive coaching pathways.",
-      },
-      {
-        title: "Growth With Accountability",
-        body: "Coaching and consulting are paired with explicit outcomes, follow-through checkpoints, and operational clarity so development work does not stop at inspiration.",
-      },
-    ]}
-  />
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="About Us"
+      title="Philosophy"
+      intro="CONC works as a university-linked consulting and coaching center that values disciplined thinking, practical execution, and measurable development for leaders, teams, and organizations."
+      sections={[
+        {
+          title: "Learning Through Practice",
+          body: "Programs are designed around real organizational challenges so participants can translate frameworks into decisions, communication, and delivery habits that hold up in actual work.",
+        },
+        {
+          title: "Evidence Before Assumption",
+          body: "We favor structured diagnosis, stakeholder listening, and clear success criteria before recommending interventions, content strategy, or executive coaching pathways.",
+        },
+        {
+          title: "Growth With Accountability",
+          body: "Coaching and consulting are paired with explicit outcomes, follow-through checkpoints, and operational clarity so development work does not stop at inspiration.",
+        },
+      ]}
+    />
+  )}
 </MainLayout>

@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("customized-training"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Customized Training | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Training Service"
+      title="Customized Training"
+      intro="This page can be used to describe in-house or partner-specific training programs designed around an organization's goals, participant profile, and delivery constraints."
+      sections={[
+        {
+          title: "Needs-Based Design",
+          body: "Customized training can be scoped from specific business challenges, capability gaps, or leadership objectives instead of forcing teams into a fixed public curriculum.",
+        },
+        {
+          title: "Flexible Delivery",
+          body: "Programs may be delivered on campus, on site, or in blended format with timing, activities, and facilitation adjusted to the audience and operating context.",
+        },
+        {
+          title: "Coordination Process",
+          body: "This page can outline how clients submit a brief, define outcomes, and coordinate content, speakers, scheduling, and participant support with the CONC team.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

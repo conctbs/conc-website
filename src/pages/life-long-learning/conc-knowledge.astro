@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("conc-knowledge"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "CONC Knowledge | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Life Long Learning"
+      title="CONC Knowledge"
+      intro="CONC Knowledge organizes practical insight, academic perspective, and working tools into a format that can support ongoing learning between programs and engagements."
+      sections={[
+        {
+          title: "Applied Articles",
+          body: "Short-form knowledge pieces can translate academic ideas and field experience into practical guidance for leaders, teams, and partner organizations.",
+        },
+        {
+          title: "Frameworks and Tools",
+          body: "Resources may include planning models, communication structures, and workshop artifacts that help users apply ideas more consistently in real work.",
+        },
+        {
+          title: "Shared Reference Base",
+          body: "A visible knowledge archive strengthens continuity across forums, training programs, and consulting work by giving participants a common reference point.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

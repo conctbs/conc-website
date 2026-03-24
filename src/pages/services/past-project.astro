@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("past-project"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Past Project | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Consulting Service"
+      title="Past Project"
+      intro="Selected past projects can be summarized here to show the range of consulting, coaching, and learning initiatives delivered by the center."
+      sections={[
+        {
+          title: "Leadership Programs",
+          body: "Past work may include executive learning series, coaching engagements, and cross-functional workshops designed to improve leadership communication and decision quality.",
+        },
+        {
+          title: "Consulting Initiatives",
+          body: "Projects can span service design, communication frameworks, organizational capability planning, and implementation roadmaps tailored to partner needs.",
+        },
+        {
+          title: "Integrated Delivery",
+          body: "Many engagements combine advisory work, facilitation, and follow-through support so recommendations are translated into usable tools, routines, and next-step actions.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

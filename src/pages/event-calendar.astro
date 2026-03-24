@@ -1,0 +1,35 @@
+---
+import InfoPage from "../components/InfoPage.astro";
+import SectionRenderer from "../components/SectionRenderer.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("event-calendar"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Event Calendar | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="News & Events"
+      title="Event Calendar"
+      intro="The event calendar can present upcoming public sessions, forums, workshops, and special activities in a single reference point for visitors and participants."
+      sections={[
+        {
+          title: "Upcoming Dates",
+          body: "Use this space to show scheduled events, registration periods, and milestone dates so visitors can plan participation with minimal friction.",
+        },
+        {
+          title: "Program Timing",
+          body: "Calendar entries can clarify duration, delivery format, and whether each activity is public, invitation-only, or partner-specific.",
+        },
+        {
+          title: "Planning Reference",
+          body: "A visible event calendar helps organizations and participants coordinate attendance, staffing, and follow-up preparation more effectively.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

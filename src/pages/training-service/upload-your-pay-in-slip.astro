@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("upload-your-pay-in-slip"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Upload your pay-in-slip | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Training Service"
+      title="Upload your pay-in-slip"
+      intro="This page can be used to collect payment confirmation files from participants after registration so finance and operations teams can verify enrollment efficiently."
+      sections={[
+        {
+          title: "Accepted Submission Details",
+          body: "Participants can be instructed on the required file format, reference number, program name, and contact details needed for payment matching.",
+        },
+        {
+          title: "Verification Workflow",
+          body: "The upload step can support a clear handoff from participant payment to internal review, confirmation, and final registration approval.",
+        },
+        {
+          title: "Support and Follow-up",
+          body: "This page can also clarify expected verification time and where participants should contact the team if a payment cannot be matched immediately.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

@@ -1,3 +1,62 @@
+---
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+
+const aboutLinks = [
+  { href: "/about", label: "Overview" },
+  { href: "/about/philosophy", label: "Philosophy" },
+  { href: "/about/executive", label: "Executive" },
+  { href: "/about/facilities", label: "Facilities" },
+  { href: "/sitemap", label: "Sitemap" },
+  { href: "/privacy-policy", label: "Privacy Policy" },
+];
+
+const trainingLinks = [
+  { href: "/programs", label: "OPEN ENROLLMENT PROGRAMS" },
+  { href: "/training-service/customized-training", label: "CUSTOMIZED TRAINING" },
+  { href: "/training-service/e-documents", label: "E-Documents" },
+  { href: "/training-service/come-teach-with-us", label: "Come teach with us" },
+  { href: "/training-service/upload-your-pay-in-slip", label: "Upload your pay-in-slip" },
+];
+
+const consultingLinks = [
+  { href: "/services", label: "Overview" },
+  { href: "/services/service-field", label: "Service Field" },
+  { href: "/services/case-method-learning", label: "Case Method Learning" },
+  { href: "/services/client-list", label: "Client List" },
+  { href: "/services/past-project", label: "Past Project" },
+  { href: "/projects", label: "Projects" },
+];
+
+const lifelongLinks = [
+  { href: "/life-long-learning", label: "Overview" },
+  { href: "/life-long-learning/conc-thammasat-forum", label: "CONC Thammasat Forum" },
+  { href: "/life-long-learning/past-conc-thammasat-forum", label: "Past CONC Thammasat Forum" },
+  { href: "/life-long-learning/conc-knowledge", label: "CONC Knowledge" },
+  { href: "/life-long-learning/class-observation", label: "Class Observation" },
+];
+
+const newsLinks = [
+  { href: "/news", label: "News" },
+  { href: "/announcement", label: "Announcement" },
+  { href: "/event-calendar", label: "Event Calendar" },
+  { href: "/event-programs", label: "Event Programs" },
+];
+
+function isCurrentPath(path: string) {
+  return currentPath === path;
+}
+
+function isSectionActive(paths: { href: string }[]) {
+  return paths.some((item) => isCurrentPath(item.href));
+}
+
+const aboutActive = isSectionActive(aboutLinks);
+const trainingActive = isSectionActive(trainingLinks);
+const consultingActive = isSectionActive(consultingLinks);
+const lifelongActive = isSectionActive(lifelongLinks);
+const newsActive = isSectionActive(newsLinks);
+---
+
 <style>
   .sr-only {
     position: absolute;
@@ -29,12 +88,13 @@
     display: inline-flex;
     align-items: center;
     gap: 0.8rem;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
+    text-decoration: none;
   }
 
   .brand img {
     display: block;
-    width: auto;
     width: 92px;
     height: 92px;
     object-fit: contain;
@@ -48,6 +108,9 @@
     font-weight: 700;
     line-height: 1.2;
     max-width: 320px;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .nav-shell {
@@ -55,7 +118,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
   }
 
   .menu-toggle {
@@ -70,6 +134,7 @@
     justify-content: center;
     padding: 0;
     cursor: pointer;
+    flex-shrink: 0;
   }
 
   .menu-toggle span {
@@ -89,7 +154,7 @@
 
   .nav-links {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
@@ -100,60 +165,77 @@
     position: relative;
     display: flex;
     align-items: center;
+    padding-bottom: 12px;
+    margin-bottom: -12px;
   }
 
   .nav-item-shell {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
 
-  .nav-parent-link {
+  .nav-parent-link,
+  .nav-links > a {
+    position: relative;
     color: #ffffff;
     text-decoration: none;
     font-weight: 700;
     font-size: 0.95rem;
-  }
-
-  .nav-trigger,
-  nav a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.95rem;
+    line-height: 1.1;
   }
 
   .nav-trigger {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.8rem;
-    height: 1.8rem;
+    width: auto;
+    height: auto;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.06);
+    border: 0;
+    background: transparent;
+    color: #ffffff;
     cursor: pointer;
     font: inherit;
+    line-height: 1;
   }
 
   .nav-trigger::after {
     content: "";
-    width: 0.55rem;
-    height: 0.55rem;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
+    width: 0.38rem;
+    height: 0.38rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
     transform: rotate(45deg) translateY(-1px);
     transition: transform 0.2s ease;
   }
 
-  nav a:hover {
+  nav a:hover,
+  .nav-trigger:hover,
+  .nav-trigger:focus-visible {
     color: rgba(255, 255, 255, 0.82);
+  }
+
+  .nav-links > a.is-active,
+  .nav-parent-link.is-active {
+    color: #ffffff;
+  }
+
+  .nav-links > a.is-active::after,
+  .nav-parent-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.35rem;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
   }
 
   .submenu {
     position: absolute;
-    top: calc(100% + 12px);
+    top: 100%;
     left: 0;
     display: grid;
     min-width: 220px;
@@ -173,6 +255,8 @@
     border-radius: 12px;
     font-size: 0.92rem;
     color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
   }
 
   .submenu a:hover {
@@ -180,10 +264,10 @@
     color: var(--accent-2);
   }
 
-  .nav-parent-link:hover,
-  .nav-trigger:hover,
-  .nav-trigger:focus-visible {
-    color: rgba(255, 255, 255, 0.82);
+  .submenu a.is-active {
+    background: rgba(185, 28, 28, 0.12);
+    color: var(--accent-2);
+    font-weight: 800;
   }
 
   .nav-item.has-submenu:hover .submenu,
@@ -200,7 +284,7 @@
     transform: rotate(225deg) translateY(-1px);
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1120px) {
     nav {
       align-items: stretch;
       flex-direction: column;
@@ -223,14 +307,12 @@
 
     .menu-toggle {
       display: inline-flex;
-      flex-shrink: 0;
     }
 
     .nav-links {
       display: none;
       flex-direction: column;
       gap: 14px;
-      flex-wrap: nowrap;
       align-items: stretch;
       padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.18);
@@ -240,6 +322,8 @@
     .nav-item {
       flex-direction: column;
       align-items: stretch;
+      padding-bottom: 0;
+      margin-bottom: 0;
     }
 
     .nav-item-shell,
@@ -260,9 +344,17 @@
       padding: 0.2rem 0;
     }
 
+    .nav-links > a.is-active::after,
+    .nav-parent-link.is-active::after {
+      bottom: 0;
+      left: 0;
+      right: auto;
+      width: 2.25rem;
+    }
+
     .nav-trigger {
-      width: 2rem;
-      height: 2rem;
+      width: 1.25rem;
+      height: 1.25rem;
       flex-shrink: 0;
     }
 
@@ -284,6 +376,13 @@
 
     .submenu a {
       padding: 0.55rem 0;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .submenu a:hover,
+    .submenu a.is-active {
+      background: transparent;
+      color: #ffffff;
     }
 
     nav[data-open="true"] .nav-links {
@@ -312,7 +411,7 @@
   <div class="nav-shell">
     <a class="brand" href="/" aria-label="CONC home">
       <img src="/conc-logo.svg" alt="CONC Thammasat Business School logo" />
-      <span class="brand-text">Thammasat Consulting Networking and Coaching Center</span>
+      <span class="brand-text">CONC Thammasat</span>
     </a>
 
     <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">
@@ -325,34 +424,78 @@
   </div>
 
   <div class="nav-links" id="primary-nav">
-    <a href="/">Home</a>
     <div class="nav-item has-submenu" data-submenu-open="false">
       <div class="nav-item-shell">
-        <a class="nav-parent-link" href="/about">About Us</a>
-        <button
-          class="nav-trigger"
-          type="button"
-          aria-expanded="false"
-          aria-controls="about-submenu"
-          aria-label="Toggle About Us menu"
-        >
+        <a class:list={["nav-parent-link", aboutActive && "is-active"]} href="/about" aria-current={isCurrentPath("/about") ? "page" : undefined}>About Us</a>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="about-submenu" aria-label="Toggle About Us menu">
           <span class="sr-only">Open About Us submenu</span>
         </button>
       </div>
       <div class="submenu" id="about-submenu">
-        <a href="/about">Overview</a>
-        <a href="/about/philosophy">Philosophy</a>
-        <a href="/about/executive">Executive</a>
-        <a href="/about/facilities">Facilities</a>
-        <a href="/sitemap">Sitemap</a>
-        <a href="/privacy-policy">Privacy Policy</a>
+        {aboutLinks.map((item) => (
+          <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
       </div>
     </div>
-    <a href="/services">Services</a>
-    <a href="/programs">Programs</a>
-    <a href="/projects">Projects</a>
-    <a href="/news">News</a>
-    <a href="/contact">Contact</a>
+
+    <div class="nav-item has-submenu" data-submenu-open="false">
+      <div class="nav-item-shell">
+        <a class:list={["nav-parent-link", trainingActive && "is-active"]} href="/programs" aria-current={isCurrentPath("/programs") ? "page" : undefined}>Training Service</a>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="training-submenu" aria-label="Toggle Training Service menu">
+          <span class="sr-only">Open Training Service submenu</span>
+        </button>
+      </div>
+      <div class="submenu" id="training-submenu">
+        {trainingLinks.map((item) => (
+          <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </div>
+    </div>
+
+    <div class="nav-item has-submenu" data-submenu-open="false">
+      <div class="nav-item-shell">
+        <a class:list={["nav-parent-link", consultingActive && "is-active"]} href="/services" aria-current={isCurrentPath("/services") ? "page" : undefined}>Consulting Service</a>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="consulting-submenu" aria-label="Toggle Consulting Service menu">
+          <span class="sr-only">Open Consulting Service submenu</span>
+        </button>
+      </div>
+      <div class="submenu" id="consulting-submenu">
+        {consultingLinks.map((item) => (
+          <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </div>
+    </div>
+
+    <div class="nav-item has-submenu" data-submenu-open="false">
+      <div class="nav-item-shell">
+        <a class:list={["nav-parent-link", lifelongActive && "is-active"]} href="/life-long-learning" aria-current={isCurrentPath("/life-long-learning") ? "page" : undefined}>Life Long Learning</a>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="lifelong-submenu" aria-label="Toggle Life Long Learning menu">
+          <span class="sr-only">Open Life Long Learning submenu</span>
+        </button>
+      </div>
+      <div class="submenu" id="lifelong-submenu">
+        {lifelongLinks.map((item) => (
+          <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </div>
+    </div>
+
+    <div class="nav-item has-submenu" data-submenu-open="false">
+      <div class="nav-item-shell">
+        <a class:list={["nav-parent-link", newsActive && "is-active"]} href="/news" aria-current={isCurrentPath("/news") ? "page" : undefined}>News &amp; Events</a>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="news-submenu" aria-label="Toggle News and Events menu">
+          <span class="sr-only">Open News and Events submenu</span>
+        </button>
+      </div>
+      <div class="submenu" id="news-submenu">
+        {newsLinks.map((item) => (
+          <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </div>
+    </div>
+
+    <a href="/contact" class:list={[isCurrentPath("/contact") && "is-active"]} aria-current={isCurrentPath("/contact") ? "page" : undefined}>Contact</a>
+
   </div>
 </nav>
 
@@ -360,8 +503,7 @@
   const nav = document.getElementById('site-nav');
   const toggle = document.getElementById('menu-toggle');
   const links = document.querySelectorAll('#primary-nav a');
-  const submenuItem = document.querySelector('.nav-item.has-submenu');
-  const submenuTrigger = submenuItem?.querySelector('.nav-trigger');
+  const submenuItems = Array.from(document.querySelectorAll('.nav-item.has-submenu'));
 
   function setOpen(nextOpen) {
     if (!nav || !toggle) return;
@@ -369,10 +511,19 @@
     toggle.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
   }
 
-  function setSubmenuOpen(nextOpen) {
-    if (!submenuItem || !submenuTrigger) return;
-    submenuItem.dataset.submenuOpen = nextOpen ? 'true' : 'false';
-    submenuTrigger.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  function setSubmenuOpen(targetItem, nextOpen) {
+    if (!targetItem) return;
+    const targetTrigger = targetItem.querySelector('.nav-trigger');
+    targetItem.dataset.submenuOpen = nextOpen ? 'true' : 'false';
+    targetTrigger?.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  }
+
+  function closeOtherSubmenus(activeItem) {
+    submenuItems.forEach((item) => {
+      if (item !== activeItem) {
+        setSubmenuOpen(item, false);
+      }
+    });
   }
 
   toggle?.addEventListener('click', () => {
@@ -380,31 +531,37 @@
     setOpen(!isOpen);
   });
 
-  submenuTrigger?.addEventListener('click', () => {
-    const isOpen = submenuItem?.dataset.submenuOpen === 'true';
-    setSubmenuOpen(!isOpen);
+  submenuItems.forEach((item) => {
+    const trigger = item.querySelector('.nav-trigger');
+
+    trigger?.addEventListener('click', () => {
+      const isOpen = item.dataset.submenuOpen === 'true';
+      closeOtherSubmenus(item);
+      setSubmenuOpen(item, !isOpen);
+    });
   });
 
   links.forEach((link) => {
     link.addEventListener('click', () => {
-      setSubmenuOpen(false);
-      if (window.innerWidth <= 900) {
+      submenuItems.forEach((item) => setSubmenuOpen(item, false));
+      if (window.innerWidth <= 1120) {
         setOpen(false);
       }
     });
   });
 
   window.addEventListener('resize', () => {
-    if (window.innerWidth > 900) {
+    if (window.innerWidth > 1120) {
       setOpen(false);
-      setSubmenuOpen(false);
+      submenuItems.forEach((item) => setSubmenuOpen(item, false));
     }
   });
 
   document.addEventListener('click', (event) => {
-    if (!submenuItem) return;
-    if (!submenuItem.contains(event.target)) {
-      setSubmenuOpen(false);
-    }
+    submenuItems.forEach((item) => {
+      if (!item.contains(event.target)) {
+        setSubmenuOpen(item, false);
+      }
+    });
   });
 </script>

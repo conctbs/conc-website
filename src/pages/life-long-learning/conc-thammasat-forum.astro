@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("conc-thammasat-forum"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "CONC Thammasat Forum | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Life Long Learning"
+      title="CONC Thammasat Forum"
+      intro="The CONC Thammasat Forum convenes leaders, experts, and participants around current management, communication, and organizational topics that benefit from cross-sector discussion."
+      sections={[
+        {
+          title: "Current Issues",
+          body: "Forum sessions focus on timely questions in leadership, transformation, communication, and strategic execution so participants can compare ideas against current realities.",
+        },
+        {
+          title: "Cross-Sector Dialogue",
+          body: "The format encourages exchange between academic, public, and private-sector perspectives to sharpen judgment and reveal practical constraints.",
+        },
+        {
+          title: "Continuing Engagement",
+          body: "Each forum acts as a continuing-learning touchpoint that extends relationships beyond one-off courses and supports long-term professional development.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

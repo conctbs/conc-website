@@ -30,6 +30,14 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 
   html {
     background: var(--bg);
+    overflow-x: clip;
+    box-sizing: border-box;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
   }
 
   body{
@@ -37,6 +45,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
     color:var(--text);
     background: var(--bg);
     font-family:"Sarabun", sans-serif;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4 {
@@ -49,6 +58,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
     max-width:1200px;
     margin:auto;
     padding:0 24px;
+    width:100%;
   }
 
   footer{
@@ -61,7 +71,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 
   .footer-grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr;
+    grid-template-columns: minmax(0, 1.8fr) repeat(2, minmax(0, 1fr));
     gap: 2rem;
     align-items: start;
   }
@@ -102,7 +112,14 @@ const { title, seo = null, siteSetting = null } = Astro.props;
     color: rgba(255, 255, 255, 0.72);
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1120px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 720px) {
     .footer-grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
@@ -158,6 +175,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
           <a href="/contact">Contact</a>
         </div>
       </div>
+
     </div>
 
     <div class="footer-bottom">

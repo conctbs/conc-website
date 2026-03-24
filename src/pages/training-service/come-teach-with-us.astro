@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("come-teach-with-us"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Come teach with us | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Training Service"
+      title="Come teach with us"
+      intro="This page can invite instructors, facilitators, and subject-matter experts to collaborate with CONC on open-enrollment or customized training programs."
+      sections={[
+        {
+          title: "Instructor Profile",
+          body: "Potential teaching partners can review the center's focus areas, participant audiences, and delivery formats before proposing a topic or teaching role.",
+        },
+        {
+          title: "Submission Guidelines",
+          body: "The page can explain what information to submit, such as teaching background, expertise, sample topics, preferred formats, and availability.",
+        },
+        {
+          title: "Collaboration Path",
+          body: "A clear process for screening, curriculum alignment, and scheduling helps external instructors understand how to move from interest to confirmed delivery.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

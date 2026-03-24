@@ -241,7 +241,7 @@ if (!program) {
   .program-card, .form-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
   .program-card, .form-card { padding: 1.5rem; }
   .program-card h2, .success-state h2, .closed-state h2 { margin: 0.5rem 0 0.75rem; font-size: 1.8rem; }
-  .detail-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+  .detail-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
   .register-form { display: grid; gap: 1rem; }
   label { display: grid; gap: 0.45rem; font-weight: 700; }
   input, textarea { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 0.9rem 1rem; font: inherit; background: #fff; color: var(--text); box-sizing: border-box; }
@@ -272,7 +272,7 @@ if (!program) {
   }
   .closed-state { display: grid; gap: 0.75rem; }
   .closed-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-  @media (max-width: 900px) {
+  @media (max-width: 1120px) {
     .register-grid { grid-template-columns: 1fr; }
     .form-notification {
       top: 1rem;

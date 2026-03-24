@@ -1,0 +1,35 @@
+---
+import InfoPage from "../components/InfoPage.astro";
+import SectionRenderer from "../components/SectionRenderer.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("life-long-learning"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Life Long Learning | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Life Long Learning"
+      title="Life Long Learning"
+      intro="CONC extends learning beyond single programs through recurring forums, knowledge-sharing formats, and observation-based experiences that help participants keep developing over time."
+      sections={[
+        {
+          title: "Forum-Based Exchange",
+          body: "Public and partner forums create space for leaders, faculty, and professionals to examine emerging issues through structured discussion and applied reflection.",
+        },
+        {
+          title: "Knowledge Resources",
+          body: "Learning is reinforced through curated content, practical insights, and follow-on materials that participants can use after formal sessions end.",
+        },
+        {
+          title: "Observation and Practice",
+          body: "Selected formats allow participants to learn by observing instruction, facilitation, and decision-making processes in realistic academic and professional settings.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

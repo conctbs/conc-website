@@ -1,0 +1,35 @@
+---
+import InfoPage from "../../components/InfoPage.astro";
+import SectionRenderer from "../../components/SectionRenderer.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("e-documents"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "E-Documents | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="Training Service"
+      title="E-Documents"
+      intro="This page can centralize downloadable forms, registration materials, invoices, schedules, and participant documents required across training workflows."
+      sections={[
+        {
+          title: "Registration Documents",
+          body: "Forms, requirement lists, and supporting documents for enrollment can be organized here so participants have one clear source of truth.",
+        },
+        {
+          title: "Operational References",
+          body: "The section can also include payment instructions, attendance policies, training schedules, and post-program reference materials.",
+        },
+        {
+          title: "Version Control",
+          body: "Publishing documents in one place makes it easier to keep the latest approved versions visible and reduce confusion caused by outdated files.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

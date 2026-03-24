@@ -1,0 +1,35 @@
+---
+import InfoPage from "../components/InfoPage.astro";
+import SectionRenderer from "../components/SectionRenderer.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import { getPageBySlug, getSiteSetting } from "../lib/api";
+
+const [page, siteSetting] = await Promise.all([getPageBySlug("event-programs"), getSiteSetting()]);
+const title = page?.seo?.metaTitle ?? page?.title ?? "Event Programs | CONC";
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  {page ? (
+    <SectionRenderer sections={page.sections} />
+  ) : (
+    <InfoPage
+      eyebrow="News & Events"
+      title="Event Programs"
+      intro="This page can summarize special event programs, speaker sessions, themed series, and public-facing activities beyond the standard consulting and learning catalog."
+      sections={[
+        {
+          title: "Special Sessions",
+          body: "Event programs may include keynote talks, invited expert sessions, thematic panels, and short-format learning experiences built for broader audiences.",
+        },
+        {
+          title: "Series Design",
+          body: "When activities are part of a recurring series, this page can show the structure, themes, and progression across multiple sessions or cohorts.",
+        },
+        {
+          title: "Participation Details",
+          body: "Program descriptions can make expectations clear by outlining audience fit, format, and any registration or attendance requirements.",
+        },
+      ]}
+    />
+  )}
+</MainLayout>

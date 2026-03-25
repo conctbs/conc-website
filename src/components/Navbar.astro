@@ -79,6 +79,7 @@ const newsActive = isSectionActive(newsLinks);
     align-items: center;
     gap: 1rem;
     padding: 4px 20px;
+    -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
     background: rgba(185, 28, 28, 0.96);
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
@@ -555,6 +556,11 @@ const newsActive = isSectionActive(newsLinks);
       setOpen(false);
       submenuItems.forEach((item) => setSubmenuOpen(item, false));
     }
+  });
+
+  window.addEventListener('pageshow', () => {
+    setOpen(false);
+    submenuItems.forEach((item) => setSubmenuOpen(item, false));
   });
 
   document.addEventListener('click', (event) => {

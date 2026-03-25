@@ -47,34 +47,34 @@ if (!program) {
           </div>
         </div>
 
-        <aside class="rounded-[1.75rem] border border-neutral-900 bg-neutral-950 p-6 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
+        <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
           <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-500">Program overview</p>
           <div class="mt-6 grid gap-4">
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p class="text-sm text-white/60">Audience</p>
-              <p class="mt-2 text-base font-medium text-white">{program.audience}</p>
+            <div class="rounded-2xl border border-stone-200 bg-white p-4">
+              <p class="text-sm text-stone-500">Audience</p>
+              <p class="mt-2 text-base font-medium text-stone-900">{program.audience}</p>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-sm text-white/60">Starts</p>
-                <p class="mt-2 text-base font-medium text-white">{program.startsAt ?? 'TBC'}</p>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Starts</p>
+                <p class="mt-2 text-base font-medium text-stone-900">{program.startsAt ?? 'TBC'}</p>
               </div>
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-sm text-white/60">Location</p>
-                <p class="mt-2 text-base font-medium text-white">{program.location}</p>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Location</p>
+                <p class="mt-2 text-base font-medium text-stone-900">{program.location}</p>
               </div>
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-sm text-white/60">Fee</p>
-                <p class="mt-2 text-base font-medium text-white">{program.fee}</p>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Fee</p>
+                <p class="mt-2 text-base font-medium text-stone-900">{program.fee}</p>
               </div>
-              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p class="text-sm text-white/60">Duration</p>
-                <p class="mt-2 text-base font-medium text-white">{program.duration}</p>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Duration</p>
+                <p class="mt-2 text-base font-medium text-stone-900">{program.duration}</p>
               </div>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p class="text-sm text-white/60">Seats</p>
-              <p class="mt-2 text-base font-medium text-white">{program.seats ? `${program.seats} seats` : 'TBC'}</p>
+            <div class="rounded-2xl border border-stone-200 bg-white p-4">
+              <p class="text-sm text-stone-500">Seats</p>
+              <p class="mt-2 text-base font-medium text-stone-900">{program.seats ? `${program.seats} seats` : 'TBC'}</p>
             </div>
           </div>
         </aside>
@@ -123,12 +123,12 @@ if (!program) {
         </section>
       )}
 
-      <section class="mt-6 rounded-[2rem] border border-neutral-900 bg-neutral-950 px-6 py-10 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)] md:px-10">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-500">Custom Delivery</p>
+      <section class="mt-6 rounded-[2rem] border border-stone-200 bg-stone-100 px-6 py-10 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)] md:px-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Custom Delivery</p>
         <h2 class="mt-4 max-w-3xl text-3xl font-semibold leading-tight md:text-4xl">
           Need an in-house version shaped around your team?
         </h2>
-        <p class="mt-5 max-w-3xl text-base leading-8 text-white/70">
+        <p class="mt-5 max-w-3xl text-base leading-8 text-stone-600">
           Use this program as a reference point for a private cohort, tailored scope, or a workshop designed around a current delivery challenge.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
@@ -137,7 +137,7 @@ if (!program) {
           ) : (
             <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact Us</a>
           )}
-          <a class="btn-secondary !rounded-md !border-white/20 !bg-white/5 !px-7 !py-3.5 !text-white" href="/programs">
+          <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href="/programs">
             Back to programs
           </a>
         </div>

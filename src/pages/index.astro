@@ -140,7 +140,7 @@ const latestNews = news.slice(0, 3);
 
   <section class="section-block section-two-column">
     <div class="dark-panel">
-      <div class="eyebrow is-light">About the Shift</div>
+      <div class="eyebrow">About the Shift</div>
       <h2>From generic CMS frontend into an institutional content portal</h2>
       <p>
         `conc-website` still runs on the Strapi DTO layer, but the visible composition now follows the stronger
@@ -181,7 +181,7 @@ const latestNews = news.slice(0, 3);
   </section>
 
   <section class="contact-panel">
-    <div>
+    <div class="contact-copy">
       <div class="eyebrow">Contact</div>
       <h2>Ready to move into registration, inquiry, or project planning?</h2>
       <p>
@@ -189,9 +189,15 @@ const latestNews = news.slice(0, 3);
         migration, form integration, or another round of detail-page refinement.
       </p>
     </div>
-    <div class="contact-actions">
-      <a class="button primary" href="/contact">Contact the Team</a>
-      <a class="button secondary" href="/programs">Browse Programs</a>
+    <div class="contact-side">
+      <div class="contact-note">
+        <span>Next actions</span>
+        <strong>Programs, inquiries, and implementation planning</strong>
+      </div>
+      <div class="contact-actions">
+        <a class="button contact-primary" href="/contact">Contact the Team</a>
+        <a class="button secondary invert" href="/programs">Browse Programs</a>
+      </div>
     </div>
   </section>
 </MainLayout>
@@ -309,7 +315,6 @@ const latestNews = news.slice(0, 3);
   .news-card,
   .panel-card,
   .project-link,
-  .contact-panel,
   .section-band,
   .dark-panel {
     border: 1px solid var(--line);
@@ -343,15 +348,18 @@ const latestNews = news.slice(0, 3);
   .hero-panel,
   .dark-panel {
     background:
-      linear-gradient(180deg, rgba(23, 20, 18, 0.97), rgba(23, 20, 18, 1)),
-      radial-gradient(circle at top left, rgba(180, 35, 24, 0.18), transparent 34%);
-    color: #fff;
+      linear-gradient(180deg, rgba(244, 244, 245, 0.96), rgba(244, 244, 245, 1)),
+      radial-gradient(circle at top left, rgba(180, 35, 24, 0.08), transparent 34%);
+    color: var(--text);
     padding: 2rem;
+    border-radius: var(--radius-card);
+    border-color: var(--line);
+    box-shadow: 0 24px 60px -34px rgba(41, 37, 36, 0.28);
   }
 
   .panel-kicker,
   .eyebrow.is-light {
-    color: rgba(255, 255, 255, 0.68);
+    color: var(--accent);
   }
 
   .panel-card-grid {
@@ -360,7 +368,8 @@ const latestNews = news.slice(0, 3);
   }
 
   .panel-card {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(216, 216, 216, 0.9);
   }
 
   .panel-card h2,
@@ -373,11 +382,11 @@ const latestNews = news.slice(0, 3);
   }
 
   .panel-card h2 {
-    color: #fff;
+    color: var(--text);
   }
 
   .panel-card p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--muted);
     margin-top: 0.9rem;
   }
 
@@ -391,8 +400,9 @@ const latestNews = news.slice(0, 3);
     display: block;
     padding: 0.95rem 1rem;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--text);
+    border: 1px solid rgba(216, 216, 216, 0.9);
     text-decoration: none;
     font-weight: 700;
   }
@@ -475,7 +485,7 @@ const latestNews = news.slice(0, 3);
   .dark-panel ul {
     margin: 1.4rem 0 0;
     padding-left: 1.15rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--muted);
     line-height: 1.9;
   }
 
@@ -502,12 +512,50 @@ const latestNews = news.slice(0, 3);
   }
 
   .contact-panel {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    grid-template-columns: minmax(0, 1.05fr) minmax(19rem, 0.95fr);
+    align-items: stretch;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.98)),
-      radial-gradient(circle at top left, rgba(180, 35, 24, 0.08), transparent 26%);
+      linear-gradient(180deg, rgba(244, 244, 245, 0.96), rgba(244, 244, 245, 1)),
+      radial-gradient(circle at top left, rgba(180, 35, 24, 0.08), transparent 34%);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: 0 24px 60px -34px rgba(41, 37, 36, 0.28);
     padding: 2.4rem;
+  }
+
+  .contact-copy p {
+    max-width: 46rem;
+    color: var(--muted);
+  }
+
+  .contact-side {
+    display: grid;
+    gap: 1rem;
+    align-content: end;
+  }
+
+  .contact-note {
+    padding: 1.1rem 1.15rem;
+    border: 1px solid rgba(216, 216, 216, 0.9);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .contact-note span {
+    display: block;
+    font-size: 0.74rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .contact-note strong {
+    display: block;
+    margin-top: 0.55rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--text);
   }
 
   .button {
@@ -536,6 +584,20 @@ const latestNews = news.slice(0, 3);
     border: 1px solid var(--line);
     color: var(--text);
     background: rgba(255, 255, 255, 0.62);
+  }
+
+  .button.secondary.invert {
+    border-color: var(--line);
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.82);
+  }
+
+  .button.contact-primary {
+    background: #efe7e1;
+    color: #7f1d1d;
+    border: 1px solid rgba(127, 29, 29, 0.14);
+    box-shadow: none;
+    font-weight: 800;
   }
 
   @media (max-width: 1120px) {

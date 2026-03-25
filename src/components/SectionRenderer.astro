@@ -77,22 +77,22 @@ const subtleCardClass =
               </div>
             </div>
 
-            <aside class="rounded-[2rem] border border-neutral-900 bg-neutral-950 p-6 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
-              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Overview</p>
+            <aside class="rounded-[2rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Overview</p>
               <h2 class="mt-4 max-w-xs text-3xl font-semibold leading-tight">{section.title}</h2>
-              <p class="mt-4 max-w-sm text-sm leading-7 text-white/70">
+              <p class="mt-4 max-w-sm text-sm leading-7 text-stone-600">
                 Structured sections, reusable editorial blocks, and route-ready content appear in a page language aligned
                 with the imported theme shell.
               </p>
 
               <div class="mt-6 grid gap-3">
-                <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85">
+                <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-800">
                   Programs
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85">
+                <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-800">
                   Consulting
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85">
+                <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-800">
                   News & Events
                 </div>
               </div>
@@ -250,11 +250,11 @@ const subtleCardClass =
 
         <div class="mt-10 grid gap-6 lg:grid-cols-2">
           {section.items.map((item) => (
-            <article class="rounded-[1.75rem] border border-neutral-900 bg-neutral-950 p-8 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
-              <blockquote class="text-xl leading-8 text-white/90 md:text-2xl">"{item.quote}"</blockquote>
-              <div class="mt-8 border-t border-white/10 pt-5">
+            <article class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-8 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+              <blockquote class="text-xl leading-8 text-stone-800 md:text-2xl">"{item.quote}"</blockquote>
+              <div class="mt-8 border-t border-stone-200 pt-5">
                 <strong class="block text-lg font-semibold">{item.authorName}</strong>
-                <span class="mt-1 block text-sm text-white/60">{item.authorRole}</span>
+                <span class="mt-1 block text-sm text-stone-500">{item.authorRole}</span>
               </div>
             </article>
           ))}
@@ -474,12 +474,12 @@ const subtleCardClass =
 
     {section.type === 'call-to-action' && (
       <section class={shellClass}>
-        <div class="rounded-[2rem] border border-neutral-900 bg-neutral-950 px-6 py-10 text-center text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)] md:px-10">
+        <div class="rounded-[2rem] border border-stone-200 bg-stone-100 px-6 py-10 text-center text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)] md:px-10">
           {section.eyebrow && (
-            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-500">{section.eyebrow}</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
           )}
           <h2 class="mt-4 text-3xl font-semibold leading-tight md:text-4xl">{section.title}</h2>
-          {section.description && <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-white/70">{section.description}</p>}
+          {section.description && <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-stone-600">{section.description}</p>}
           {section.buttonText && section.buttonUrl && (
             <a class="btn-primary mt-8 !rounded-md !px-7 !py-3.5" href={section.buttonUrl}>
               {section.buttonText}

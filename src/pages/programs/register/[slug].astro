@@ -33,29 +33,29 @@ if (!program) {
       </div>
 
       <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(18rem,0.78fr)_minmax(0,1.22fr)]">
-        <aside class="rounded-[1.75rem] border border-neutral-900 bg-neutral-950 p-6 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-500">Program Summary</p>
+        <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Program Summary</p>
           <h2 class="mt-4 text-3xl font-semibold leading-tight">{program.title}</h2>
-          <p class="mt-4 text-base leading-8 text-white/70">{program.summary}</p>
+          <p class="mt-4 text-base leading-8 text-stone-600">{program.summary}</p>
           <div class="mt-6 grid gap-3">
-            <div class="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
-              <span class="text-white/60">Date</span>
+            <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <span class="text-stone-500">Date</span>
               <span class="text-right font-medium">{program.dateLabel}</span>
             </div>
-            <div class="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
-              <span class="text-white/60">Fee</span>
+            <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <span class="text-stone-500">Fee</span>
               <span class="text-right font-medium">{program.fee}</span>
             </div>
-            <div class="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
-              <span class="text-white/60">Location</span>
+            <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <span class="text-stone-500">Location</span>
               <span class="text-right font-medium">{program.location}</span>
             </div>
-            <div class="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
-              <span class="text-white/60">Format</span>
+            <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <span class="text-stone-500">Format</span>
               <span class="text-right font-medium">{program.format}</span>
             </div>
-            <div class="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
-              <span class="text-white/60">Starts</span>
+            <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <span class="text-stone-500">Starts</span>
               <span class="text-right font-medium">{program.startsAt ?? 'TBC'}</span>
             </div>
           </div>

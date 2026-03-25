@@ -19,139 +19,135 @@ if (!program) {
 
 <MainLayout title={program?.seo?.metaTitle ?? program?.title ?? 'Program'} seo={program?.seo} siteSetting={siteSetting}>
   {program ? (
-    <article class="detail-page">
-      <a class="back-link" href="/programs">Back to programs</a>
-      <header class="detail-hero">
-        <div class="detail-copy">
-          <div class="eyebrow">{program.category}</div>
-          <h1>{program.title}</h1>
-          <p class="lead">{program.summary}</p>
-          <div class="meta-grid">
-            <div><span>Format</span><strong>{program.format}</strong></div>
-            <div><span>Date</span><strong>{program.dateLabel}</strong></div>
-            <div><span>Starts</span><strong>{program.startsAt ?? 'TBC'}</strong></div>
-            <div><span>Location</span><strong>{program.location}</strong></div>
-            <div><span>Fee</span><strong>{program.fee}</strong></div>
+    <article class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/programs">Back to programs</a>
+
+      <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(20rem,0.92fr)]">
+        <div>
+          <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+            <span class="rounded-full bg-red-700 px-3 py-1 text-white">{program.category ?? 'Program'}</span>
+            {program.format && <span>{program.format}</span>}
+            {program.dateLabel && <span>{program.dateLabel}</span>}
           </div>
-          <div class="action-row">
+          <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+            {program.title}
+          </h1>
+          <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{program.summary}</p>
+          <div class="mt-8 flex flex-wrap gap-3">
             {program.registrationEnabled ? (
-              <a class="button primary" href={`/programs/register/${program.slug}`}>Register</a>
+              <a class="btn-primary !rounded-md !px-7 !py-3.5" href={`/programs/register/${program.slug}`}>Register</a>
             ) : (
-              <span class="status-chip">Registration closed</span>
+              <span class="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-red-700">
+                Registration closed
+              </span>
             )}
-            <a class="button secondary" href="/contact">Contact Us</a>
+            <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href="/contact">
+              Contact Us
+            </a>
           </div>
         </div>
-        <aside class="detail-panel">
-          <div class="panel-label">Best for</div>
-          <p>{program.audience}</p>
-          <div class="panel-label">Seats</div>
-          <p>{program.seats} seats</p>
-          <div class="panel-label">Duration</div>
-          <p>{program.duration}</p>
-        </aside>
-      </header>
 
-      <section class="content-grid">
-        <section class="content-card">
-          <div class="section-head">
-            <div class="eyebrow">Overview</div>
-            <h2>What participants will work through</h2>
+        <aside class="rounded-[1.75rem] border border-neutral-900 bg-neutral-950 p-6 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-500">Program overview</p>
+          <div class="mt-6 grid gap-4">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p class="text-sm text-white/60">Audience</p>
+              <p class="mt-2 text-base font-medium text-white">{program.audience}</p>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-sm text-white/60">Starts</p>
+                <p class="mt-2 text-base font-medium text-white">{program.startsAt ?? 'TBC'}</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-sm text-white/60">Location</p>
+                <p class="mt-2 text-base font-medium text-white">{program.location}</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-sm text-white/60">Fee</p>
+                <p class="mt-2 text-base font-medium text-white">{program.fee}</p>
+              </div>
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-sm text-white/60">Duration</p>
+                <p class="mt-2 text-base font-medium text-white">{program.duration}</p>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p class="text-sm text-white/60">Seats</p>
+              <p class="mt-2 text-base font-medium text-white">{program.seats ? `${program.seats} seats` : 'TBC'}</p>
+            </div>
           </div>
-          {program.overview.map((paragraph) => <p>{paragraph}</p>)}
-        </section>
-        <section class="content-card">
-          <div class="section-head">
-            <div class="eyebrow">Outcomes</div>
-            <h2>Expected takeaways</h2>
+        </aside>
+      </section>
+
+      <section class="mt-10 grid gap-6 lg:grid-cols-2">
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Program Overview</p>
+          <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">What participants will work through</h2>
+          <div class="mt-5 space-y-4 text-base leading-8 text-stone-600">
+            {program.overview.map((paragraph) => <p>{paragraph}</p>)}
           </div>
-          <ul>
+        </article>
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Learning Outcomes</p>
+          <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Expected takeaways</h2>
+          <ul class="mt-5 space-y-3 pl-5 text-base leading-8 text-stone-600 marker:text-red-700">
             {program.outcomes.map((item) => <li>{item}</li>)}
           </ul>
-        </section>
+        </article>
       </section>
 
       {sampleContent && (
-        <section class="content-grid extra-grid">
-          <section class="content-card">
-            <div class="section-head">
-              <div class="eyebrow">Highlights</div>
-              <h2>{sampleContent.highlightTitle}</h2>
-            </div>
-            <ul>
+        <section class="mt-6 grid gap-6 lg:grid-cols-2">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)]">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Highlights</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">{sampleContent.highlightTitle}</h2>
+            <ul class="mt-5 space-y-3 pl-5 text-base leading-8 text-stone-600 marker:text-red-700">
               {sampleContent.highlights.map((item) => <li>{item}</li>)}
             </ul>
-          </section>
-          <section class="content-card">
-            <div class="section-head">
-              <div class="eyebrow">Agenda</div>
-              <h2>{sampleContent.agendaTitle}</h2>
-            </div>
-            <ul>
+          </article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)]">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Agenda</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">{sampleContent.agendaTitle}</h2>
+            <ul class="mt-5 space-y-3 pl-5 text-base leading-8 text-stone-600 marker:text-red-700">
               {sampleContent.agenda.map((item) => <li>{item}</li>)}
             </ul>
-          </section>
-          <section class="content-card full-span">
-            <div class="section-head">
-              <div class="eyebrow">Deliverables</div>
-              <h2>{sampleContent.deliverablesTitle}</h2>
-            </div>
-            <ul>
+          </article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)] lg:col-span-2">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Deliverables</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">{sampleContent.deliverablesTitle}</h2>
+            <ul class="mt-5 space-y-3 pl-5 text-base leading-8 text-stone-600 marker:text-red-700">
               {sampleContent.deliverables.map((item) => <li>{item}</li>)}
             </ul>
-          </section>
+          </article>
         </section>
       )}
-      <section class="action-card">
-        <div class="eyebrow">Need A Custom Track?</div>
-        <h2>Bring this program into your team context</h2>
-        <p>Use the contact route if you need an in-house cohort, adjusted scope, or a program aligned to a specific delivery challenge.</p>
-        <div class="action-row">
+
+      <section class="mt-6 rounded-[2rem] border border-neutral-900 bg-neutral-950 px-6 py-10 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)] md:px-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-500">Custom Delivery</p>
+        <h2 class="mt-4 max-w-3xl text-3xl font-semibold leading-tight md:text-4xl">
+          Need an in-house version shaped around your team?
+        </h2>
+        <p class="mt-5 max-w-3xl text-base leading-8 text-white/70">
+          Use this program as a reference point for a private cohort, tailored scope, or a workshop designed around a current delivery challenge.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
           {program.registrationEnabled ? (
-            <a class="button primary" href={`/programs/register/${program.slug}`}>Register</a>
+            <a class="btn-primary !rounded-md !px-7 !py-3.5" href={`/programs/register/${program.slug}`}>Register</a>
           ) : (
-            <a class="button primary" href="/contact">Contact Us</a>
+            <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact Us</a>
           )}
-          <a class="button secondary" href="/programs">Back to programs</a>
+          <a class="btn-secondary !rounded-md !border-white/20 !bg-white/5 !px-7 !py-3.5 !text-white" href="/programs">
+            Back to programs
+          </a>
         </div>
       </section>
     </article>
   ) : (
-    <section class="missing-state">
-      <div class="eyebrow">404</div>
-      <h1>Program not found</h1>
-      <p>The requested training program is not available.</p>
+    <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Program not found</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">The requested training program is not available.</p>
     </section>
   )}
 </MainLayout>
-
-<style>
-  .detail-page, .missing-state { padding: 4rem 0 5rem; }
-  .back-link { display: inline-flex; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-weight: 700; }
-  .detail-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr); gap: 2rem; align-items: start; }
-  .eyebrow, .meta-grid span, .panel-label, .status-chip { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; }
-  h1 { margin: 0.35rem 0 1rem; font-size: clamp(3rem, 6vw, 4.8rem); line-height: 0.95; }
-  .lead { color: var(--muted); line-height: 1.8; max-width: 44rem; }
-  .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-  .meta-grid div, .detail-panel, .content-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
-  .meta-grid div { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; }
-  .detail-panel { padding: 1.5rem; }
-  .detail-panel p { margin: 0.5rem 0 1.25rem; color: var(--muted); line-height: 1.8; }
-  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
-  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; }
-  .button.primary { background: var(--accent); color: #fff; }
-  .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
-  .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 2rem; }
-  .extra-grid { margin-top: 1.25rem; }
-  .content-card { padding: 1.5rem; }
-  .full-span { grid-column: 1 / -1; }
-  .action-card { margin-top: 2rem; padding: 2rem; background: #f3f4f6; border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
-  .action-card h2 { margin: 0.35rem 0 0.75rem; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; }
-  .action-card p { color: var(--muted); line-height: 1.8; max-width: 42rem; }
-  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
-  .section-head { max-width: 40rem; margin-bottom: 1rem; }
-  .section-head h2 { margin: 0.35rem 0 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; }
-  .content-card p, .content-card li, .missing-state p { color: var(--muted); line-height: 1.8; }
-  ul { padding-left: 1.2rem; margin: 0; }
-  @media (max-width: 1120px) { .detail-hero, .content-grid, .meta-grid { grid-template-columns: 1fr; } }
-</style>

@@ -1,28 +1,68 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import SectionRenderer from '../components/SectionRenderer.astro';
-import { getPageBySlug, getSiteSetting } from '../lib/api';
+import { getPageBySlug, getPrograms, getSiteSetting } from '../lib/api';
 
-const [page, siteSetting] = await Promise.all([getPageBySlug('programs'), getSiteSetting()]);
+const [page, siteSetting, programs] = await Promise.all([getPageBySlug('programs'), getSiteSetting(), getPrograms()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'Programs';
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? (
-    <SectionRenderer sections={page.sections} />
-  ) : (
-    <section style="padding: 6rem 0;">
-      <div style="max-width: 40rem;">
-        <div style="text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-size: 0.75rem;">
-          Programs Page
-        </div>
-        <h1 style="font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; margin: 0.5rem 0 1rem;">
-          Programs content is not available yet
+  <section class="border-b border-gray-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Open Enrollment Programs</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
+          {page?.sections?.find((section) => section.type === 'hero')?.title ?? 'Programs built for executives, teams, and applied organizational learning'}
         </h1>
-        <p style="color: var(--muted); font-size: 1.1rem; line-height: 1.8;">
-          The frontend is ready to render the Strapi page with slug <code>programs</code>. Add or publish that page in Strapi and reload.
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+          {page?.sections?.find((section) => section.type === 'hero')?.description ??
+            'Browse structured training offers managed in Strapi and presented through the new institutional theme shell.'}
         </p>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Current Cohorts</p>
+        <h2 class="mt-3 text-3xl font-semibold text-stone-900 md:text-4xl">Courses accepting applications and flagship sessions</h2>
+      </div>
+      <p class="max-w-2xl text-base leading-7 text-stone-600">
+        This listing now follows the same institutional card rhythm as the reference theme while keeping Strapi-powered content intact.
+      </p>
+    </div>
+
+    <div class="mt-10 grid gap-6 lg:grid-cols-2">
+      {programs.map((program) => (
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-sm">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class:list={[
+              'rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]',
+              program.registrationEnabled ? 'bg-red-700 text-white' : 'border border-stone-300 bg-white text-stone-700',
+            ]}>
+              {program.registrationEnabled ? 'Registration Open' : 'Registration Closed'}
+            </span>
+            {program.category && <span class="text-sm text-stone-500">{program.category}</span>}
+            {program.dateLabel && <span class="text-sm text-stone-500">{program.dateLabel}</span>}
+          </div>
+          <h3 class="mt-5 text-2xl font-semibold leading-snug text-stone-900">{program.title}</h3>
+          <p class="mt-4 text-sm leading-7 text-stone-600">{program.summary}</p>
+          <div class="mt-6 flex flex-wrap gap-2 text-xs text-stone-600">
+            {program.format && <span class="rounded-full bg-stone-100 px-3 py-2">{program.format}</span>}
+            {program.location && <span class="rounded-full bg-stone-100 px-3 py-2">{program.location}</span>}
+            {program.fee && <span class="rounded-full bg-stone-100 px-3 py-2">{program.fee}</span>}
+          </div>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a class="btn-primary !rounded-md !px-6 !py-3" href={`/programs/${program.slug}`}>View details</a>
+            {program.registrationEnabled && (
+              <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={`/programs/register/${program.slug}`}>
+                Register
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 </MainLayout>

@@ -1,28 +1,44 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-import SectionRenderer from '../../components/SectionRenderer.astro';
-import { getPageBySlug, getSiteSetting } from '../../lib/api';
+import { getPageBySlug, getProjects, getSiteSetting } from '../../lib/api';
 
-const [page, siteSetting] = await Promise.all([getPageBySlug('projects'), getSiteSetting()]);
+const [page, siteSetting, projects] = await Promise.all([getPageBySlug('projects'), getSiteSetting(), getProjects()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'Projects';
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? (
-    <SectionRenderer sections={page.sections} />
-  ) : (
-    <section style="padding: 6rem 0;">
-      <div style="max-width: 40rem;">
-        <div style="text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-size: 0.75rem;">
-          Projects Page
-        </div>
-        <h1 style="font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; margin: 0.5rem 0 1rem;">
-          Projects content is not available yet
+  <section class="border-b border-gray-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Selected Work</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
+          {page?.sections?.find((section) => section.type === 'hero')?.title ?? 'Project examples that connect service positioning to delivery outcomes'}
         </h1>
-        <p style="color: var(--muted); font-size: 1.1rem; line-height: 1.8;">
-          The frontend is ready to render the Strapi page with slug <code>projects</code>. Add or publish that page in Strapi and reload.
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+          {page?.sections?.find((section) => section.type === 'hero')?.description ??
+            'Case studies are now presented in the same visual system as the reference theme while keeping Strapi-driven content intact.'}
         </p>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <div class="grid gap-6 lg:grid-cols-2">
+      {projects.map((project) => (
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-sm">
+          <div class="flex flex-wrap items-center gap-3 text-sm text-stone-500">
+            {project.clientName && <span>{project.clientName}</span>}
+            {project.completedDate && <span>{project.completedDate}</span>}
+            {project.featured && <span class="rounded-full bg-red-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white">Featured</span>}
+          </div>
+          <h2 class="mt-5 text-2xl font-semibold text-stone-900">{project.title}</h2>
+          <p class="mt-4 text-sm leading-7 text-stone-600">{project.summary}</p>
+          <a class="mt-6 inline-flex items-center text-sm font-semibold text-red-700" href={`/projects/${project.slug}`}>
+            View case study
+            <span class="ml-2">→</span>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
 </MainLayout>

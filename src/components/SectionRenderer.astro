@@ -1,4 +1,6 @@
 ---
+import { Icon } from 'astro-icon/components';
+
 const { sections = [] } = Astro.props;
 
 function formatDate(value) {
@@ -17,56 +19,121 @@ function excerpt(value, fallback = '') {
   const plain = value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   return plain.length > 170 ? `${plain.slice(0, 167)}...` : plain;
 }
+
+const shellClass = 'mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20';
+const headingClass = 'mt-3 text-3xl font-semibold leading-tight text-stone-900 md:text-4xl';
+const copyClass = 'mt-4 max-w-3xl text-base leading-7 text-stone-600';
+const cardClass =
+  'rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)] transition duration-200 hover:-translate-y-1 hover:border-red-700/50';
+const subtleCardClass =
+  'rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)]';
 ---
 
 {sections.map((section) => (
   <>
-    {section.type === "hero" && (
-      <section class="hero section">
-        <div class="eyebrow">{section.eyebrow}</div>
-        <div class="hero-grid">
-          <div>
-            <h1>{section.title}</h1>
-            <p class="lead">{section.description}</p>
-            <div class="hero-actions">
-              {section.primaryButtonText && section.primaryButtonUrl && (
-                <a class="button primary" href={section.primaryButtonUrl}>
-                  {section.primaryButtonText}
-                </a>
+    {section.type === 'hero' && (
+      <section class="border-b border-stone-200 bg-white">
+        <div class={shellClass}>
+          <div class="grid gap-10 lg:grid-cols-[minmax(0,1.18fr)_minmax(19rem,0.82fr)] lg:items-stretch">
+            <div class="py-2">
+              {section.eyebrow && (
+                <p class="inline-flex rounded-full border border-red-700/20 bg-red-50 px-4 py-1 text-sm font-semibold uppercase tracking-[0.18em] text-red-700">
+                  {section.eyebrow}
+                </p>
               )}
-              {section.secondaryButtonText && section.secondaryButtonUrl && (
-                <a class="button secondary" href={section.secondaryButtonUrl}>
-                  {section.secondaryButtonText}
-                </a>
-              )}
+              <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+                {section.title}
+              </h1>
+              {section.description && <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{section.description}</p>}
+              <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                {section.primaryButtonText && section.primaryButtonUrl && (
+                  <a class="btn-primary !rounded-md !px-7 !py-3.5" href={section.primaryButtonUrl}>
+                    {section.primaryButtonText}
+                  </a>
+                )}
+                {section.secondaryButtonText && section.secondaryButtonUrl && (
+                  <a
+                    class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800"
+                    href={section.secondaryButtonUrl}
+                  >
+                    {section.secondaryButtonText}
+                  </a>
+                )}
+              </div>
+
+              <div class="mt-10 grid gap-5 text-sm text-stone-700 sm:grid-cols-3">
+                <article class="rounded-2xl border border-white/70 bg-white/75 p-5 shadow-[0_12px_40px_-24px_rgba(41,37,36,0.45)]">
+                  <span class="text-stone-500">Content model</span>
+                  <strong class="mt-2 block text-2xl font-semibold text-stone-900">Strapi DTO</strong>
+                </article>
+                <article class="rounded-2xl border border-white/70 bg-white/75 p-5 shadow-[0_12px_40px_-24px_rgba(41,37,36,0.45)]">
+                  <span class="text-stone-500">Design mode</span>
+                  <strong class="mt-2 block text-2xl font-semibold text-stone-900">Institutional</strong>
+                </article>
+                <article class="rounded-2xl border border-white/70 bg-white/75 p-5 shadow-[0_12px_40px_-24px_rgba(41,37,36,0.45)]">
+                  <span class="text-stone-500">Delivery path</span>
+                  <strong class="mt-2 block text-2xl font-semibold text-stone-900">Frontend + CMS</strong>
+                </article>
+              </div>
             </div>
-          </div>
-          <div class="hero-panel">
-            <div class="hero-note">Reusable page sections powered by Strapi DTOs</div>
+
+            <aside class="rounded-[2rem] border border-neutral-900 bg-neutral-950 p-6 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">Overview</p>
+              <h2 class="mt-4 max-w-xs text-3xl font-semibold leading-tight">{section.title}</h2>
+              <p class="mt-4 max-w-sm text-sm leading-7 text-white/70">
+                Structured sections, reusable editorial blocks, and route-ready content appear in a page language aligned
+                with the imported theme shell.
+              </p>
+
+              <div class="mt-6 grid gap-3">
+                <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85">
+                  Programs
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85">
+                  Consulting
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85">
+                  News & Events
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
     )}
 
-    {section.type === "services-list" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
+    {section.type === 'services-list' && (
+      <section class={shellClass}>
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            {section.eyebrow && (
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+            )}
+            <h2 class={headingClass}>{section.title}</h2>
+          </div>
+          {section.description && <p class="max-w-2xl text-base leading-7 text-stone-600">{section.description}</p>}
         </div>
-        <div class="card-grid three">
+
+        <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {section.services.map((service) => (
-            <article class="card">
-              <div class="meta-kicker">Service</div>
-              <h3><a class="card-link" href={`/services/${service.slug}`}>{service.name}</a></h3>
-              <p>{service.description}</p>
+            <article class={cardClass}>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-red-700">
+                <Icon name="tabler:briefcase-2" class="h-6 w-6" />
+              </div>
+              <p class="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Service</p>
+              <h3 class="mt-3 text-2xl font-semibold leading-tight text-stone-900">
+                <a class="transition hover:text-red-700" href={`/services/${service.slug}`}>
+                  {service.name}
+                </a>
+              </h3>
+              <p class="mt-4 text-sm leading-7 text-stone-600 md:text-base">{service.description}</p>
             </article>
           ))}
         </div>
+
         {section.viewAllText && section.viewAllUrl && (
-          <div class="section-actions">
-            <a class="button secondary" href={section.viewAllUrl}>
+          <div class="mt-8">
+            <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={section.viewAllUrl}>
               {section.viewAllText}
             </a>
           </div>
@@ -74,93 +141,120 @@ function excerpt(value, fallback = '') {
       </section>
     )}
 
-    {section.type === "projects-list" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
-        </div>
-        <div class="project-list">
-          {section.projects.map((project) => (
-            <article class="project-card">
-              <div class="project-meta">
-                <span>{project.clientName}</span>
-                <span>{formatDate(project.completedDate)}</span>
-              </div>
-              <h3><a class="card-link" href={`/projects/${project.slug}`}>{project.title}</a></h3>
-              <p>{project.summary}</p>
-              <div class="tag-row">
-                {project.services.map((service) => <span class="tag">{service.name}</span>)}
-              </div>
-            </article>
-          ))}
-        </div>
-        {section.viewAllText && section.viewAllUrl && (
-          <div class="section-actions">
-            <a class="button secondary" href={section.viewAllUrl}>
-              {section.viewAllText}
-            </a>
+    {section.type === 'projects-list' && (
+      <section class="border-y border-stone-200 bg-white">
+        <div class={shellClass}>
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              {section.eyebrow && (
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+              )}
+              <h2 class={headingClass}>{section.title}</h2>
+            </div>
+            {section.description && <p class="max-w-2xl text-base leading-7 text-stone-600">{section.description}</p>}
           </div>
-        )}
+
+          <div class="mt-10 grid gap-6 lg:grid-cols-2">
+            {section.projects.map((project) => (
+              <article class={cardClass}>
+                <div class="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+                  <span>{project.clientName}</span>
+                  <span>{formatDate(project.completedDate)}</span>
+                </div>
+                <h3 class="mt-5 text-2xl font-semibold leading-tight text-stone-900">
+                  <a class="transition hover:text-red-700" href={`/projects/${project.slug}`}>
+                    {project.title}
+                  </a>
+                </h3>
+                <p class="mt-4 text-sm leading-7 text-stone-600 md:text-base">{project.summary}</p>
+                <div class="mt-6 flex flex-wrap gap-2">
+                  {project.services.map((service) => (
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+                      {service.name}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {section.viewAllText && section.viewAllUrl && (
+            <div class="mt-8">
+              <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={section.viewAllUrl}>
+                {section.viewAllText}
+              </a>
+            </div>
+          )}
+        </div>
       </section>
     )}
 
-    {section.type === "stats" && (
-      <section class="section">
-        <div class="section-head centered">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
+    {section.type === 'stats' && (
+      <section class={shellClass}>
+        <div class="mx-auto max-w-3xl text-center">
+          {section.eyebrow && (
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+          )}
+          <h2 class={headingClass}>{section.title}</h2>
+          {section.description && <p class={copyClass}>{section.description}</p>}
         </div>
-        <div class="stats-grid">
+
+        <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {section.items.map((item) => (
-            <article class="stat-card">
-              <div class="stat-value">
+            <article class={subtleCardClass}>
+              <div class="text-4xl font-semibold leading-none text-red-700 md:text-5xl">
                 {item.value}
                 {item.suffix}
               </div>
-              <h3>{item.label}</h3>
-              <p>{item.description}</p>
+              <h3 class="mt-5 text-xl font-semibold text-stone-900">{item.label}</h3>
+              <p class="mt-3 text-sm leading-7 text-stone-600">{item.description}</p>
             </article>
           ))}
         </div>
       </section>
     )}
 
-    {section.type === "team" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
-        </div>
-        <div class="card-grid two">
-          {section.members.map((member) => (
-            <article class="card">
-              <h3>{member.name}</h3>
-              <div class="meta-kicker">{member.role}</div>
-              <p>{member.bio}</p>
-            </article>
-          ))}
+    {section.type === 'team' && (
+      <section class="border-y border-stone-200 bg-white">
+        <div class={shellClass}>
+          <div>
+            {section.eyebrow && (
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+            )}
+            <h2 class={headingClass}>{section.title}</h2>
+            {section.description && <p class={copyClass}>{section.description}</p>}
+          </div>
+
+          <div class="mt-10 grid gap-6 lg:grid-cols-2">
+            {section.members.map((member) => (
+              <article class={cardClass}>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">{member.role}</p>
+                <h3 class="mt-4 text-2xl font-semibold text-stone-900">{member.name}</h3>
+                <p class="mt-4 text-sm leading-7 text-stone-600 md:text-base">{member.bio}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     )}
 
-    {section.type === "testimonial" && (
-      <section class="section">
-        <div class="section-head centered">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
+    {section.type === 'testimonial' && (
+      <section class={shellClass}>
+        <div class="mx-auto max-w-3xl text-center">
+          {section.eyebrow && (
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+          )}
+          <h2 class={headingClass}>{section.title}</h2>
+          {section.description && <p class={copyClass}>{section.description}</p>}
         </div>
-        <div class="card-grid two">
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
           {section.items.map((item) => (
-            <article class="quote-card">
-              <blockquote>{item.quote}</blockquote>
-              <div class="quote-author">
-                <strong>{item.authorName}</strong>
-                <span>{item.authorRole}</span>
+            <article class="rounded-[1.75rem] border border-neutral-900 bg-neutral-950 p-8 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)]">
+              <blockquote class="text-xl leading-8 text-white/90 md:text-2xl">"{item.quote}"</blockquote>
+              <div class="mt-8 border-t border-white/10 pt-5">
+                <strong class="block text-lg font-semibold">{item.authorName}</strong>
+                <span class="mt-1 block text-sm text-white/60">{item.authorRole}</span>
               </div>
             </article>
           ))}
@@ -168,43 +262,65 @@ function excerpt(value, fallback = '') {
       </section>
     )}
 
-    {section.type === "faq" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
-        </div>
-        <div class="faq-list">
-          {section.items.map((item) => (
-            <details class="faq-item">
-              <summary>{item.question}</summary>
-              <div class="faq-answer" set:html={item.answer}></div>
-            </details>
-          ))}
+    {section.type === 'faq' && (
+      <section class="border-y border-stone-200 bg-white">
+        <div class={shellClass}>
+          <div>
+            {section.eyebrow && (
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+            )}
+            <h2 class={headingClass}>{section.title}</h2>
+            {section.description && <p class={copyClass}>{section.description}</p>}
+          </div>
+
+          <div class="mt-10 rounded-[1.75rem] border border-stone-200 bg-white px-6 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.28)]">
+            {section.items.map((item) => (
+              <details class="group border-b border-stone-200 py-5 last:border-b-0">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-stone-900">
+                  <span>{item.question}</span>
+                  <span class="text-red-700 transition group-open:rotate-45">+</span>
+                </summary>
+                <div class="prose prose-stone mt-4 max-w-none text-stone-600" set:html={item.answer}></div>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
     )}
 
-    {section.type === "news-list" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
+    {section.type === 'news-list' && (
+      <section class={shellClass}>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            {section.eyebrow && (
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+            )}
+            <h2 class={headingClass}>{section.title}</h2>
+          </div>
+          {section.description && <p class="max-w-2xl text-base leading-7 text-stone-600">{section.description}</p>}
         </div>
-        <div class="card-grid three">
+
+        <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {section.newsEntries.map((entry) => (
-            <article class="card">
-              <div class="meta-kicker">{formatDate(entry.publishedDate)}</div>
-              <h3><a class="card-link" href={`/news/${entry.slug}`}>{entry.title}</a></h3>
-              <p>{entry.seo?.metaDescription ?? excerpt(entry.content, 'No summary available yet.')}</p>
+            <article class={cardClass}>
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">
+                {formatDate(entry.publishedDate)}
+              </p>
+              <h3 class="mt-4 text-2xl font-semibold leading-tight text-stone-900">
+                <a class="transition hover:text-red-700" href={`/news/${entry.slug}`}>
+                  {entry.title}
+                </a>
+              </h3>
+              <p class="mt-4 text-sm leading-7 text-stone-600 md:text-base">
+                {entry.seo?.metaDescription ?? excerpt(entry.content, 'No summary available yet.')}
+              </p>
             </article>
           ))}
         </div>
+
         {section.viewAllText && section.viewAllUrl && (
-          <div class="section-actions">
-            <a class="button secondary" href={section.viewAllUrl}>
+          <div class="mt-8">
+            <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={section.viewAllUrl}>
               {section.viewAllText}
             </a>
           </div>
@@ -212,98 +328,160 @@ function excerpt(value, fallback = '') {
       </section>
     )}
 
-    {section.type === "programs-list" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
-        </div>
-        <div class="card-grid two">
-          {section.programs.map((program) => (
-            <article class="card program-card">
-              <div class="project-meta">
-                <span>{program.format}</span>
-                <span>{program.dateLabel}</span>
-              </div>
-              <div class="program-status-row">
-                <span class:list={["status-tag", program.registrationEnabled ? "is-open" : "is-closed"]}>
-                  {program.registrationEnabled ? "Registration Open" : "Registration Closed"}
-                </span>
-                {program.duration && <span class="status-tag">{program.duration}</span>}
-              </div>
-              <h3><a class="card-link" href={`/programs/${program.slug}`}>{program.title}</a></h3>
-              <p>{program.summary}</p>
-              {program.audience && (
-                <p class="program-audience">
-                  Best for: {program.audience}
-                </p>
+    {section.type === 'programs-list' && (
+      <section class="border-y border-stone-200 bg-white">
+        <div class={shellClass}>
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              {section.eyebrow && (
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
               )}
-              <div class="program-facts">
-                {program.location && <span class="tag">{program.location}</span>}
-                {program.fee && <span class="tag">{program.fee}</span>}
-                {program.seats && <span class="tag">{program.seats} seats</span>}
-              </div>
-              <div class="tag-row">
-                <a class="button secondary small" href={`/programs/${program.slug}`}>View details</a>
-                {program.registrationEnabled && (
-                  <a class="button primary small" href={`/programs/register/${program.slug}`}>Register</a>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-        {section.viewAllText && section.viewAllUrl && (
-          <div class="section-actions">
-            <a class="button secondary" href={section.viewAllUrl}>
-              {section.viewAllText}
-            </a>
+              <h2 class={headingClass}>{section.title}</h2>
+            </div>
+            {section.description && <p class="max-w-2xl text-base leading-7 text-stone-600">{section.description}</p>}
           </div>
-        )}
+
+          <div class="mt-10 grid gap-6 lg:grid-cols-2">
+            {section.programs.map((program) => (
+              <article class={cardClass}>
+                <div class="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+                  <span>{program.format}</span>
+                  <span>{program.dateLabel}</span>
+                </div>
+
+                <div class="mt-4 flex flex-wrap gap-2">
+                  <span
+                    class:list={[
+                      'rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]',
+                      program.registrationEnabled
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                        : 'border-red-200 bg-red-50 text-red-700',
+                    ]}
+                  >
+                    {program.registrationEnabled ? 'Registration Open' : 'Registration Closed'}
+                  </span>
+                  {program.duration && (
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+                      {program.duration}
+                    </span>
+                  )}
+                </div>
+
+                <h3 class="mt-5 text-2xl font-semibold leading-tight text-stone-900">
+                  <a class="transition hover:text-red-700" href={`/programs/${program.slug}`}>
+                    {program.title}
+                  </a>
+                </h3>
+                <p class="mt-4 text-sm leading-7 text-stone-600 md:text-base">{program.summary}</p>
+
+                {program.audience && <p class="mt-4 text-sm leading-7 text-stone-500">Best for: {program.audience}</p>}
+
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {program.location && (
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+                      {program.location}
+                    </span>
+                  )}
+                  {program.fee && (
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+                      {program.fee}
+                    </span>
+                  )}
+                  {program.seats && (
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+                      {program.seats} seats
+                    </span>
+                  )}
+                </div>
+
+                <div class="mt-7 flex flex-wrap gap-3">
+                  <a class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-2.5 !text-sm !text-stone-800" href={`/programs/${program.slug}`}>
+                    View details
+                  </a>
+                  {program.registrationEnabled && (
+                    <a class="btn-primary !rounded-md !px-5 !py-2.5 !text-sm" href={`/programs/register/${program.slug}`}>
+                      Register
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {section.viewAllText && section.viewAllUrl && (
+            <div class="mt-8">
+              <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={section.viewAllUrl}>
+                {section.viewAllText}
+              </a>
+            </div>
+          )}
+        </div>
       </section>
     )}
 
-    {section.type === "gallery" && (
-      <section class="section">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
+    {section.type === 'gallery' && (
+      <section class={shellClass}>
+        <div>
+          {section.eyebrow && (
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+          )}
+          <h2 class={headingClass}>{section.title}</h2>
+          {section.description && <p class={copyClass}>{section.description}</p>}
         </div>
+
         {section.images.length > 0 ? (
-          <div class:list={["gallery-grid", section.layout === "mosaic" && "mosaic"]}>
+          <div
+            class:list={[
+              'mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3',
+              section.layout === 'mosaic' && 'lg:auto-rows-[18rem]',
+            ]}
+          >
             {section.images.map((image, index) => (
-              <figure class="gallery-card">
+              <figure
+                class:list={[
+                  'group relative overflow-hidden rounded-[1.75rem] border border-stone-200 bg-stone-100 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]',
+                  section.layout === 'mosaic' && index === 0 && 'lg:col-span-2 lg:row-span-2',
+                ]}
+              >
                 {image?.url ? (
                   <img
+                    class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
                     src={image.url}
-                    alt={image.alternativeText ?? `${section.title ?? "Gallery"} image ${index + 1}`}
+                    alt={image.alternativeText ?? `${section.title ?? 'Gallery'} image ${index + 1}`}
                     loading="lazy"
                   />
                 ) : (
-                  <div class="gallery-empty-tile">Image unavailable</div>
+                  <div class="flex min-h-[16rem] items-center justify-center text-sm text-stone-500">Image unavailable</div>
                 )}
-                {image?.caption && <figcaption>{image.caption}</figcaption>}
+                {image?.caption && (
+                  <figcaption class="absolute inset-x-4 bottom-4 rounded-2xl bg-neutral-950/78 px-4 py-3 text-sm leading-6 text-white">
+                    {image.caption}
+                  </figcaption>
+                )}
               </figure>
             ))}
           </div>
         ) : (
-          <div class="gallery-empty-state">
-            <div class="gallery-empty-eyebrow">{section.layout ?? "grid"} layout ready</div>
-            <p>Connect images in Strapi to populate this section without changing the frontend code.</p>
+          <div class="mt-10 rounded-[1.75rem] border border-stone-200 bg-stone-50 p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">{section.layout ?? 'grid'} layout ready</p>
+            <p class="mt-4 max-w-2xl text-base leading-7 text-stone-600">
+              Connect images in Strapi to populate this section without changing the frontend code.
+            </p>
           </div>
         )}
       </section>
     )}
 
-    {section.type === "call-to-action" && (
-      <section class="section">
-        <div class="cta-panel">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
-          <p>{section.description}</p>
+    {section.type === 'call-to-action' && (
+      <section class={shellClass}>
+        <div class="rounded-[2rem] border border-neutral-900 bg-neutral-950 px-6 py-10 text-center text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)] md:px-10">
+          {section.eyebrow && (
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-500">{section.eyebrow}</p>
+          )}
+          <h2 class="mt-4 text-3xl font-semibold leading-tight md:text-4xl">{section.title}</h2>
+          {section.description && <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-white/70">{section.description}</p>}
           {section.buttonText && section.buttonUrl && (
-            <a class="button primary" href={section.buttonUrl}>
+            <a class="btn-primary mt-8 !rounded-md !px-7 !py-3.5" href={section.buttonUrl}>
               {section.buttonText}
             </a>
           )}
@@ -311,396 +489,16 @@ function excerpt(value, fallback = '') {
       </section>
     )}
 
-    {section.type === "rich-text" && (
-      <section class="section prose-block">
-        <div class="section-head">
-          <div class="eyebrow">{section.eyebrow}</div>
-          <h2>{section.title}</h2>
+    {section.type === 'rich-text' && (
+      <section class={shellClass}>
+        <div class="max-w-4xl">
+          {section.eyebrow && (
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{section.eyebrow}</p>
+          )}
+          <h2 class={headingClass}>{section.title}</h2>
         </div>
-        <div set:html={section.body}></div>
+        <div class="prose prose-stone mt-8 max-w-4xl prose-headings:font-semibold prose-p:leading-8 prose-a:text-red-700" set:html={section.body}></div>
       </section>
     )}
   </>
 ))}
-
-<style>
-  .section {
-    padding: 5.5rem 0;
-  }
-
-  .hero {
-    padding-top: 4.5rem;
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-    gap: 2rem;
-    align-items: stretch;
-  }
-
-  .hero h1 {
-    margin: 0;
-    font-size: clamp(3.2rem, 7vw, 5rem);
-    line-height: 0.92;
-    letter-spacing: -0.03em;
-  }
-
-  .lead {
-    max-width: 40rem;
-    color: var(--muted);
-    font-size: 1.125rem;
-  }
-
-  .hero-panel,
-  .cta-panel,
-  .project-card,
-  .card,
-  .quote-card,
-  .stat-card,
-  .gallery-placeholder {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .hero-panel {
-    padding: 2rem;
-    display: flex;
-    align-items: end;
-    min-height: 22rem;
-    background: #f3f4f6;
-  }
-
-  .hero-note {
-    font-size: 1.2rem;
-    line-height: 1.4;
-    max-width: 14rem;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 0.875rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-  }
-
-  .section-head {
-    max-width: 46rem;
-    margin-bottom: 2rem;
-  }
-
-  .section-head.centered {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .section-head h2 {
-    margin: 0.25rem 0 0.75rem;
-    font-size: clamp(2.1rem, 4vw, 3.3rem);
-    line-height: 1;
-  }
-
-  .section-head p {
-    margin: 0;
-    color: var(--muted);
-  }
-
-  .eyebrow,
-  .meta-kicker,
-  .project-meta,
-  .quote-author span {
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 0.72rem;
-  }
-
-  .card-grid {
-    display: grid;
-    gap: 1.25rem;
-  }
-
-  .card-grid.three {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .card-grid.two,
-  .stats-grid,
-  .project-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    display: grid;
-    gap: 1.25rem;
-  }
-
-  .card,
-  .project-card,
-  .quote-card,
-  .stat-card {
-    padding: 1.5rem;
-  }
-
-  .card h3,
-  .project-card h3,
-  .stat-card h3 {
-    margin: 0.5rem 0 0.75rem;
-    font-size: 1.45rem;
-  }
-
-  .card-link {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .card-link:hover {
-    color: var(--accent);
-  }
-
-  .project-meta {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .tag-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    margin-top: 1rem;
-  }
-
-  .program-card {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .program-status-row,
-  .program-facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    margin-top: 0.85rem;
-  }
-
-  .program-audience {
-    margin: 0.25rem 0 0;
-    color: var(--muted);
-    line-height: 1.7;
-  }
-
-  .tag {
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.82rem;
-    background: rgba(185, 28, 28, 0.08);
-  }
-
-  .status-tag {
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.38rem 0.72rem;
-    font-size: 0.76rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: #fff;
-  }
-
-  .status-tag.is-open {
-    border-color: rgba(22, 101, 52, 0.22);
-    background: rgba(22, 163, 74, 0.1);
-    color: #166534;
-  }
-
-  .status-tag.is-closed {
-    border-color: rgba(185, 28, 28, 0.15);
-    background: rgba(185, 28, 28, 0.08);
-    color: var(--accent);
-  }
-
-  .button.small {
-    min-height: 2.55rem;
-    padding: 0 1rem;
-    font-size: 0.92rem;
-  }
-
-  .stat-value {
-    font-size: clamp(2.6rem, 6vw, 4.4rem);
-    line-height: 0.9;
-    margin-bottom: 0.8rem;
-  }
-
-  .quote-card blockquote {
-    margin: 0 0 1.5rem;
-    font-size: 1.4rem;
-    line-height: 1.5;
-  }
-
-  .quote-author {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .faq-list {
-    border-top: 1px solid var(--line);
-  }
-
-  .faq-item {
-    border-bottom: 1px solid var(--line);
-    padding: 1rem 0;
-  }
-
-  .faq-item summary {
-    cursor: pointer;
-    list-style: none;
-    font-weight: 700;
-  }
-
-  .faq-answer {
-    color: var(--muted);
-    margin-top: 0.85rem;
-    max-width: 48rem;
-  }
-
-  .gallery-placeholder,
-  .cta-panel {
-    padding: 2rem;
-  }
-
-  .section-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .gallery-grid.mosaic .gallery-card:first-child {
-    grid-column: span 2;
-    grid-row: span 2;
-  }
-
-  .gallery-card,
-  .gallery-empty-state {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .gallery-card {
-    overflow: hidden;
-    aspect-ratio: 1 / 1;
-    position: relative;
-  }
-
-  .gallery-card img,
-  .gallery-empty-tile {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-  }
-
-  .gallery-empty-tile {
-    display: grid;
-    place-items: center;
-    background: #f8fafc;
-    color: var(--muted);
-  }
-
-  .gallery-card figcaption {
-    position: absolute;
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-    margin: 0;
-    padding: 0.7rem 0.85rem;
-    border-radius: 14px;
-    background: rgba(15, 15, 16, 0.72);
-    color: #fff;
-    font-size: 0.88rem;
-    line-height: 1.5;
-  }
-
-  .gallery-empty-state {
-    min-height: 14rem;
-    padding: 2rem;
-    display: grid;
-    align-content: center;
-    gap: 0.6rem;
-    color: var(--muted);
-    background:
-      radial-gradient(circle at top left, rgba(185, 28, 28, 0.08), transparent 40%),
-      linear-gradient(135deg, #ffffff, #f8fafc);
-  }
-
-  .gallery-empty-eyebrow {
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-size: 0.72rem;
-    font-weight: 700;
-  }
-
-  .cta-panel {
-    text-align: center;
-    background: #f3f4f6;
-  }
-
-  .prose-block :global(p) {
-    color: var(--muted);
-    max-width: 48rem;
-  }
-
-  .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    padding: 0 1.2rem;
-    border-radius: var(--radius-pill);
-    text-decoration: none;
-    font-weight: 700;
-    transition: transform 180ms ease, background-color 180ms ease;
-  }
-
-  .button:hover {
-    transform: translateY(-2px);
-  }
-
-  .button.primary {
-    background: var(--accent);
-    color: #fff;
-  }
-
-  .button.secondary {
-    border: 1px solid var(--line);
-    color: var(--text);
-    background: transparent;
-  }
-
-  @media (max-width: 1120px) {
-    .hero-grid,
-    .card-grid.three,
-    .card-grid.two,
-    .stats-grid,
-    .project-list,
-    .gallery-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .gallery-grid.mosaic .gallery-card:first-child {
-      grid-column: auto;
-      grid-row: auto;
-    }
-  }
-</style>

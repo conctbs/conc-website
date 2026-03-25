@@ -1,28 +1,40 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import SectionRenderer from '../components/SectionRenderer.astro';
-import { getPageBySlug, getSiteSetting } from '../lib/api';
+import { getPageBySlug, getServices, getSiteSetting } from '../lib/api';
 
-const [page, siteSetting] = await Promise.all([getPageBySlug('services'), getSiteSetting()]);
+const [page, siteSetting, services] = await Promise.all([getPageBySlug('services'), getSiteSetting(), getServices()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'Services';
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? (
-    <SectionRenderer sections={page.sections} />
-  ) : (
-    <section style="padding: 6rem 0;">
-      <div style="max-width: 40rem;">
-        <div style="text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-size: 0.75rem;">
-          Services Page
-        </div>
-        <h1 style="font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; margin: 0.5rem 0 1rem;">
-          Services content is not available yet
+  <section class="border-b border-gray-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Consulting Service</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
+          {page?.sections?.find((section) => section.type === 'hero')?.title ?? 'A focused set of service lines shaped for institutional positioning'}
         </h1>
-        <p style="color: var(--muted); font-size: 1.1rem; line-height: 1.8;">
-          The frontend is ready to render the Strapi page with slug <code>services</code>. Add or publish that page in Strapi and reload.
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+          {page?.sections?.find((section) => section.type === 'hero')?.description ??
+            'These service entries connect the consulting offering to project work, frontend routes, and reusable content architecture.'}
         </p>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {services.map((service) => (
+        <article class="group rounded-[1.75rem] border border-stone-200 bg-white p-7 transition hover:-translate-y-1 hover:border-red-700">
+          <div class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Service Area</div>
+          <h2 class="mt-4 text-2xl font-semibold text-stone-900">{service.name}</h2>
+          <p class="mt-4 text-sm leading-7 text-stone-600">{service.description}</p>
+          <a class="mt-6 inline-flex items-center text-sm font-semibold text-red-700" href={`/services/${service.slug}`}>
+            Read more
+            <span class="ml-2">→</span>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
 </MainLayout>

@@ -16,6 +16,12 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Event Programs | CONC";
       eyebrow="News & Events"
       title="Event Programs"
       intro="This page can summarize special event programs, speaker sessions, themed series, and public-facing activities beyond the standard consulting and learning catalog."
+      quickLinks={[
+        { text: "Event Calendar", href: "/event-calendar" },
+        { text: "Announcements", href: "/announcement" },
+        { text: "News", href: "/news" },
+        { text: "Contact Us", href: "/contact" },
+      ]}
       sections={[
         {
           title: "Special Sessions",

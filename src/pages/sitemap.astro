@@ -16,6 +16,12 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Sitemap | CONC";
       eyebrow="About Us"
       title="Sitemap"
       intro="A quick reference for the main public sections of the CONC website."
+      quickLinks={[
+        { text: "About", href: "/about" },
+        { text: "Services", href: "/services" },
+        { text: "Programs", href: "/programs" },
+        { text: "News", href: "/news" },
+      ]}
       sections={[
         {
           title: "Main Pages",
@@ -33,20 +39,25 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Sitemap | CONC";
     />
   )}
 
-  <section style="padding: 0 0 4rem;">
-    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
-      <a href="/" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Home</a>
-      <a href="/about" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">About</a>
-      <a href="/about/philosophy" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Philosophy</a>
-      <a href="/about/executive" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Executive</a>
-      <a href="/about/facilities" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Facilities</a>
-      <a href="/services" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Services</a>
-      <a href="/programs" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Programs</a>
-      <a href="/projects" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Projects</a>
-      <a href="/news" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">News</a>
-      <a href="/contact" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Contact</a>
-      <a href="/sitemap" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Sitemap</a>
-      <a href="/privacy-policy" style="padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 16px; text-decoration: none; color: var(--text); background: var(--surface);">Privacy Policy</a>
+  <section class="mx-auto max-w-7xl px-4 pb-16 md:px-6 md:pb-20">
+    <div class="max-w-3xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Navigation index</p>
+      <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Main public routes</h2>
+    </div>
+
+    <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/">Home</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/about">About</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/about/philosophy">Philosophy</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/about/executive">Executive</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/about/facilities">Facilities</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/services">Services</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/programs">Programs</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/projects">Projects</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/news">News</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/contact">Contact</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/sitemap">Sitemap</a>
+      <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)] transition hover:-translate-y-1 hover:border-red-700 hover:text-red-700" href="/privacy-policy">Privacy Policy</a>
     </div>
   </section>
 </MainLayout>

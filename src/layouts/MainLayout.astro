@@ -1,188 +1,42 @@
 ---
-import Navbar from "../components/Navbar.astro";
+import '../assets/styles/tailwind.css';
+
+import Favicons from '~/components/Favicons.astro';
+import CustomStyles from '~/components/CustomStyles.astro';
+import BasicScripts from '~/components/common/BasicScripts.astro';
+import Announcement from '~/components/widgets/Announcement.astro';
+import Header from '~/components/widgets/Header.astro';
+import Footer from '~/components/widgets/Footer.astro';
+import { headerData, footerData } from '~/navigation';
+import { I18N, SITE } from '~/theme-config';
+import { getCanonical } from '~/utils/permalinks';
+
 const { title, seo = null, siteSetting = null } = Astro.props;
+const pageTitle = title ?? siteSetting?.siteName ?? SITE.name;
+const pageDescription = seo?.metaDescription ?? siteSetting?.siteDescription ?? null;
+const canonical = seo?.canonicalUrl ?? String(getCanonical(String(Astro.url.pathname)));
 ---
 
-<html lang="th">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>{title}</title>
-{seo?.metaDescription && <meta name="description" content={seo.metaDescription} />}
-{seo?.canonicalUrl && <link rel="canonical" href={seo.canonicalUrl} />}
-{seo?.noIndex && <meta name="robots" content="noindex,nofollow" />}
-<link rel="icon" type="image/svg+xml" href="/conc-logo.svg" />
-<link rel="shortcut icon" href="/conc-logo.svg" />
+<!doctype html>
+<html lang={I18N.language} dir={I18N.textDirection} class="2xl:text-[20px]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    {pageDescription && <meta name="description" content={pageDescription} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {seo?.noIndex && <meta name="robots" content="noindex,nofollow" />}
+    <Favicons />
+    <CustomStyles />
+  </head>
 
-<style>
-  :root {
-    --bg: #f3f4f6;
-    --surface: #ffffff;
-    --text: #0f0f10;
-    --muted: #5f6368;
-    --line: #d1d5db;
-    --accent: #b91c1c;
-    --accent-2: #7f1d1d;
-    --radius-card: 20px;
-    --radius-pill: 999px;
-    --shadow-soft: 0 14px 34px rgba(15, 15, 16, 0.08);
-  }
-
-  html {
-    background: var(--bg);
-    overflow-x: clip;
-    box-sizing: border-box;
-  }
-
-  *,
-  *::before,
-  *::after {
-    box-sizing: inherit;
-  }
-
-  body{
-    margin:0;
-    color:var(--text);
-    background: var(--bg);
-    font-family:"Sarabun", sans-serif;
-    overflow-x: clip;
-  }
-
-  h1, h2, h3, h4 {
-    font-family:"Sarabun", sans-serif;
-    font-weight:700;
-    letter-spacing:-0.02em;
-  }
-
-  .container{
-    max-width:1200px;
-    margin:auto;
-    padding:0 24px;
-    width:100%;
-  }
-
-  footer{
-    margin-top:80px;
-    padding:32px 0 48px;
-    border-top:1px solid #111111;
-    background:#111111;
-    color:#ffffff;
-  }
-
-  .footer-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.8fr) repeat(2, minmax(0, 1fr));
-    gap: 2rem;
-    align-items: start;
-  }
-
-  .footer-title {
-    margin: 0 0 0.9rem;
-    font-size: 0.95rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .footer-copy {
-    margin: 0;
-    max-width: 34rem;
-    color: rgba(255, 255, 255, 0.72);
-    line-height: 1.8;
-  }
-
-  .footer-links {
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .footer-links a {
-    color: #ffffff;
-    text-decoration: none;
-  }
-
-  .footer-links a:hover {
-    color: rgba(255, 255, 255, 0.74);
-  }
-
-  .footer-bottom {
-    margin-top: 2rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    color: rgba(255, 255, 255, 0.72);
-  }
-
-  @media (max-width: 1120px) {
-    .footer-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.5rem;
-    }
-  }
-
-  @media (max-width: 720px) {
-    .footer-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-  }
-</style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-44Q9S4ZPHC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-44Q9S4ZPHC');
-</script>
-</head>
-
-<body>
-
-<Navbar />
-
-<div class="container">
-<slot />
-</div>
-
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-title">CONC</div>
-        <p class="footer-copy">
-          Thammasat Consulting Networking and Coaching Center provides consulting, coaching, and capability-building programs for leaders, teams, and organizations.
-        </p>
-      </div>
-
-      <div>
-        <div class="footer-title">About Us</div>
-        <div class="footer-links">
-          <a href="/about/philosophy">Philosophy</a>
-          <a href="/about/executive">Executive</a>
-          <a href="/about/facilities">Facilities</a>
-        </div>
-      </div>
-
-      <div>
-        <div class="footer-title">Reference</div>
-        <div class="footer-links">
-          <a href="/sitemap">Sitemap</a>
-          <a href="/privacy-policy">Privacy Policy</a>
-          <a href="/contact">Contact</a>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="footer-bottom">
-      {siteSetting?.copyrightText ?? "© 2026 CONC"}
-    </div>
-  </div>
-</footer>
-
-</body>
+  <body class="antialiased text-default bg-page tracking-tight">
+    <Announcement />
+    <Header {...headerData} isSticky />
+    <main>
+      <slot />
+    </main>
+    <Footer {...footerData} />
+    <BasicScripts />
+  </body>
 </html>

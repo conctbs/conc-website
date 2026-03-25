@@ -1,0 +1,29 @@
+---
+const { eyebrow, title, message, slug } = Astro.props as {
+  eyebrow: string;
+  title: string;
+  message: string;
+  slug: string;
+};
+---
+
+<section class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:items-end">
+    <div>
+      <p class="inline-flex rounded-full border border-red-700/20 bg-red-50 px-4 py-1 text-sm font-semibold uppercase tracking-[0.18em] text-red-700">
+        {eyebrow}
+      </p>
+      <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+        {title}
+      </h1>
+      <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{message}</p>
+    </div>
+
+    <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)]">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Publishing note</p>
+      <p class="mt-4 text-base leading-8 text-stone-600">
+        The frontend is ready to render the Strapi page with slug <code>{slug}</code>. Publish that page in Strapi to replace this placeholder.
+      </p>
+    </aside>
+  </div>
+</section>

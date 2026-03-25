@@ -28,114 +28,98 @@ const pageDescription = project?.seo?.metaDescription ?? project?.summary ?? sit
 
 <MainLayout title={pageTitle} seo={project?.seo} siteSetting={siteSetting}>
   {project ? (
-    <article class="detail-page">
-      <a class="back-link" href="/projects">Back to projects</a>
-      <header class="detail-hero">
-        <div class="detail-copy">
-          <div class="eyebrow">Project Detail</div>
-          <h1>{project.title}</h1>
-          {pageDescription && <p class="lead">{pageDescription}</p>}
-          <div class="meta-row">
-            {project.clientName && <span>{project.clientName}</span>}
+    <article class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/projects">Back to projects</a>
+
+      <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.04fr)_minmax(20rem,0.96fr)]">
+        <div>
+          <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+            <span class="rounded-full bg-red-700 px-3 py-1 text-white">{project.clientName ?? 'Selected Work'}</span>
             {completedDate && <span>{completedDate}</span>}
           </div>
+          <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+            {project.title}
+          </h1>
+          {pageDescription && <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{pageDescription}</p>}
           {project.services.length > 0 && (
-            <div class="tag-row">
-              {project.services.map((service) => <span class="tag">{service.name}</span>)}
+            <div class="mt-7 flex flex-wrap gap-2">
+              {project.services.map((service) => (
+                <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+                  {service.name}
+                </span>
+              ))}
             </div>
           )}
         </div>
-        <div class="detail-panel">
+
+        <div class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
           {project.coverImage?.url ? (
-            <img src={project.coverImage.url} alt={project.coverImage.alternativeText ?? project.title} loading="eager" />
+            <img class="h-full w-full object-cover" src={project.coverImage.url} alt={project.coverImage.alternativeText ?? project.title} loading="eager" />
           ) : (
-            <div class="placeholder hero-placeholder">
-              <div class="placeholder-kicker">Project Visual</div>
-              <strong>{project.title}</strong>
-              <p>Upload a cover image in Strapi to turn this detail header into a media-led case study.</p>
+            <div class="grid min-h-[24rem] place-items-center bg-stone-50 p-8 text-center">
+              <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Project Visual</p>
+                <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">{project.title}</h2>
+                <p class="mt-4 max-w-sm text-sm leading-7 text-stone-600">
+                  Upload a cover image in Strapi to turn this case study header into a stronger institutional project lead.
+                </p>
+              </div>
             </div>
           )}
         </div>
-      </header>
+      </section>
+
       {project.content && (
-        <section class="content-card prose-block">
-          <div set:html={project.content}></div>
+        <section class="mt-10 rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Case Study</p>
+          <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Project context and delivery approach</h2>
+          <div
+            class="prose prose-stone mt-6 max-w-4xl prose-headings:font-semibold prose-p:leading-8 prose-a:text-red-700"
+            set:html={project.content}
+          ></div>
         </section>
       )}
+
       {project.gallery.length > 0 && (
-        <section class="gallery-section">
-          <div class="section-head">
-            <div class="eyebrow">Project Gallery</div>
-            <h2>Selected visuals</h2>
+        <section class="mt-6">
+          <div class="max-w-3xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Project Gallery</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Selected visuals</h2>
           </div>
-          <div class="gallery-grid">
+          <div class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {project.gallery.map((image, index) => (
-              <figure class="gallery-card">
+              <figure class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
                 {image?.url ? (
-                  <img src={image.url} alt={image.alternativeText ?? `${project.title} image ${index + 1}`} loading="lazy" />
+                  <img class="h-full w-full object-cover" src={image.url} alt={image.alternativeText ?? `${project.title} image ${index + 1}`} loading="lazy" />
                 ) : (
-                  <div class="placeholder gallery-placeholder">
-                    <span>Image slot {index + 1}</span>
-                  </div>
+                  <div class="flex min-h-[18rem] items-center justify-center bg-stone-50 text-sm text-stone-500">Image slot {index + 1}</div>
                 )}
               </figure>
             ))}
           </div>
         </section>
       )}
-      <section class="action-card">
-        <div class="eyebrow">Next Step</div>
-        <h2>Looking for a similar delivery model?</h2>
-        <p>Use this case study as a starting point for discussing scope, architecture, and rollout priorities.</p>
-        <div class="action-row">
-          <a class="button primary" href="/contact">Start a Conversation</a>
-          <a class="button secondary" href="/services">Review Services</a>
+
+      <section class="mt-6 rounded-[2rem] border border-neutral-900 bg-neutral-950 px-6 py-10 text-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.72)] md:px-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-500">Next Step</p>
+        <h2 class="mt-4 max-w-3xl text-3xl font-semibold leading-tight md:text-4xl">Looking for a similar delivery model?</h2>
+        <p class="mt-5 max-w-3xl text-base leading-8 text-white/70">
+          Use this case study as a starting point for discussing scope, content architecture, and rollout priorities.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Start a Conversation</a>
+          <a class="btn-secondary !rounded-md !border-white/20 !bg-white/5 !px-7 !py-3.5 !text-white" href="/services">
+            Review Services
+          </a>
         </div>
       </section>
     </article>
   ) : (
-    <section class="missing-state">
-      <div class="eyebrow">404</div>
-      <h1>Project not found</h1>
-      <p>The requested project slug is not available from Strapi.</p>
-      <a class="back-link" href="/projects">Back to projects</a>
+    <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Project not found</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">The requested project slug is not available from Strapi.</p>
+      <a class="mt-6 inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/projects">Back to projects</a>
     </section>
   )}
 </MainLayout>
-
-<style>
-  .detail-page,
-  .missing-state { padding: 4rem 0 5rem; }
-  .back-link { display: inline-flex; margin-bottom: 1.5rem; color: var(--accent); text-decoration: none; font-weight: 700; }
-  .detail-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr); gap: 2rem; align-items: start; }
-  .detail-copy h1, .missing-state h1 { margin: 0.35rem 0 1rem; font-size: clamp(3rem, 6vw, 4.8rem); line-height: 0.95; }
-  .eyebrow, .meta-row { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; }
-  .lead { max-width: 40rem; color: var(--muted); font-size: 1.1rem; line-height: 1.8; }
-  .meta-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
-  .detail-panel, .content-card, .gallery-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
-  .detail-panel { overflow: hidden; min-height: 22rem; }
-  .detail-panel img, .gallery-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .placeholder { min-height: 100%; display: grid; place-items: center; align-content: center; gap: 0.6rem; color: var(--muted); text-align: center; background: radial-gradient(circle at top left, rgba(185, 28, 28, 0.08), transparent 42%), #f8fafc; }
-  .placeholder-kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; font-weight: 700; }
-  .hero-placeholder { padding: 2rem; }
-  .hero-placeholder p { margin: 0; max-width: 18rem; line-height: 1.7; }
-  .gallery-placeholder { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.16em; }
-  .tag-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.5rem; }
-  .tag { border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.75rem; font-size: 0.82rem; background: rgba(185, 28, 28, 0.08); }
-  .content-card, .gallery-section { margin-top: 2rem; }
-  .content-card { padding: 2rem; }
-  .action-card { margin-top: 2rem; padding: 2rem; background: #f3f4f6; border: 1px solid var(--line); border-radius: var(--radius-card); box-shadow: var(--shadow-soft); }
-  .action-card h2 { margin: 0.35rem 0 0.75rem; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1; }
-  .action-card p { color: var(--muted); line-height: 1.8; max-width: 42rem; }
-  .action-row { display: flex; flex-wrap: wrap; gap: 0.875rem; margin-top: 1.5rem; }
-  .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0 1.2rem; border-radius: var(--radius-pill); text-decoration: none; font-weight: 700; }
-  .button.primary { background: var(--accent); color: #fff; }
-  .button.secondary { border: 1px solid var(--line); color: var(--text); background: transparent; }
-  .prose-block :global(p) { color: var(--muted); font-size: 1.05rem; line-height: 1.9; }
-  .section-head { max-width: 42rem; margin-bottom: 1.5rem; }
-  .section-head h2 { margin: 0.35rem 0 0; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1; }
-  .gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-  .gallery-card { overflow: hidden; aspect-ratio: 1 / 1; }
-  .missing-state p { color: var(--muted); max-width: 32rem; }
-  @media (max-width: 1120px) { .detail-hero, .gallery-grid { grid-template-columns: 1fr; } }
-</style>

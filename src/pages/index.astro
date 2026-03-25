@@ -1,9 +1,29 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import SectionRenderer from "../components/SectionRenderer.astro";
-import { getHomePage, getSiteSetting } from "../lib/api";
+import {
+  getHomePage,
+  getNews,
+  getPrograms,
+  getProjects,
+  getServices,
+  getSiteSetting,
+} from "../lib/api";
 
-const [page, siteSetting] = await Promise.all([getHomePage(), getSiteSetting()]);
+const [page, siteSetting, services, projects, programs, news] = await Promise.all([
+  getHomePage(),
+  getSiteSetting(),
+  getServices(),
+  getProjects(),
+  getPrograms(),
+  getNews(),
+]);
+
+const statsSection = page?.sections.find((section) => section.type === "stats");
+const heroSection = page?.sections.find((section) => section.type === "hero");
+const topServices = services.slice(0, 4);
+const featuredPrograms = programs.slice(0, 4);
+const featuredProjects = projects.slice(0, 2);
+const latestNews = news.slice(0, 3);
 ---
 
 <MainLayout
@@ -11,21 +31,524 @@ const [page, siteSetting] = await Promise.all([getHomePage(), getSiteSetting()])
   seo={page?.seo}
   siteSetting={siteSetting}
 >
-  {page ? (
-    <SectionRenderer sections={page.sections} />
-  ) : (
-    <section style="padding: 6rem 0;">
-      <div style="max-width: 40rem;">
-        <div style="text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-size: 0.75rem;">
-          Frontend Ready
-        </div>
-        <h1 style="font-size: clamp(3rem, 7vw, 5rem); line-height: 0.95; margin: 0.5rem 0 1rem;">
-          Connect `conc-website` to the Strapi DTO endpoints
-        </h1>
-        <p style="color: var(--muted); font-size: 1.1rem; line-height: 1.8;">
-          The frontend theme is in place, but the home page API could not be reached during render. Start the Strapi app and reload this page.
+  <section class="hero-shell">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-kicker">Thammasat Consulting Networking and Coaching Center</div>
+        <h1>{heroSection?.title ?? "Training, consulting, and lifelong learning for modern organizations"}</h1>
+        <p class="hero-copy">
+          {heroSection?.description ??
+            "A structured institutional homepage for programs, consulting service lines, editorial content, and conversion-ready next steps."}
         </p>
+        <div class="hero-actions">
+          <a class="button primary" href={heroSection?.primaryButtonUrl ?? "/programs"}>
+            {heroSection?.primaryButtonText ?? "Explore Programs"}
+          </a>
+          <a class="button secondary" href={heroSection?.secondaryButtonUrl ?? "/services"}>
+            {heroSection?.secondaryButtonText ?? "Review Services"}
+          </a>
+        </div>
+
+        {statsSection?.type === "stats" && (
+          <div class="hero-stats">
+            {statsSection.items.slice(0, 3).map((item) => (
+              <article>
+                <div class="value">
+                  {item.value}
+                  {item.suffix}
+                </div>
+                <div class="label">{item.label}</div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
-    </section>
-  )}
+
+      <aside class="hero-panel">
+        <div class="panel-kicker">Quick Access</div>
+        <div class="panel-card-grid">
+          {topServices.slice(0, 2).map((service) => (
+            <article class="panel-card">
+              <div class="panel-label">Service</div>
+              <h2>{service.name}</h2>
+              <p>{service.description}</p>
+            </article>
+          ))}
+        </div>
+
+        <div class="quick-links">
+          <a href="/programs">Courses accepting applications</a>
+          <a href="/news">News and event updates</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading split">
+      <div>
+        <div class="eyebrow">Core Services</div>
+        <h2>Institutional entry points designed like the reference site</h2>
+      </div>
+      <p>
+        The homepage now leads with service architecture, program discovery, and editorial updates so users can move
+        faster toward the right route.
+      </p>
+    </div>
+
+    <div class="services-grid">
+      {topServices.map((service) => (
+        <article class="service-card">
+          <div class="service-label">Service Area</div>
+          <h3>{service.name}</h3>
+          <p>{service.description}</p>
+          <a href={`/services/${service.slug}`}>Read more</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section-band">
+    <div class="section-heading split">
+      <div>
+        <div class="eyebrow">Featured Programs</div>
+        <h2>Courses accepting applications</h2>
+      </div>
+      <p>
+        A tighter presentation for open enrollment and executive learning, aligned to the portal-style hierarchy used in
+        the reference project.
+      </p>
+    </div>
+
+    <div class="program-grid">
+      {featuredPrograms.map((program) => (
+        <article class="program-card">
+          <div class="program-meta">
+            <span>{program.category ?? "Program"}</span>
+            <span>{program.dateLabel}</span>
+          </div>
+          <h3>{program.title}</h3>
+          <p>{program.summary}</p>
+          <div class="program-actions">
+            <a href={`/programs/${program.slug}`}>View details</a>
+            {program.registrationEnabled && <a href={`/programs/register/${program.slug}`}>Register</a>}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section-block section-two-column">
+    <div class="dark-panel">
+      <div class="eyebrow is-light">About the Shift</div>
+      <h2>From generic CMS frontend into an institutional content portal</h2>
+      <p>
+        `conc-website` still runs on the Strapi DTO layer, but the visible composition now follows the stronger
+        academic-professional structure used in `stale-satellite`.
+      </p>
+      <ul>
+        <li>Clearer hierarchy across services, programs, consulting, and updates.</li>
+        <li>Homepage sections now behave more like a public portal than a generic card list.</li>
+        <li>The redesign keeps compatibility with existing Strapi content and fallback data.</li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="section-heading">
+        <div class="eyebrow">News and Projects</div>
+        <h2>Latest updates and selected delivery work</h2>
+      </div>
+
+      <div class="news-grid">
+        {latestNews.map((item) => (
+          <a class="news-card" href={`/news/${item.slug}`}>
+            <span>{item.publishedDate ?? "News"}</span>
+            <h3>{item.title}</h3>
+            <p>{item.content?.replace(/<[^>]*>/g, " ").slice(0, 130) ?? "Editorial update from the CONC content system."}</p>
+          </a>
+        ))}
+      </div>
+
+      <div class="project-strip">
+        {featuredProjects.map((project) => (
+          <a class="project-link" href={`/projects/${project.slug}`}>
+            <strong>{project.title}</strong>
+            <span>{project.clientName ?? "Selected Work"}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-panel">
+    <div>
+      <div class="eyebrow">Contact</div>
+      <h2>Ready to move into registration, inquiry, or project planning?</h2>
+      <p>
+        The site now carries the reference project's institutional layout direction. The next step can be a fuller route
+        migration, form integration, or another round of detail-page refinement.
+      </p>
+    </div>
+    <div class="contact-actions">
+      <a class="button primary" href="/contact">Contact the Team</a>
+      <a class="button secondary" href="/programs">Browse Programs</a>
+    </div>
+  </section>
 </MainLayout>
+
+<style>
+  .hero-shell,
+  .section-block,
+  .section-band,
+  .contact-panel {
+    margin-top: 1.5rem;
+  }
+
+  .hero-grid,
+  .section-two-column,
+  .contact-panel {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    align-items: stretch;
+  }
+
+  .hero-shell h1,
+  .section-heading h2,
+  .dark-panel h2,
+  .contact-panel h2 {
+    margin: 0;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+
+  .hero-shell h1 {
+    max-width: 11ch;
+    font-size: clamp(3.4rem, 7vw, 5.6rem);
+    margin-top: 0.75rem;
+  }
+
+  .hero-kicker,
+  .eyebrow,
+  .panel-kicker,
+  .service-label,
+  .panel-label,
+  .program-meta,
+  .news-card span {
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .hero-kicker,
+  .eyebrow,
+  .service-label,
+  .panel-label {
+    color: var(--accent);
+  }
+
+  .hero-kicker {
+    display: inline-flex;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(180, 35, 24, 0.18);
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .hero-copy,
+  .section-heading p,
+  .dark-panel p,
+  .contact-panel p,
+  .service-card p,
+  .program-card p,
+  .panel-card p,
+  .news-card p {
+    color: var(--muted);
+    line-height: 1.85;
+  }
+
+  .hero-copy {
+    max-width: 44rem;
+    font-size: 1.08rem;
+    margin: 1.35rem 0 0;
+  }
+
+  .hero-actions,
+  .program-actions,
+  .contact-actions {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-actions {
+    margin-top: 1.8rem;
+  }
+
+  .hero-stats,
+  .services-grid,
+  .program-grid,
+  .news-grid,
+  .panel-card-grid {
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 2rem;
+  }
+
+  .hero-stats article,
+  .service-card,
+  .program-card,
+  .news-card,
+  .panel-card,
+  .project-link,
+  .contact-panel,
+  .section-band,
+  .dark-panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .hero-stats article,
+  .service-card,
+  .program-card,
+  .news-card,
+  .panel-card,
+  .project-link {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.98)),
+      linear-gradient(135deg, rgba(180, 35, 24, 0.05), transparent 36%);
+    padding: 1.45rem;
+  }
+
+  .hero-stats .value {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--accent-2);
+    line-height: 0.95;
+    margin-bottom: 0.45rem;
+  }
+
+  .hero-stats .label {
+    color: var(--muted);
+  }
+
+  .hero-panel,
+  .dark-panel {
+    background:
+      linear-gradient(180deg, rgba(23, 20, 18, 0.97), rgba(23, 20, 18, 1)),
+      radial-gradient(circle at top left, rgba(180, 35, 24, 0.18), transparent 34%);
+    color: #fff;
+    padding: 2rem;
+  }
+
+  .panel-kicker,
+  .eyebrow.is-light {
+    color: rgba(255, 255, 255, 0.68);
+  }
+
+  .panel-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 1.2rem;
+  }
+
+  .panel-card {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .panel-card h2,
+  .service-card h3,
+  .program-card h3,
+  .news-card h3 {
+    margin: 0.65rem 0 0;
+    font-size: 1.35rem;
+    line-height: 1.15;
+  }
+
+  .panel-card h2 {
+    color: #fff;
+  }
+
+  .panel-card p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.9rem;
+  }
+
+  .quick-links {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: 1.3rem;
+  }
+
+  .quick-links a {
+    display: block;
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.88);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .section-heading {
+    max-width: 48rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-heading.split {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+    gap: 1.5rem;
+    align-items: end;
+  }
+
+  .section-heading h2,
+  .dark-panel h2,
+  .contact-panel h2 {
+    font-size: clamp(2.3rem, 4vw, 4rem);
+    margin-top: 0.4rem;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .service-card a,
+  .program-actions a,
+  .project-link,
+  .news-card {
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .service-card a,
+  .program-actions a:first-child,
+  .news-card {
+    color: var(--accent-2);
+  }
+
+  .service-card a {
+    display: inline-flex;
+    margin-top: 1rem;
+  }
+
+  .section-band {
+    background: rgba(255, 255, 255, 0.54);
+    padding: 2rem;
+  }
+
+  .program-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .program-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--muted);
+  }
+
+  .program-actions {
+    margin-top: 1.1rem;
+  }
+
+  .program-actions a:last-child {
+    color: #fff;
+    background: var(--accent);
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+  }
+
+  .section-two-column {
+    grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+    align-items: start;
+  }
+
+  .dark-panel ul {
+    margin: 1.4rem 0 0;
+    padding-left: 1.15rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.9;
+  }
+
+  .news-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .project-strip {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.2rem;
+  }
+
+  .project-link {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .project-link span {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .contact-panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.98)),
+      radial-gradient(circle at top left, rgba(180, 35, 24, 0.08), transparent 26%);
+    padding: 2.4rem;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0 1.2rem;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 180ms ease, background-color 180ms ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button.primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 16px 35px rgba(180, 35, 24, 0.22);
+  }
+
+  .button.secondary {
+    border: 1px solid var(--line);
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.62);
+  }
+
+  @media (max-width: 1120px) {
+    .hero-grid,
+    .section-heading.split,
+    .section-two-column,
+    .contact-panel,
+    .services-grid,
+    .program-grid,
+    .news-grid,
+    .panel-card-grid,
+    .hero-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

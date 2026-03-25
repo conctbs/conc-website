@@ -16,6 +16,12 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Announcement | CONC";
       eyebrow="News & Events"
       title="Announcement"
       intro="This page can be used for official announcements, public notices, registration windows, and important updates related to CONC activities and programs."
+      quickLinks={[
+        { text: "News", href: "/news" },
+        { text: "Event Calendar", href: "/event-calendar" },
+        { text: "Event Programs", href: "/event-programs" },
+        { text: "Programs", href: "/programs" },
+      ]}
       sections={[
         {
           title: "Public Notices",

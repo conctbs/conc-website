@@ -273,6 +273,82 @@ const siteSetting: SiteSettingDto = {
   logo: null,
 };
 
+function buildInfoPage(input: {
+  id: number;
+  slug: string;
+  title: string;
+  eyebrow: string;
+  metaTitle: string;
+  metaDescription: string;
+  canonicalUrl: string;
+  intro: string;
+  sections: Array<{
+    title: string;
+    body: string;
+  }>;
+}): PageDto {
+  return {
+    id: input.id,
+    slug: input.slug,
+    title: input.title,
+    seo: {
+      metaTitle: input.metaTitle,
+      metaDescription: input.metaDescription,
+      canonicalUrl: input.canonicalUrl,
+      noIndex: false,
+      metaImage: null,
+    },
+    sections: [
+      {
+        type: "hero",
+        id: input.id * 10 + 1,
+        eyebrow: input.eyebrow,
+        title: input.title,
+        description: input.intro,
+        primaryButtonText: "Contact Us",
+        primaryButtonUrl: "/contact",
+        secondaryButtonText: "View Sitemap",
+        secondaryButtonUrl: "/sitemap",
+        backgroundImage: null,
+      },
+      {
+        type: "stats",
+        id: input.id * 10 + 2,
+        eyebrow: input.eyebrow,
+        title: "Key Focus Areas",
+        description: "A concise summary block that helps the frontend render structured supporting points for this page.",
+        items: input.sections.map((section, index) => ({
+          id: input.id * 100 + index + 1,
+          value: "01",
+          suffix: null,
+          label: section.title,
+          description: section.body,
+        })),
+      },
+      {
+        type: "rich-text",
+        id: input.id * 10 + 3,
+        eyebrow: "Overview",
+        title: input.title,
+        description: null,
+        body: `<p>${input.intro}</p>`,
+      },
+      {
+        type: "faq",
+        id: input.id * 10 + 4,
+        eyebrow: "Details",
+        title: `${input.title} Highlights`,
+        description: "This section mirrors the supporting cards from the frontend placeholder page in a backend-friendly shape.",
+        items: input.sections.map((section, index) => ({
+          id: input.id * 100 + index + 11,
+          question: section.title,
+          answer: `<p>${section.body}</p>`,
+        })),
+      },
+    ],
+  };
+}
+
 const pages: Record<string, PageDto> = {
   home: {
     id: 1,
@@ -491,111 +567,81 @@ const pages: Record<string, PageDto> = {
       },
     ],
   },
-  executive: {
+  executive: buildInfoPage({
     id: 8,
     slug: "executive",
     title: "Executive",
-    seo: {
-      metaTitle: "Executive | CONC",
-      metaDescription: "Executive direction, stewardship, and institutional leadership context for CONC.",
-      canonicalUrl: "https://conc.example/about/executive",
-      noIndex: false,
-      metaImage: null,
-    },
+    eyebrow: "About Us",
+    metaTitle: "Executive | CONC",
+    metaDescription: "Executive direction, stewardship, and institutional leadership context for CONC.",
+    canonicalUrl: "https://conc.example/about/executive",
+    intro:
+      "CONC brings together academic credibility and market-facing experience to support executive development, strategic communication, and capability building across leadership teams.",
     sections: [
       {
-        type: "hero",
-        id: 31,
-        eyebrow: "About Us",
-        title: "Executive",
-        description:
-          "CONC brings together academic credibility and market-facing experience to support executive development, strategic communication, and capability building across leadership teams.",
-        primaryButtonText: "Contact Us",
-        primaryButtonUrl: "/contact",
-        secondaryButtonText: "About CONC",
-        secondaryButtonUrl: "/about",
-        backgroundImage: null,
+        title: "Strategic Direction",
+        body: "Executive oversight focuses on keeping consulting, coaching, and learning services aligned with institutional goals and the practical needs of partner organizations.",
       },
       {
-        type: "rich-text",
-        id: 32,
-        eyebrow: "Strategic Direction",
-        title: "Leadership aligned to institutional relevance",
-        description: null,
-        body: "<p>Executive oversight focuses on keeping consulting, coaching, and learning services aligned with institutional goals and the practical needs of partner organizations.</p><p>The center operates with a mix of academic, advisory, and operational perspectives so programs can address leadership, communication, and transformation work in one place.</p><p>Leadership also maintains relationships with university stakeholders, industry partners, and client organizations to ensure quality, continuity, and long-term relevance.</p>",
+        title: "Cross-Disciplinary Expertise",
+        body: "The center operates with a mix of academic, advisory, and operational perspectives so programs can address leadership, communication, and transformation work in one place.",
+      },
+      {
+        title: "Partnership Stewardship",
+        body: "Leadership maintains relationships with university stakeholders, industry partners, and client organizations to ensure quality, continuity, and long-term relevance.",
       },
     ],
-  },
-  philosophy: {
+  }),
+  philosophy: buildInfoPage({
     id: 9,
     slug: "philosophy",
     title: "Philosophy",
-    seo: {
-      metaTitle: "Philosophy | CONC",
-      metaDescription: "How CONC approaches practical learning, evidence-led work, and accountable organizational development.",
-      canonicalUrl: "https://conc.example/about/philosophy",
-      noIndex: false,
-      metaImage: null,
-    },
+    eyebrow: "About Us",
+    metaTitle: "Philosophy | CONC",
+    metaDescription: "How CONC approaches practical learning, evidence-led work, and accountable organizational development.",
+    canonicalUrl: "https://conc.example/about/philosophy",
+    intro:
+      "CONC works as a university-linked consulting and coaching center that values disciplined thinking, practical execution, and measurable development for leaders, teams, and organizations.",
     sections: [
       {
-        type: "hero",
-        id: 33,
-        eyebrow: "About Us",
-        title: "Philosophy",
-        description:
-          "CONC works as a university-linked consulting and coaching center that values disciplined thinking, practical execution, and measurable development for leaders, teams, and organizations.",
-        primaryButtonText: "See Programs",
-        primaryButtonUrl: "/programs",
-        secondaryButtonText: "Contact Us",
-        secondaryButtonUrl: "/contact",
-        backgroundImage: null,
+        title: "Learning Through Practice",
+        body: "Programs are designed around real organizational challenges so participants can translate frameworks into decisions, communication, and delivery habits that hold up in actual work.",
       },
       {
-        type: "rich-text",
-        id: 34,
-        eyebrow: "Principles",
-        title: "Learning through practice and accountable delivery",
-        description: null,
-        body: "<p>Programs are designed around real organizational challenges so participants can translate frameworks into decisions, communication, and delivery habits that hold up in actual work.</p><p>We favor structured diagnosis, stakeholder listening, and clear success criteria before recommending interventions, content strategy, or executive coaching pathways.</p><p>Coaching and consulting are paired with explicit outcomes, follow-through checkpoints, and operational clarity so development work does not stop at inspiration.</p>",
+        title: "Evidence Before Assumption",
+        body: "We favor structured diagnosis, stakeholder listening, and clear success criteria before recommending interventions, content strategy, or executive coaching pathways.",
+      },
+      {
+        title: "Growth With Accountability",
+        body: "Coaching and consulting are paired with explicit outcomes, follow-through checkpoints, and operational clarity so development work does not stop at inspiration.",
       },
     ],
-  },
-  facilities: {
+  }),
+  facilities: buildInfoPage({
     id: 10,
     slug: "facilities",
     title: "Facilities",
-    seo: {
-      metaTitle: "Facilities | CONC",
-      metaDescription: "Training rooms, meeting space, and hybrid-ready facilities that support CONC programs and engagements.",
-      canonicalUrl: "https://conc.example/about/facilities",
-      noIndex: false,
-      metaImage: null,
-    },
+    eyebrow: "About Us",
+    metaTitle: "Facilities | CONC",
+    metaDescription: "Training rooms, meeting space, and hybrid-ready facilities that support CONC programs and engagements.",
+    canonicalUrl: "https://conc.example/about/facilities",
+    intro:
+      "The center supports workshops, coaching, and executive engagement with spaces and formats that can accommodate focused discussion, collaborative sessions, and hybrid delivery.",
     sections: [
       {
-        type: "hero",
-        id: 35,
-        eyebrow: "About Us",
-        title: "Facilities",
-        description:
-          "The center supports workshops, coaching, and executive engagement with spaces and formats that can accommodate focused discussion, collaborative sessions, and hybrid delivery.",
-        primaryButtonText: "Contact Us",
-        primaryButtonUrl: "/contact",
-        secondaryButtonText: "About CONC",
-        secondaryButtonUrl: "/about",
-        backgroundImage: null,
+        title: "Training Rooms",
+        body: "Configured for seminars, capability workshops, and intensive short-format programs with layouts that support both instruction and group work.",
       },
       {
-        type: "rich-text",
-        id: 36,
-        eyebrow: "Spaces",
-        title: "Built for workshops, executive sessions, and blended delivery",
-        description: null,
-        body: "<p>Facilities include training rooms configured for seminars, capability workshops, and intensive short-format programs with layouts that support both instruction and group work.</p><p>Executive meeting spaces support coaching conversations, planning sessions, and partner consultations that require privacy and concentration.</p><p>Hybrid session support makes it possible to combine on-site facilitation with remote attendance and documentation workflows.</p>",
+        title: "Executive Meeting Space",
+        body: "Used for coaching conversations, planning sessions, and partner consultations that require privacy, concentration, and a more formal setting.",
+      },
+      {
+        title: "Hybrid Session Support",
+        body: "Facilities can support blended participation models for organizations that need on-site facilitation combined with remote attendance and documentation workflows.",
       },
     ],
-  },
+  }),
   contact: {
     id: 3,
     slug: "contact",
@@ -864,75 +910,455 @@ const pages: Record<string, PageDto> = {
       },
     ],
   },
-  "privacy-policy": {
+  "announcement": buildInfoPage({
     id: 11,
+    slug: "announcement",
+    title: "Announcement",
+    eyebrow: "News & Events",
+    metaTitle: "Announcement | CONC",
+    metaDescription: "Official announcements, notices, and program updates published from the CONC backend.",
+    canonicalUrl: "https://conc.example/announcement",
+    intro:
+      "This page can be used for official announcements, public notices, registration windows, and important updates related to CONC activities and programs.",
+    sections: [
+      {
+        title: "Public Notices",
+        body: "Announcements can cover opening and closing dates, participation requirements, venue updates, and service information that visitors should see quickly.",
+      },
+      {
+        title: "Program Updates",
+        body: "Use this section for schedule changes, new opportunities, speaker confirmations, or any update that directly affects participants and partners.",
+      },
+      {
+        title: "Institutional Communication",
+        body: "The page can also support formal communication from the center when information needs to remain visible outside the standard news feed format.",
+      },
+    ],
+  }),
+  "event-calendar": buildInfoPage({
+    id: 12,
+    slug: "event-calendar",
+    title: "Event Calendar",
+    eyebrow: "News & Events",
+    metaTitle: "Event Calendar | CONC",
+    metaDescription: "Upcoming dates, sessions, and planning milestones for CONC events and activities.",
+    canonicalUrl: "https://conc.example/event-calendar",
+    intro:
+      "The event calendar can present upcoming public sessions, forums, workshops, and special activities in a single reference point for visitors and participants.",
+    sections: [
+      {
+        title: "Upcoming Dates",
+        body: "Use this space to show scheduled events, registration periods, and milestone dates so visitors can plan participation with minimal friction.",
+      },
+      {
+        title: "Program Timing",
+        body: "Calendar entries can clarify duration, delivery format, and whether each activity is public, invitation-only, or partner-specific.",
+      },
+      {
+        title: "Planning Reference",
+        body: "A visible event calendar helps organizations and participants coordinate attendance, staffing, and follow-up preparation more effectively.",
+      },
+    ],
+  }),
+  "event-programs": buildInfoPage({
+    id: 13,
+    slug: "event-programs",
+    title: "Event Programs",
+    eyebrow: "News & Events",
+    metaTitle: "Event Programs | CONC",
+    metaDescription: "Special event programs, speaker sessions, and themed series managed in the CONC backend.",
+    canonicalUrl: "https://conc.example/event-programs",
+    intro:
+      "This page can summarize special event programs, speaker sessions, themed series, and public-facing activities beyond the standard consulting and learning catalog.",
+    sections: [
+      {
+        title: "Special Sessions",
+        body: "Event programs may include keynote talks, invited expert sessions, thematic panels, and short-format learning experiences built for broader audiences.",
+      },
+      {
+        title: "Series Design",
+        body: "When activities are part of a recurring series, this page can show the structure, themes, and progression across multiple sessions or cohorts.",
+      },
+      {
+        title: "Participation Details",
+        body: "Program descriptions can make expectations clear by outlining audience fit, format, and any registration or attendance requirements.",
+      },
+    ],
+  }),
+  "life-long-learning": buildInfoPage({
+    id: 14,
+    slug: "life-long-learning",
+    title: "Life Long Learning",
+    eyebrow: "Life Long Learning",
+    metaTitle: "Life Long Learning | CONC",
+    metaDescription: "Continuing-learning formats, forums, and knowledge-sharing experiences from CONC.",
+    canonicalUrl: "https://conc.example/life-long-learning",
+    intro:
+      "CONC extends learning beyond single programs through recurring forums, knowledge-sharing formats, and observation-based experiences that help participants keep developing over time.",
+    sections: [
+      {
+        title: "Forum-Based Exchange",
+        body: "Public and partner forums create space for leaders, faculty, and professionals to examine emerging issues through structured discussion and applied reflection.",
+      },
+      {
+        title: "Knowledge Resources",
+        body: "Learning is reinforced through curated content, practical insights, and follow-on materials that participants can use after formal sessions end.",
+      },
+      {
+        title: "Observation and Practice",
+        body: "Selected formats allow participants to learn by observing instruction, facilitation, and decision-making processes in realistic academic and professional settings.",
+      },
+    ],
+  }),
+  "conc-thammasat-forum": buildInfoPage({
+    id: 15,
+    slug: "conc-thammasat-forum",
+    title: "CONC Thammasat Forum",
+    eyebrow: "Life Long Learning",
+    metaTitle: "CONC Thammasat Forum | CONC",
+    metaDescription: "Cross-sector forum content for current management, communication, and organizational topics.",
+    canonicalUrl: "https://conc.example/life-long-learning/conc-thammasat-forum",
+    intro:
+      "The CONC Thammasat Forum convenes leaders, experts, and participants around current management, communication, and organizational topics that benefit from cross-sector discussion.",
+    sections: [
+      {
+        title: "Current Issues",
+        body: "Forum sessions focus on timely questions in leadership, transformation, communication, and strategic execution so participants can compare ideas against current realities.",
+      },
+      {
+        title: "Cross-Sector Dialogue",
+        body: "The format encourages exchange between academic, public, and private-sector perspectives to sharpen judgment and reveal practical constraints.",
+      },
+      {
+        title: "Continuing Engagement",
+        body: "Each forum acts as a continuing-learning touchpoint that extends relationships beyond one-off courses and supports long-term professional development.",
+      },
+    ],
+  }),
+  "past-conc-thammasat-forum": buildInfoPage({
+    id: 16,
+    slug: "past-conc-thammasat-forum",
+    title: "Past CONC Thammasat Forum",
+    eyebrow: "Life Long Learning",
+    metaTitle: "Past CONC Thammasat Forum | CONC",
+    metaDescription: "Archived forum themes, speakers, and continuing-education topics from previous CONC sessions.",
+    canonicalUrl: "https://conc.example/life-long-learning/past-conc-thammasat-forum",
+    intro:
+      "Past forum sessions can be archived here to document themes, speakers, and discussion topics that have shaped the center's continuing-education activity.",
+    sections: [
+      {
+        title: "Session Archive",
+        body: "This section can present previous forum topics, dates, and thematic summaries so visitors can understand the scope and continuity of the initiative.",
+      },
+      {
+        title: "Speaker Highlights",
+        body: "Past contributors may be highlighted to show the range of expertise and institutional voices involved in forum conversations.",
+      },
+      {
+        title: "Learning Themes",
+        body: "Archived sessions can also reveal recurring concerns across leadership, communication, and capability development over time.",
+      },
+    ],
+  }),
+  "conc-knowledge": buildInfoPage({
+    id: 17,
+    slug: "conc-knowledge",
+    title: "CONC Knowledge",
+    eyebrow: "Life Long Learning",
+    metaTitle: "CONC Knowledge | CONC",
+    metaDescription: "Knowledge resources, frameworks, and practical references for continuing learning.",
+    canonicalUrl: "https://conc.example/life-long-learning/conc-knowledge",
+    intro:
+      "CONC Knowledge organizes practical insight, academic perspective, and working tools into a format that can support ongoing learning between programs and engagements.",
+    sections: [
+      {
+        title: "Applied Articles",
+        body: "Short-form knowledge pieces can translate academic ideas and field experience into practical guidance for leaders, teams, and partner organizations.",
+      },
+      {
+        title: "Frameworks and Tools",
+        body: "Resources may include planning models, communication structures, and workshop artifacts that help users apply ideas more consistently in real work.",
+      },
+      {
+        title: "Shared Reference Base",
+        body: "A visible knowledge archive strengthens continuity across forums, training programs, and consulting work by giving participants a common reference point.",
+      },
+    ],
+  }),
+  "class-observation": buildInfoPage({
+    id: 18,
+    slug: "class-observation",
+    title: "Class Observation",
+    eyebrow: "Life Long Learning",
+    metaTitle: "Class Observation | CONC",
+    metaDescription: "Observation-based learning focused on teaching, facilitation, and applied reflection.",
+    canonicalUrl: "https://conc.example/life-long-learning/class-observation",
+    intro:
+      "Class observation creates learning value by allowing participants to watch teaching, facilitation, and discussion design in action, then reflect on what makes those formats effective.",
+    sections: [
+      {
+        title: "Observe Practice in Context",
+        body: "Participants can study how instructors frame problems, guide discussion, and manage participation instead of learning those techniques only in abstract form.",
+      },
+      {
+        title: "Reflection After Observation",
+        body: "Observation works best when paired with structured debriefs that clarify what was intentional, what constraints were present, and what can be adapted elsewhere.",
+      },
+      {
+        title: "Transfer to Professional Use",
+        body: "The format helps leaders, facilitators, and educators bring stronger design choices into their own classrooms, workshops, and organizational learning settings.",
+      },
+    ],
+  }),
+  "service-field": buildInfoPage({
+    id: 19,
+    slug: "service-field",
+    title: "Service Field",
+    eyebrow: "Consulting Service",
+    metaTitle: "Service Field | CONC",
+    metaDescription: "Consulting work across strategy, capability, communication, and implementation design.",
+    canonicalUrl: "https://conc.example/services/service-field",
+    intro:
+      "CONC supports consulting work across strategy, organizational capability, communication, and implementation design with an emphasis on practical decisions and structured delivery.",
+    sections: [
+      {
+        title: "Strategic Communication",
+        body: "We help teams clarify positioning, executive messaging, and stakeholder communication structures that can support business, academic, and institutional goals.",
+      },
+      {
+        title: "Capability Development",
+        body: "Programs combine consulting and learning design to strengthen leadership practice, team operating rhythms, and project execution across changing environments.",
+      },
+      {
+        title: "Transformation Support",
+        body: "The center advises on service design, content operations, and implementation planning so organizations can move from abstract goals to workable operating models.",
+      },
+    ],
+  }),
+  "case-method-learning": buildInfoPage({
+    id: 20,
+    slug: "case-method-learning",
+    title: "Case Method Learning",
+    eyebrow: "Consulting Service",
+    metaTitle: "Case Method Learning | CONC",
+    metaDescription: "Case-based learning content for executive development, facilitation, and applied judgment.",
+    canonicalUrl: "https://conc.example/services/case-method-learning",
+    intro:
+      "Case-based learning is used to connect strategic analysis with managerial judgment, giving participants a disciplined way to evaluate tradeoffs, context, and execution choices.",
+    sections: [
+      {
+        title: "Decision-Focused Discussion",
+        body: "Sessions are structured around realistic decision points so participants practice diagnosing constraints, comparing options, and defending a course of action.",
+      },
+      {
+        title: "Applied Reflection",
+        body: "Case work is paired with facilitated reflection to help teams connect lessons from discussion back to their own operating realities and leadership behaviors.",
+      },
+      {
+        title: "Executive and Team Formats",
+        body: "The method can be adapted for executive briefings, management programs, and team-based workshops where judgment quality matters as much as technical skill.",
+      },
+    ],
+  }),
+  "client-list": buildInfoPage({
+    id: 21,
+    slug: "client-list",
+    title: "Client List",
+    eyebrow: "Consulting Service",
+    metaTitle: "Client List | CONC",
+    metaDescription: "Example client categories and partnership contexts supported by CONC.",
+    canonicalUrl: "https://conc.example/services/client-list",
+    intro:
+      "CONC works with organizations that need a combination of advisory support, executive development, and applied learning formats. Public examples can be listed here as institutional approval allows.",
+    sections: [
+      {
+        title: "Public Sector",
+        body: "Engagements may include leadership capability development, communication design, and advisory support for programs that require stakeholder alignment and structured delivery.",
+      },
+      {
+        title: "Private Sector",
+        body: "The center can support business teams with executive workshops, service strategy, and implementation-oriented consulting for communication and organizational effectiveness.",
+      },
+      {
+        title: "Academic and Institutional Partners",
+        body: "Partnerships may extend across universities, learning organizations, and mission-driven institutions that benefit from academic rigor combined with practical facilitation.",
+      },
+    ],
+  }),
+  "past-project": buildInfoPage({
+    id: 22,
+    slug: "past-project",
+    title: "Past Project",
+    eyebrow: "Consulting Service",
+    metaTitle: "Past Project | CONC",
+    metaDescription: "Selected consulting, coaching, and learning initiatives from previous CONC engagements.",
+    canonicalUrl: "https://conc.example/services/past-project",
+    intro:
+      "Selected past projects can be summarized here to show the range of consulting, coaching, and learning initiatives delivered by the center.",
+    sections: [
+      {
+        title: "Leadership Programs",
+        body: "Past work may include executive learning series, coaching engagements, and cross-functional workshops designed to improve leadership communication and decision quality.",
+      },
+      {
+        title: "Consulting Initiatives",
+        body: "Projects can span service design, communication frameworks, organizational capability planning, and implementation roadmaps tailored to partner needs.",
+      },
+      {
+        title: "Integrated Delivery",
+        body: "Many engagements combine advisory work, facilitation, and follow-through support so recommendations are translated into usable tools, routines, and next-step actions.",
+      },
+    ],
+  }),
+  "privacy-policy": buildInfoPage({
+    id: 23,
     slug: "privacy-policy",
     title: "Privacy Policy",
-    seo: {
-      metaTitle: "Privacy Policy | CONC",
-      metaDescription: "How CONC handles registration, inquiry, and website operation data.",
-      canonicalUrl: "https://conc.example/privacy-policy",
-      noIndex: false,
-      metaImage: null,
-    },
+    eyebrow: "About Us",
+    metaTitle: "Privacy Policy | CONC",
+    metaDescription: "How CONC handles registration, inquiry, and website operation data.",
+    canonicalUrl: "https://conc.example/privacy-policy",
+    intro:
+      "This website collects only the information required to respond to inquiries, process program registrations, and maintain reliable site operations. Personal data is handled with reasonable safeguards and limited to legitimate operational use.",
     sections: [
       {
-        type: "hero",
-        id: 37,
-        eyebrow: "About Us",
-        title: "Privacy Policy",
-        description:
-          "This website collects only the information required to respond to inquiries, process program registrations, and maintain reliable site operations. Personal data is handled with reasonable safeguards and limited to legitimate operational use.",
-        primaryButtonText: "Contact Us",
-        primaryButtonUrl: "/contact",
-        secondaryButtonText: "Sitemap",
-        secondaryButtonUrl: "/sitemap",
-        backgroundImage: null,
+        title: "Information We Collect",
+        body: "Information submitted through contact and registration forms may include names, email addresses, phone numbers, organizational details, and any message content provided by the user.",
       },
       {
-        type: "rich-text",
-        id: 38,
-        eyebrow: "Data Handling",
-        title: "Collection, use, and retention",
-        description: null,
-        body: "<p>Information submitted through contact and registration forms may include names, email addresses, phone numbers, organizational details, and any message content provided by the user.</p><p>Submitted information is used to respond to requests, evaluate registration eligibility, coordinate services, and maintain records necessary for program delivery and follow-up communication.</p><p>Information is retained only as long as needed for operational, academic, or compliance purposes. Access is limited to personnel and authorized collaborators who require it to perform their duties.</p>",
+        title: "How Information Is Used",
+        body: "Submitted information is used to respond to requests, evaluate registration eligibility, coordinate services, and maintain records necessary for program delivery and follow-up communication.",
+      },
+      {
+        title: "Retention and Access",
+        body: "Information is retained only as long as needed for operational, academic, or compliance purposes. Access is limited to personnel and authorized collaborators who require it to perform their duties.",
       },
     ],
-  },
-  sitemap: {
-    id: 12,
+  }),
+  sitemap: buildInfoPage({
+    id: 24,
     slug: "sitemap",
     title: "Sitemap",
-    seo: {
-      metaTitle: "Sitemap | CONC",
-      metaDescription: "A quick reference to the public website structure and key content areas.",
-      canonicalUrl: "https://conc.example/sitemap",
-      noIndex: false,
-      metaImage: null,
-    },
+    eyebrow: "About Us",
+    metaTitle: "Sitemap | CONC",
+    metaDescription: "A quick reference to the public website structure and key content areas.",
+    canonicalUrl: "https://conc.example/sitemap",
+    intro: "A quick reference for the main public sections of the CONC website.",
     sections: [
       {
-        type: "hero",
-        id: 39,
-        eyebrow: "About Us",
-        title: "Sitemap",
-        description: "A quick reference for the main public sections of the CONC website.",
-        primaryButtonText: "Home",
-        primaryButtonUrl: "/",
-        secondaryButtonText: "Contact",
-        secondaryButtonUrl: "/contact",
-        backgroundImage: null,
+        title: "Main Pages",
+        body: "Home, About, Services, Programs, Projects, News, and Contact provide the primary public navigation experience across the site.",
       },
       {
-        type: "rich-text",
-        id: 40,
-        eyebrow: "Structure",
-        title: "Main pages and generated detail routes",
-        description: null,
-        body: "<p>Home, About, Services, Programs, Projects, News, and Contact provide the primary public navigation experience across the site.</p><p>Philosophy, Executive, Facilities, Sitemap, and Privacy Policy are grouped under About Us for institutional information and public reference material.</p><p>The site also includes generated detail pages for individual services, programs, projects, news articles, and program registration flows.</p>",
+        title: "About Us",
+        body: "Philosophy, Executive, Facilities, Sitemap, and Privacy Policy are grouped under About Us for institutional information and public reference material.",
+      },
+      {
+        title: "Program and Content Detail Pages",
+        body: "The site also includes generated detail pages for individual services, programs, projects, news articles, and program registration flows.",
       },
     ],
-  },
+  }),
+  "customized-training": buildInfoPage({
+    id: 25,
+    slug: "customized-training",
+    title: "Customized Training",
+    eyebrow: "Training Service",
+    metaTitle: "Customized Training | CONC",
+    metaDescription: "In-house and partner-specific training programs designed around organizational needs.",
+    canonicalUrl: "https://conc.example/training-service/customized-training",
+    intro:
+      "This page can be used to describe in-house or partner-specific training programs designed around an organization's goals, participant profile, and delivery constraints.",
+    sections: [
+      {
+        title: "Needs-Based Design",
+        body: "Customized training can be scoped from specific business challenges, capability gaps, or leadership objectives instead of forcing teams into a fixed public curriculum.",
+      },
+      {
+        title: "Flexible Delivery",
+        body: "Programs may be delivered on campus, on site, or in blended format with timing, activities, and facilitation adjusted to the audience and operating context.",
+      },
+      {
+        title: "Coordination Process",
+        body: "This page can outline how clients submit a brief, define outcomes, and coordinate content, speakers, scheduling, and participant support with the CONC team.",
+      },
+    ],
+  }),
+  "e-documents": buildInfoPage({
+    id: 26,
+    slug: "e-documents",
+    title: "E-Documents",
+    eyebrow: "Training Service",
+    metaTitle: "E-Documents | CONC",
+    metaDescription: "Downloadable forms, schedules, and operational documents for training workflows.",
+    canonicalUrl: "https://conc.example/training-service/e-documents",
+    intro:
+      "This page can centralize downloadable forms, registration materials, invoices, schedules, and participant documents required across training workflows.",
+    sections: [
+      {
+        title: "Registration Documents",
+        body: "Forms, requirement lists, and supporting documents for enrollment can be organized here so participants have one clear source of truth.",
+      },
+      {
+        title: "Operational References",
+        body: "The section can also include payment instructions, attendance policies, training schedules, and post-program reference materials.",
+      },
+      {
+        title: "Version Control",
+        body: "Publishing documents in one place makes it easier to keep the latest approved versions visible and reduce confusion caused by outdated files.",
+      },
+    ],
+  }),
+  "come-teach-with-us": buildInfoPage({
+    id: 27,
+    slug: "come-teach-with-us",
+    title: "Come teach with us",
+    eyebrow: "Training Service",
+    metaTitle: "Come teach with us | CONC",
+    metaDescription: "Instructor collaboration information for open-enrollment and customized training programs.",
+    canonicalUrl: "https://conc.example/training-service/come-teach-with-us",
+    intro:
+      "This page can invite instructors, facilitators, and subject-matter experts to collaborate with CONC on open-enrollment or customized training programs.",
+    sections: [
+      {
+        title: "Instructor Profile",
+        body: "Potential teaching partners can review the center's focus areas, participant audiences, and delivery formats before proposing a topic or teaching role.",
+      },
+      {
+        title: "Submission Guidelines",
+        body: "The page can explain what information to submit, such as teaching background, expertise, sample topics, preferred formats, and availability.",
+      },
+      {
+        title: "Collaboration Path",
+        body: "A clear process for screening, curriculum alignment, and scheduling helps external instructors understand how to move from interest to confirmed delivery.",
+      },
+    ],
+  }),
+  "upload-your-pay-in-slip": buildInfoPage({
+    id: 28,
+    slug: "upload-your-pay-in-slip",
+    title: "Upload your pay-in-slip",
+    eyebrow: "Training Service",
+    metaTitle: "Upload your pay-in-slip | CONC",
+    metaDescription: "Payment confirmation submission content for finance and registration workflows.",
+    canonicalUrl: "https://conc.example/training-service/upload-your-pay-in-slip",
+    intro:
+      "This page can be used to collect payment confirmation files from participants after registration so finance and operations teams can verify enrollment efficiently.",
+    sections: [
+      {
+        title: "Accepted Submission Details",
+        body: "Participants can be instructed on the required file format, reference number, program name, and contact details needed for payment matching.",
+      },
+      {
+        title: "Verification Workflow",
+        body: "The upload step can support a clear handoff from participant payment to internal review, confirmation, and final registration approval.",
+      },
+      {
+        title: "Support and Follow-up",
+        body: "This page can also clarify expected verification time and where participants should contact the team if a payment cannot be matched immediately.",
+      },
+    ],
+  }),
 };
 
 export const fallbackContent = {

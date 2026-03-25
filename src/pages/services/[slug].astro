@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import PageCover from '../../components/PageCover.astro';
 import { getServiceBySlug, getServiceSlugs, getSiteSetting } from '../../lib/api';
 
 export async function getStaticPaths() {
@@ -42,15 +43,7 @@ const pageDescription = service?.seo?.metaDescription ?? service?.description ??
           {service.icon?.url ? (
             <img src={service.icon.url} alt={service.icon.alternativeText ?? service.name} loading="eager" class="h-full w-full object-cover" />
           ) : (
-            <div class="grid min-h-[24rem] place-items-center p-8 text-center text-stone-900">
-              <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Service</p>
-                <strong class="mt-4 block text-3xl font-semibold">{service.name}</strong>
-                <p class="mt-4 max-w-sm text-sm leading-7 text-stone-600">
-                  Media can be connected from Strapi later without changing this layout.
-                </p>
-              </div>
-            </div>
+            <PageCover eyebrow="Service" title={service.name} theme="services" />
           )}
         </div>
       </section>

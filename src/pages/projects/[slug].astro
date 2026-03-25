@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import PageCover from '../../components/PageCover.astro';
 import { getProjectBySlug, getProjectSlugs, getSiteSetting } from '../../lib/api';
 
 export async function getStaticPaths() {
@@ -56,15 +57,7 @@ const pageDescription = project?.seo?.metaDescription ?? project?.summary ?? sit
           {project.coverImage?.url ? (
             <img class="h-full w-full object-cover" src={project.coverImage.url} alt={project.coverImage.alternativeText ?? project.title} loading="eager" />
           ) : (
-            <div class="grid min-h-[24rem] place-items-center bg-stone-50 p-8 text-center">
-              <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Project Visual</p>
-                <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">{project.title}</h2>
-                <p class="mt-4 max-w-sm text-sm leading-7 text-stone-600">
-                  Upload a cover image in Strapi to turn this case study header into a stronger institutional project lead.
-                </p>
-              </div>
-            </div>
+            <PageCover eyebrow="Project Visual" title={project.title} theme="projects" />
           )}
         </div>
       </section>

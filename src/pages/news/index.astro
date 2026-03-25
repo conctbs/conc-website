@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import PageCover from '../../components/PageCover.astro';
 import { getNews, getPageBySlug, getSiteSetting } from '../../lib/api';
 
 const [page, siteSetting, news] = await Promise.all([getPageBySlug('news'), getSiteSetting(), getNews()]);
@@ -8,7 +9,7 @@ const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'N
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   <section class="border-b border-gray-200 bg-white">
-    <div class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
       <div class="max-w-4xl">
         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">News & Events</p>
         <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
@@ -19,6 +20,7 @@ const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'N
             'News entries now sit inside the same portal-style presentation model used across the rest of the migrated theme.'}
         </p>
       </div>
+      <PageCover eyebrow="News & Events" title="Announcements, editorial updates, and institutional communication" theme="editorial" />
     </div>
   </section>
 

@@ -1,4 +1,6 @@
 ---
+import PageCover from './PageCover.astro';
+
 interface SectionItem {
   title: string;
   body: string;
@@ -43,21 +45,24 @@ const {
         </p>
       </div>
 
-      <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.38)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Information brief</p>
-        <div class="mt-5 space-y-4">
-          <div>
-            <p class="text-sm text-stone-500">Content sections</p>
-            <p class="mt-1 text-2xl font-semibold text-stone-900">{sections.length}</p>
-          </div>
-          {lastUpdated && (
-            <div class="border-t border-stone-200 pt-4">
-              <p class="text-sm text-stone-500">Last updated</p>
-              <p class="mt-1 text-base font-medium text-stone-900">{lastUpdated}</p>
+      <div class="grid gap-5">
+        <PageCover eyebrow={eyebrow} title={title} />
+        <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)]">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Information brief</p>
+          <div class="mt-5 space-y-4">
+            <div>
+              <p class="text-sm text-stone-500">Content sections</p>
+              <p class="mt-1 text-2xl font-semibold text-stone-900">{sections.length}</p>
             </div>
-          )}
-        </div>
-      </aside>
+            {lastUpdated && (
+              <div class="border-t border-stone-200 pt-4">
+                <p class="text-sm text-stone-500">Last updated</p>
+                <p class="mt-1 text-base font-medium text-stone-900">{lastUpdated}</p>
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
     </div>
   </div>
 </section>

@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import PageCover from '../../components/PageCover.astro';
 import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../lib/api';
 import { programDetailContent } from '../../lib/program-detail-content';
 
@@ -47,37 +48,40 @@ if (!program) {
           </div>
         </div>
 
-        <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-500">Program overview</p>
-          <div class="mt-6 grid gap-4">
-            <div class="rounded-2xl border border-stone-200 bg-white p-4">
-              <p class="text-sm text-stone-500">Audience</p>
-              <p class="mt-2 text-base font-medium text-stone-900">{program.audience}</p>
+        <div class="grid gap-6">
+          <PageCover eyebrow={program.category ?? 'Program'} title={program.title} theme="programs" />
+          <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-500">Program overview</p>
+            <div class="mt-6 grid gap-4">
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Audience</p>
+                <p class="mt-2 text-base font-medium text-stone-900">{program.audience}</p>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                  <p class="text-sm text-stone-500">Starts</p>
+                  <p class="mt-2 text-base font-medium text-stone-900">{program.startsAt ?? 'TBC'}</p>
+                </div>
+                <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                  <p class="text-sm text-stone-500">Location</p>
+                  <p class="mt-2 text-base font-medium text-stone-900">{program.location}</p>
+                </div>
+                <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                  <p class="text-sm text-stone-500">Fee</p>
+                  <p class="mt-2 text-base font-medium text-stone-900">{program.fee}</p>
+                </div>
+                <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                  <p class="text-sm text-stone-500">Duration</p>
+                  <p class="mt-2 text-base font-medium text-stone-900">{program.duration}</p>
+                </div>
+              </div>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Seats</p>
+                <p class="mt-2 text-base font-medium text-stone-900">{program.seats ? `${program.seats} seats` : 'TBC'}</p>
+              </div>
             </div>
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-2xl border border-stone-200 bg-white p-4">
-                <p class="text-sm text-stone-500">Starts</p>
-                <p class="mt-2 text-base font-medium text-stone-900">{program.startsAt ?? 'TBC'}</p>
-              </div>
-              <div class="rounded-2xl border border-stone-200 bg-white p-4">
-                <p class="text-sm text-stone-500">Location</p>
-                <p class="mt-2 text-base font-medium text-stone-900">{program.location}</p>
-              </div>
-              <div class="rounded-2xl border border-stone-200 bg-white p-4">
-                <p class="text-sm text-stone-500">Fee</p>
-                <p class="mt-2 text-base font-medium text-stone-900">{program.fee}</p>
-              </div>
-              <div class="rounded-2xl border border-stone-200 bg-white p-4">
-                <p class="text-sm text-stone-500">Duration</p>
-                <p class="mt-2 text-base font-medium text-stone-900">{program.duration}</p>
-              </div>
-            </div>
-            <div class="rounded-2xl border border-stone-200 bg-white p-4">
-              <p class="text-sm text-stone-500">Seats</p>
-              <p class="mt-2 text-base font-medium text-stone-900">{program.seats ? `${program.seats} seats` : 'TBC'}</p>
-            </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </section>
 
       <section class="mt-10 grid gap-6 lg:grid-cols-2">

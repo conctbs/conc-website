@@ -1,5 +1,6 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import PageCover from '../../components/PageCover.astro';
 import { getNewsBySlug, getNewsSlugs, getSiteSetting } from '../../lib/api';
 
 export async function getStaticPaths() {
@@ -47,15 +48,7 @@ const pageDescription = entry?.seo?.metaDescription ?? siteSetting?.siteDescript
           {entry.coverImage?.url ? (
             <img class="h-full w-full object-cover" src={entry.coverImage.url} alt={entry.coverImage.alternativeText ?? entry.title} loading="eager" />
           ) : (
-            <div class="grid min-h-[24rem] place-items-center bg-stone-50 p-8 text-center">
-              <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Editorial Cover</p>
-                <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">{entry.title}</h2>
-                <p class="mt-4 max-w-sm text-sm leading-7 text-stone-600">
-                  Attach a cover image in Strapi to give this article a stronger editorial lead.
-                </p>
-              </div>
-            </div>
+            <PageCover eyebrow="Editorial Cover" title={entry.title} theme="editorial" />
           )}
         </div>
       </section>

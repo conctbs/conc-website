@@ -20,6 +20,12 @@ function excerpt(value, fallback = '') {
   return plain.length > 170 ? `${plain.slice(0, 167)}...` : plain;
 }
 
+function isServiceCta(text, url) {
+  const normalizedText = typeof text === 'string' ? text.toLowerCase() : '';
+  const normalizedUrl = typeof url === 'string' ? url.toLowerCase() : '';
+  return normalizedUrl === '/services' || normalizedText.includes('service');
+}
+
 const shellClass = 'mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20';
 const headingClass = 'mt-3 text-3xl font-semibold leading-tight text-stone-900 md:text-4xl';
 const copyClass = 'mt-4 max-w-3xl text-base leading-7 text-stone-600';
@@ -47,7 +53,14 @@ const subtleCardClass =
               {section.description && <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{section.description}</p>}
               <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                 {section.primaryButtonText && section.primaryButtonUrl && (
-                  <a class="btn-primary !rounded-md !px-7 !py-3.5" href={section.primaryButtonUrl}>
+                  <a
+                    class:list={[
+                      'btn-primary !rounded-md !px-7 !py-3.5',
+                      isServiceCta(section.primaryButtonText, section.primaryButtonUrl) &&
+                        '!border !border-stone-300 !bg-stone-200 !text-stone-900 !shadow-none',
+                    ]}
+                    href={section.primaryButtonUrl}
+                  >
                     {section.primaryButtonText}
                   </a>
                 )}

@@ -24,6 +24,10 @@ const topServices = services.slice(0, 4);
 const featuredPrograms = programs.slice(0, 4);
 const featuredProjects = projects.slice(0, 2);
 const latestNews = news.slice(0, 3);
+const heroPrimaryUrl = heroSection?.primaryButtonUrl ?? "/programs";
+const heroPrimaryText = heroSection?.primaryButtonText ?? "Explore Programs";
+const heroSecondaryUrl = heroSection?.secondaryButtonUrl ?? "/services";
+const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
 ---
 
 <MainLayout
@@ -41,11 +45,11 @@ const latestNews = news.slice(0, 3);
             "A structured institutional homepage for programs, consulting service lines, editorial content, and conversion-ready next steps."}
         </p>
         <div class="hero-actions">
-          <a class="button primary" href={heroSection?.primaryButtonUrl ?? "/programs"}>
-            {heroSection?.primaryButtonText ?? "Explore Programs"}
+          <a class="button primary hero-primary-button" href={heroPrimaryUrl}>
+            {heroPrimaryText}
           </a>
-          <a class="button secondary" href={heroSection?.secondaryButtonUrl ?? "/services"}>
-            {heroSection?.secondaryButtonText ?? "Review Services"}
+          <a class="button secondary hero-services-button" href={heroSecondaryUrl}>
+            {heroSecondaryText}
           </a>
         </div>
 
@@ -195,8 +199,8 @@ const latestNews = news.slice(0, 3);
         <strong>Programs, inquiries, and implementation planning</strong>
       </div>
       <div class="contact-actions">
-        <a class="button contact-primary" href="/contact">Contact the Team</a>
-        <a class="button secondary invert" href="/programs">Browse Programs</a>
+        <a class="button contact-primary hero-primary-button" href="/contact">Contact the Team</a>
+        <a class="button secondary invert hero-primary-button" href="/programs">Browse Programs</a>
       </div>
     </div>
   </section>
@@ -293,6 +297,14 @@ const latestNews = news.slice(0, 3);
 
   .hero-actions {
     margin-top: 1.8rem;
+  }
+
+  .button.primary.hero-primary-button {
+    background: #e7e5e4;
+    color: #292524;
+    border: 1px solid #d6d3d1;
+    box-shadow: none;
+    font-weight: 800;
   }
 
   .hero-stats,
@@ -586,6 +598,14 @@ const latestNews = news.slice(0, 3);
     background: rgba(255, 255, 255, 0.62);
   }
 
+  .button.secondary.hero-services-button {
+    background: #e7e5e4;
+    color: #292524;
+    border-color: #d6d3d1;
+    box-shadow: none;
+    font-weight: 800;
+  }
+
   .button.secondary.invert {
     border-color: var(--line);
     color: var(--text);
@@ -593,9 +613,17 @@ const latestNews = news.slice(0, 3);
   }
 
   .button.contact-primary {
-    background: #efe7e1;
-    color: #7f1d1d;
-    border: 1px solid rgba(127, 29, 29, 0.14);
+    background: #e7e5e4;
+    color: #292524;
+    border: 1px solid #d6d3d1;
+    box-shadow: none;
+    font-weight: 800;
+  }
+
+  .button.secondary.invert.hero-primary-button {
+    background: #e7e5e4;
+    color: #292524;
+    border: 1px solid #d6d3d1;
     box-shadow: none;
     font-weight: 800;
   }

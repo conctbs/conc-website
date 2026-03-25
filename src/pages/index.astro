@@ -36,171 +36,181 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
   siteSetting={siteSetting}
 >
   <section class="hero-shell">
-    <div class="hero-grid">
-      <div>
-        <div class="hero-kicker">Thammasat Consulting Networking and Coaching Center</div>
-        <h1>{heroSection?.title ?? "Training, consulting, and lifelong learning for modern organizations"}</h1>
-        <p class="hero-copy">
-          {heroSection?.description ??
-            "A structured institutional homepage for programs, consulting service lines, editorial content, and conversion-ready next steps."}
-        </p>
-        <div class="hero-actions">
-          <a class="button primary hero-primary-button" href={heroPrimaryUrl}>
-            {heroPrimaryText}
-          </a>
-          <a class="button secondary hero-services-button" href={heroSecondaryUrl}>
-            {heroSecondaryText}
-          </a>
+    <div class="hero-shell-inner">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-kicker">Thammasat Consulting Networking and Coaching Center</div>
+          <h1>{heroSection?.title ?? "Training, consulting, and lifelong learning for modern organizations"}</h1>
+          <p class="hero-copy">
+            {heroSection?.description ??
+              "A structured institutional homepage for programs, consulting service lines, editorial content, and conversion-ready next steps."}
+          </p>
+          <div class="hero-actions">
+            <a class="btn-primary !rounded-md !px-7 !py-3.5" href={heroPrimaryUrl}>
+              {heroPrimaryText}
+            </a>
+            <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href={heroSecondaryUrl}>
+              {heroSecondaryText}
+            </a>
+          </div>
+
+          {statsSection?.type === "stats" && (
+            <div class="hero-stats">
+              {statsSection.items.slice(0, 3).map((item) => (
+                <article>
+                  <div class="value">
+                    {item.value}
+                    {item.suffix}
+                  </div>
+                  <div class="label">{item.label}</div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
 
-        {statsSection?.type === "stats" && (
-          <div class="hero-stats">
-            {statsSection.items.slice(0, 3).map((item) => (
-              <article>
-                <div class="value">
-                  {item.value}
-                  {item.suffix}
-                </div>
-                <div class="label">{item.label}</div>
+        <aside class="hero-panel">
+          <div class="panel-kicker">Quick Access</div>
+          <div class="panel-card-grid">
+            {topServices.slice(0, 2).map((service) => (
+              <article class="panel-card">
+                <div class="panel-label">Service</div>
+                <h2>{service.name}</h2>
+                <p>{service.description}</p>
               </article>
             ))}
           </div>
-        )}
+
+          <div class="quick-links">
+            <a href="/programs">Courses accepting applications</a>
+            <a href="/news">News and event updates</a>
+          </div>
+        </aside>
       </div>
-
-      <aside class="hero-panel">
-        <div class="panel-kicker">Quick Access</div>
-        <div class="panel-card-grid">
-          {topServices.slice(0, 2).map((service) => (
-            <article class="panel-card">
-              <div class="panel-label">Service</div>
-              <h2>{service.name}</h2>
-              <p>{service.description}</p>
-            </article>
-          ))}
-        </div>
-
-        <div class="quick-links">
-          <a href="/programs">Courses accepting applications</a>
-          <a href="/news">News and event updates</a>
-        </div>
-      </aside>
     </div>
   </section>
 
   <section class="section-block">
-    <div class="section-heading split">
-      <div>
-        <div class="eyebrow">Core Services</div>
-        <h2>Institutional entry points designed like the reference site</h2>
+    <div class="page-shell">
+      <div class="section-heading split">
+        <div>
+          <div class="eyebrow">Core Services</div>
+          <h2>Institutional entry points designed like the reference site</h2>
+        </div>
+        <p>
+          The homepage now leads with service architecture, program discovery, and editorial updates so users can move
+          faster toward the right route.
+        </p>
       </div>
-      <p>
-        The homepage now leads with service architecture, program discovery, and editorial updates so users can move
-        faster toward the right route.
-      </p>
-    </div>
 
-    <div class="services-grid">
-      {topServices.map((service) => (
-        <article class="service-card">
-          <div class="service-label">Service Area</div>
-          <h3>{service.name}</h3>
-          <p>{service.description}</p>
-          <a href={`/services/${service.slug}`}>Read more</a>
-        </article>
-      ))}
+      <div class="services-grid">
+        {topServices.map((service) => (
+          <article class="service-card">
+            <div class="service-label">Service Area</div>
+            <h3>{service.name}</h3>
+            <p>{service.description}</p>
+            <a href={`/services/${service.slug}`}>Read more</a>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
   <section class="section-band">
-    <div class="section-heading split">
-      <div>
-        <div class="eyebrow">Featured Programs</div>
-        <h2>Courses accepting applications</h2>
+    <div class="page-shell">
+      <div class="section-heading split">
+        <div>
+          <div class="eyebrow">Featured Programs</div>
+          <h2>Courses accepting applications</h2>
+        </div>
+        <p>
+          A tighter presentation for open enrollment and executive learning, aligned to the portal-style hierarchy used in
+          the reference project.
+        </p>
       </div>
-      <p>
-        A tighter presentation for open enrollment and executive learning, aligned to the portal-style hierarchy used in
-        the reference project.
-      </p>
-    </div>
 
-    <div class="program-grid">
-      {featuredPrograms.map((program) => (
-        <article class="program-card">
-          <div class="program-meta">
-            <span>{program.category ?? "Program"}</span>
-            <span>{program.dateLabel}</span>
-          </div>
-          <h3>{program.title}</h3>
-          <p>{program.summary}</p>
-          <div class="program-actions">
-            <a href={`/programs/${program.slug}`}>View details</a>
-            {program.registrationEnabled && <a href={`/programs/register/${program.slug}`}>Register</a>}
-          </div>
-        </article>
-      ))}
+      <div class="program-grid">
+        {featuredPrograms.map((program) => (
+          <article class="program-card">
+            <div class="program-meta">
+              <span>{program.category ?? "Program"}</span>
+              <span>{program.dateLabel}</span>
+            </div>
+            <h3>{program.title}</h3>
+            <p>{program.summary}</p>
+            <div class="program-actions">
+              <a href={`/programs/${program.slug}`}>View details</a>
+              {program.registrationEnabled && <a href={`/programs/register/${program.slug}`}>Register</a>}
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
   <section class="section-block section-two-column">
-    <div class="dark-panel">
-      <div class="eyebrow">About the Shift</div>
-      <h2>From generic CMS frontend into an institutional content portal</h2>
-      <p>
-        `conc-website` still runs on the Strapi DTO layer, but the visible composition now follows the stronger
-        academic-professional structure used in `stale-satellite`.
-      </p>
-      <ul>
-        <li>Clearer hierarchy across services, programs, consulting, and updates.</li>
-        <li>Homepage sections now behave more like a public portal than a generic card list.</li>
-        <li>The redesign keeps compatibility with existing Strapi content and fallback data.</li>
-      </ul>
-    </div>
-
-    <div>
-      <div class="section-heading">
-        <div class="eyebrow">News and Projects</div>
-        <h2>Latest updates and selected delivery work</h2>
+    <div class="page-shell section-two-column-inner">
+      <div class="dark-panel">
+        <div class="eyebrow">About the Shift</div>
+        <h2>From generic CMS frontend into an institutional content portal</h2>
+        <p>
+          `conc-website` still runs on the Strapi DTO layer, but the visible composition now follows the stronger
+          academic-professional structure used in `stale-satellite`.
+        </p>
+        <ul>
+          <li>Clearer hierarchy across services, programs, consulting, and updates.</li>
+          <li>Homepage sections now behave more like a public portal than a generic card list.</li>
+          <li>The redesign keeps compatibility with existing Strapi content and fallback data.</li>
+        </ul>
       </div>
 
-      <div class="news-grid">
-        {latestNews.map((item) => (
-          <a class="news-card" href={`/news/${item.slug}`}>
-            <span>{item.publishedDate ?? "News"}</span>
-            <h3>{item.title}</h3>
-            <p>{item.content?.replace(/<[^>]*>/g, " ").slice(0, 130) ?? "Editorial update from the CONC content system."}</p>
-          </a>
-        ))}
-      </div>
+      <div>
+        <div class="section-heading">
+          <div class="eyebrow">News and Projects</div>
+          <h2>Latest updates and selected delivery work</h2>
+        </div>
 
-      <div class="project-strip">
-        {featuredProjects.map((project) => (
-          <a class="project-link" href={`/projects/${project.slug}`}>
-            <strong>{project.title}</strong>
-            <span>{project.clientName ?? "Selected Work"}</span>
-          </a>
-        ))}
+        <div class="news-grid">
+          {latestNews.map((item) => (
+            <a class="news-card" href={`/news/${item.slug}`}>
+              <span>{item.publishedDate ?? "News"}</span>
+              <h3>{item.title}</h3>
+              <p>{item.content?.replace(/<[^>]*>/g, " ").slice(0, 130) ?? "Editorial update from the CONC content system."}</p>
+            </a>
+          ))}
+        </div>
+
+        <div class="project-strip">
+          {featuredProjects.map((project) => (
+            <a class="project-link" href={`/projects/${project.slug}`}>
+              <strong>{project.title}</strong>
+              <span>{project.clientName ?? "Selected Work"}</span>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   </section>
 
   <section class="contact-panel">
-    <div class="contact-copy">
-      <div class="eyebrow">Contact</div>
-      <h2>Ready to move into registration, inquiry, or project planning?</h2>
-      <p>
-        The site now carries the reference project's institutional layout direction. The next step can be a fuller route
-        migration, form integration, or another round of detail-page refinement.
-      </p>
-    </div>
-    <div class="contact-side">
-      <div class="contact-note">
-        <span>Next actions</span>
-        <strong>Programs, inquiries, and implementation planning</strong>
+    <div class="page-shell">
+      <div class="contact-copy">
+        <div class="eyebrow">Contact</div>
+        <h2>Ready to move into registration, inquiry, or project planning?</h2>
+        <p>
+          The site now carries the reference project's institutional layout direction. The next step can be a fuller route
+          migration, form integration, or another round of detail-page refinement.
+        </p>
       </div>
-      <div class="contact-actions">
-        <a class="button contact-primary hero-primary-button" href="/contact">Contact the Team</a>
-        <a class="button secondary invert hero-primary-button" href="/programs">Browse Programs</a>
+      <div class="contact-side">
+        <div class="contact-note">
+          <span>Next actions</span>
+          <strong>Programs, inquiries, and implementation planning</strong>
+        </div>
+        <div class="contact-actions">
+          <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact the Team</a>
+          <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href="/programs">Browse Programs</a>
+        </div>
       </div>
     </div>
   </section>
@@ -212,6 +222,13 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
   .section-band,
   .contact-panel {
     margin-top: 1.5rem;
+  }
+
+  .page-shell,
+  .hero-shell-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
   .hero-grid,
@@ -489,7 +506,7 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
     padding: 0.7rem 1rem;
   }
 
-  .section-two-column {
+  .section-two-column-inner {
     grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
     align-items: start;
   }
@@ -570,64 +587,6 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
     color: var(--text);
   }
 
-  .button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    padding: 0 1.2rem;
-    border-radius: var(--radius-pill);
-    text-decoration: none;
-    font-weight: 700;
-    transition: transform 180ms ease, background-color 180ms ease;
-  }
-
-  .button:hover {
-    transform: translateY(-2px);
-  }
-
-  .button.primary {
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 16px 35px rgba(180, 35, 24, 0.22);
-  }
-
-  .button.secondary {
-    border: 1px solid var(--line);
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.62);
-  }
-
-  .button.secondary.hero-services-button {
-    background: #e7e5e4;
-    color: #292524;
-    border-color: #d6d3d1;
-    box-shadow: none;
-    font-weight: 800;
-  }
-
-  .button.secondary.invert {
-    border-color: var(--line);
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.82);
-  }
-
-  .button.contact-primary {
-    background: #e7e5e4;
-    color: #292524;
-    border: 1px solid #d6d3d1;
-    box-shadow: none;
-    font-weight: 800;
-  }
-
-  .button.secondary.invert.hero-primary-button {
-    background: #e7e5e4;
-    color: #292524;
-    border: 1px solid #d6d3d1;
-    box-shadow: none;
-    font-weight: 800;
-  }
-
   @media (max-width: 1120px) {
     .hero-grid,
     .section-heading.split,
@@ -639,6 +598,14 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
     .panel-card-grid,
     .hero-stats {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .page-shell,
+    .hero-shell-inner {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
     }
   }
 </style>

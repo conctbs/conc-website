@@ -15,7 +15,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 const pageTitle = title ?? siteSetting?.siteName ?? SITE.name;
 const pageDescription = seo?.metaDescription ?? siteSetting?.siteDescription ?? null;
 const canonical = seo?.canonicalUrl ?? String(getCanonical(String(Astro.url.pathname)));
-const googleAnalyticsId = 'G-44Q9S4ZPHC';
+const googleAnalyticsId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? 'G-44Q9S4ZPHC';
 ---
 
 <!doctype html>
@@ -29,26 +29,33 @@ const googleAnalyticsId = 'G-44Q9S4ZPHC';
     {seo?.noIndex && <meta name="robots" content="noindex,nofollow" />}
     <Favicons />
     <CustomStyles />
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
-    <script is:inline define:vars={{ googleAnalyticsId }}>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
+    {googleAnalyticsId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>}
+    {googleAnalyticsId && (
+      <script is:inline define:vars={{ googleAnalyticsId }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
 
-      window.gtag = window.gtag || gtag;
+        window.gtag = window.gtag || gtag;
 
-      window.gtag('js', new Date());
-      window.gtag('config', googleAnalyticsId);
+        function trackPageView() {
+          window.gtag?.('event', 'page_view', {
+            page_path: window.location.pathname + window.location.search,
+            page_title: document.title,
+            page_location: window.location.href,
+          });
+        }
 
-      document.addEventListener('astro:after-swap', () => {
-        window.gtag?.('config', googleAnalyticsId, {
-          page_path: window.location.pathname + window.location.search,
-          page_title: document.title,
-          page_location: window.location.href,
+        window.gtag('js', new Date());
+        window.gtag('config', googleAnalyticsId, {
+          send_page_view: false,
         });
-      });
-    </script>
+
+        trackPageView();
+        document.addEventListener('astro:after-swap', trackPageView);
+      </script>
+    )}
   </head>
 
   <body class="antialiased text-default bg-page tracking-tight">
@@ -61,5 +68,3 @@ const googleAnalyticsId = 'G-44Q9S4ZPHC';
     <BasicScripts />
   </body>
 </html>
-
-

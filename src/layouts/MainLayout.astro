@@ -15,7 +15,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 const pageTitle = title ?? siteSetting?.siteName ?? SITE.name;
 const pageDescription = seo?.metaDescription ?? siteSetting?.siteDescription ?? null;
 const canonical = seo?.canonicalUrl ?? String(getCanonical(String(Astro.url.pathname)));
-const googleAnalyticsId = 'G-J8ZP9ZCXC8';
+const googleAnalyticsId = 'G-44Q9S4ZPHC';
 ---
 
 <!doctype html>

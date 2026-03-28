@@ -10,6 +10,7 @@ BACKEND_DB_FILE="${BACKEND_DB_FILE:-.tmp/smoke-e2e-data.db}"
 BACKEND_URL="${PUBLIC_STRAPI_URL:-http://${BACKEND_HOST}:${BACKEND_PORT}/api}"
 HEALTH_URL="${BACKEND_URL%/api}/api/pages/home"
 BACKEND_LOG="${ROOT_DIR}/.smoke-backend.log"
+BACKEND_DB_PATH="${BACKEND_DIR}/${BACKEND_DB_FILE}"
 
 if [ ! -d "$BACKEND_DIR" ]; then
   echo "Backend directory not found: $BACKEND_DIR" >&2
@@ -26,6 +27,8 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "Starting Strapi smoke instance from $BACKEND_DIR"
+mkdir -p "$(dirname "$BACKEND_DB_PATH")"
+rm -f "$BACKEND_DB_PATH"
 (
   cd "$BACKEND_DIR"
   HOST="$BACKEND_HOST" PORT="$BACKEND_PORT" DATABASE_FILENAME="$BACKEND_DB_FILE" npm run smoke:start >"$BACKEND_LOG" 2>&1

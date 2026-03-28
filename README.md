@@ -5,6 +5,8 @@ Astro frontend for the CONC website. It consumes the Strapi API exposed by the b
 Local development API target via `.env`: `http://127.0.0.1:1337/api`
 Smoke-test API target: `http://127.0.0.1:1338/api`
 
+The local `.env` also enables `STRAPI_STRICT_MODE=true`, so Astro will fail fast instead of silently using fallback content when the PostgreSQL-backed Strapi API is unavailable.
+
 ## Commands
 
 | Command | Action |
@@ -18,7 +20,7 @@ Smoke-test API target: `http://127.0.0.1:1338/api`
 
 ## Local Development
 
-The project includes a local `.env` file that points `PUBLIC_STRAPI_URL` to `http://127.0.0.1:1337/api`, which matches the main Strapi development server.
+The project includes a local `.env` file that points `PUBLIC_STRAPI_URL` to `http://127.0.0.1:1337/api`, which matches the main Strapi development server, and enables strict API mode for real-data integration checks.
 
 1. In `/home/saton/my-strapi-concwebsite`, run `npm run develop`.
 2. In this project, run `npm run dev`.

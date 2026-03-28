@@ -2,6 +2,7 @@ import { fallbackContent } from "./fallback-content";
 
 const STRAPI_BASE_URL = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
+const STRAPI_STRICT_MODE = import.meta.env.STRAPI_STRICT_MODE === "true";
 
 export type Media = {
   id: number | null;
@@ -384,12 +385,18 @@ async function fetchJson<T>(path: string): Promise<T | null> {
     const response = await fetch(`${STRAPI_BASE_URL}${path}`);
 
     if (!response.ok) {
+      if (STRAPI_STRICT_MODE) {
+        throw new Error(`Strapi request failed for ${path}: ${response.status} ${response.statusText}`);
+      }
       return getFallbackJson<T>(path);
     }
 
     const json = await response.json();
     return normalizeMedia(json.data ?? null) as T | null;
-  } catch {
+  } catch (error) {
+    if (STRAPI_STRICT_MODE) {
+      throw error;
+    }
     return getFallbackJson<T>(path);
   }
 }
@@ -399,12 +406,18 @@ async function fetchCollection<T>(path: string): Promise<T[]> {
     const response = await fetch(`${STRAPI_BASE_URL}${path}`);
 
     if (!response.ok) {
+      if (STRAPI_STRICT_MODE) {
+        throw new Error(`Strapi collection request failed for ${path}: ${response.status} ${response.statusText}`);
+      }
       return getFallbackCollection<T>(path);
     }
 
     const json = await response.json();
     return Array.isArray(json.data) ? (normalizeMedia(json.data) as T[]) : [];
-  } catch {
+  } catch (error) {
+    if (STRAPI_STRICT_MODE) {
+      throw error;
+    }
     return getFallbackCollection<T>(path);
   }
 }

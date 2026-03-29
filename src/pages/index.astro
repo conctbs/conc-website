@@ -28,6 +28,10 @@ const heroPrimaryUrl = heroSection?.primaryButtonUrl ?? "/programs";
 const heroPrimaryText = heroSection?.primaryButtonText ?? "Explore Programs";
 const heroSecondaryUrl = heroSection?.secondaryButtonUrl ?? "/services";
 const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
+const homeHeroImage = {
+  src: "/home/training-consulting-and-knowledge-programs-managed-from-one-editorial-system.png",
+  alt: "Training, consulting, and knowledge programs managed from one editorial system",
+};
 ---
 
 <MainLayout
@@ -71,6 +75,9 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
 
         <aside class="hero-panel">
           <div class="panel-kicker">Quick Access</div>
+          <figure class="home-hero-figure">
+            <img src={homeHeroImage.src} alt={homeHeroImage.alt} loading="eager" />
+          </figure>
           <div class="panel-card-grid">
             {topServices.slice(0, 2).map((service) => (
               <article class="panel-card">
@@ -394,6 +401,21 @@ const heroSecondaryText = heroSection?.secondaryButtonText ?? "Review Services";
   .panel-card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     margin-top: 1.2rem;
+  }
+
+  .home-hero-figure {
+    overflow: hidden;
+    margin: 1.2rem 0 0;
+    border-radius: 24px;
+    border: 1px solid rgba(216, 216, 216, 0.9);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 20px 50px -36px rgba(41, 37, 36, 0.3);
+  }
+
+  .home-hero-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   .panel-card {

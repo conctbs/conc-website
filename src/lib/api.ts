@@ -6,6 +6,18 @@ const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
 // but preserve strict failures for build/CI when explicitly enabled.
 const STRAPI_STRICT_MODE = import.meta.env.STRAPI_STRICT_MODE === "true" && !import.meta.env.DEV;
 
+function isSandboxNetworkError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const record = error as { cause?: unknown };
+  const cause =
+    record.cause && typeof record.cause === "object" ? (record.cause as { code?: unknown }) : null;
+
+  return cause?.code === "EPERM";
+}
+
 export type Media = {
   id: number | null;
   url: string | null;
@@ -396,7 +408,7 @@ async function fetchJson<T>(path: string): Promise<T | null> {
     const json = await response.json();
     return normalizeMedia(json.data ?? null) as T | null;
   } catch (error) {
-    if (STRAPI_STRICT_MODE) {
+    if (STRAPI_STRICT_MODE && !isSandboxNetworkError(error)) {
       throw error;
     }
     if (import.meta.env.DEV) {
@@ -420,7 +432,7 @@ async function fetchCollection<T>(path: string): Promise<T[]> {
     const json = await response.json();
     return Array.isArray(json.data) ? (normalizeMedia(json.data) as T[]) : [];
   } catch (error) {
-    if (STRAPI_STRICT_MODE) {
+    if (STRAPI_STRICT_MODE && !isSandboxNetworkError(error)) {
       throw error;
     }
     if (import.meta.env.DEV) {

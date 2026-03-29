@@ -4,6 +4,17 @@ import PageCover from '../../components/PageCover.astro';
 import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../lib/api';
 import { programDetailContent } from '../../lib/program-detail-content';
 
+const programHeroImageBySlug: Record<string, { src: string; alt: string }> = {
+  'strategic-content-operations-bootcamp': {
+    src: '/programs/strategic-content-operations-bootcamp-hero.png',
+    alt: 'Strategic Content Operations Bootcamp course illustration',
+  },
+  'executive-communication-design-for-digital-teams': {
+    src: '/programs/executive-communication-design-for-digital-teams.png',
+    alt: 'Executive Communication Design for Digital Teams course illustration',
+  },
+};
+
 export async function getStaticPaths() {
   const slugs = await getProgramSlugs();
   return slugs.map((slug) => ({ params: { slug } }));
@@ -12,6 +23,7 @@ export async function getStaticPaths() {
 const { slug = '' } = Astro.params;
 const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
 const sampleContent = program ? programDetailContent[program.slug] ?? null : null;
+const heroImage = program ? programHeroImageBySlug[program.slug] ?? null : null;
 
 if (!program) {
   Astro.response.status = 404;
@@ -49,7 +61,18 @@ if (!program) {
         </div>
 
         <div class="grid gap-6">
-          <PageCover eyebrow={program.category ?? 'Program'} title={program.title} theme="programs" />
+          {heroImage ? (
+            <figure class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+              <img
+                class="h-full w-full object-cover"
+                src={heroImage.src}
+                alt={heroImage.alt}
+                loading="eager"
+              />
+            </figure>
+          ) : (
+            <PageCover eyebrow={program.category ?? 'Program'} title={program.title} theme="programs" />
+          )}
           <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-500">Program overview</p>
             <div class="mt-6 grid gap-4">

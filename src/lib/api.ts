@@ -2,7 +2,21 @@ import { fallbackContent } from "./fallback-content";
 
 const STRAPI_BASE_URL = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
-const STRAPI_STRICT_MODE = import.meta.env.STRAPI_STRICT_MODE === "true";
+// Keep local dev usable with fallback content when Strapi is offline,
+// but preserve strict failures for build/CI when explicitly enabled.
+const STRAPI_STRICT_MODE = import.meta.env.STRAPI_STRICT_MODE === "true" && !import.meta.env.DEV;
+
+function isSandboxNetworkError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const record = error as { cause?: unknown };
+  const cause =
+    record.cause && typeof record.cause === "object" ? (record.cause as { code?: unknown }) : null;
+
+  return cause?.code === "EPERM";
+}
 
 export type Media = {
   id: number | null;
@@ -394,8 +408,11 @@ async function fetchJson<T>(path: string): Promise<T | null> {
     const json = await response.json();
     return normalizeMedia(json.data ?? null) as T | null;
   } catch (error) {
-    if (STRAPI_STRICT_MODE) {
+    if (STRAPI_STRICT_MODE && !isSandboxNetworkError(error)) {
       throw error;
+    }
+    if (import.meta.env.DEV) {
+      console.warn(`[api] Falling back for ${path} because Strapi is unavailable.`, error);
     }
     return getFallbackJson<T>(path);
   }
@@ -415,8 +432,11 @@ async function fetchCollection<T>(path: string): Promise<T[]> {
     const json = await response.json();
     return Array.isArray(json.data) ? (normalizeMedia(json.data) as T[]) : [];
   } catch (error) {
-    if (STRAPI_STRICT_MODE) {
+    if (STRAPI_STRICT_MODE && !isSandboxNetworkError(error)) {
       throw error;
+    }
+    if (import.meta.env.DEV) {
+      console.warn(`[api] Falling back for ${path} because Strapi is unavailable.`, error);
     }
     return getFallbackCollection<T>(path);
   }

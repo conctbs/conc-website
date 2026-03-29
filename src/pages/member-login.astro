@@ -1,0 +1,84 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+const title = siteSetting?.siteName ? `Member Login | ${siteSetting.siteName}` : "Member Login | CONC";
+---
+
+<MainLayout title={title} siteSetting={siteSetting}>
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-start">
+      <div>
+        <p class="inline-flex rounded-full border border-red-700/20 bg-red-50 px-4 py-1 text-sm font-semibold uppercase tracking-[0.18em] text-red-700">
+          Member Portal
+        </p>
+        <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+          Member Login
+        </h1>
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">
+          A dedicated access point for participants, alumni, and members who need to reach course information, documents, and member-only resources.
+        </p>
+
+        <div class="mt-10 rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)] md:p-8">
+          <div class="grid gap-5">
+            <label class="grid gap-2">
+              <span class="text-sm font-medium text-stone-700">Email</span>
+              <input
+                type="email"
+                placeholder="name@example.com"
+                class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+              />
+            </label>
+
+            <label class="grid gap-2">
+              <span class="text-sm font-medium text-stone-700">Password</span>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+              />
+            </label>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Request Member Access</a>
+            <a class="text-sm font-medium text-red-700 transition hover:text-red-800" href="/contact">
+              Need assistance with your account?
+            </a>
+          </div>
+
+          <p class="mt-6 text-sm leading-7 text-stone-600">
+            This page is prepared for the upcoming CONC member system integration. If your account has not yet been activated, please contact the team through the Contact page.
+          </p>
+        </div>
+      </div>
+
+      <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)] md:p-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Available Member Resources</p>
+        <div class="mt-6 grid gap-4">
+          <article class="rounded-2xl border border-stone-200 bg-white p-5">
+            <h2 class="text-lg font-semibold text-stone-900">Learning materials</h2>
+            <p class="mt-2 text-sm leading-7 text-stone-600">
+              Course documents, supporting files, and related resources for the programs you have registered for.
+            </p>
+          </article>
+
+          <article class="rounded-2xl border border-stone-200 bg-white p-5">
+            <h2 class="text-lg font-semibold text-stone-900">Program updates</h2>
+            <p class="mt-2 text-sm leading-7 text-stone-600">
+              Schedule changes, supplemental materials, and important announcements for participants and alumni.
+            </p>
+          </article>
+
+          <article class="rounded-2xl border border-stone-200 bg-white p-5">
+            <h2 class="text-lg font-semibold text-stone-900">Support and coordination</h2>
+            <p class="mt-2 text-sm leading-7 text-stone-600">
+              Direct support for access permissions, certification documents, and member system coordination.
+            </p>
+          </article>
+        </div>
+      </aside>
+    </div>
+  </section>
+</MainLayout>

@@ -93,6 +93,7 @@ if (!program) {
                 <label class="grid gap-2 font-semibold text-stone-900">
                   <span>Phone</span>
                   <input
+                    id="phone"
                     name="phone"
                     type="tel"
                     required
@@ -116,6 +117,46 @@ if (!program) {
                     class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
                   ></textarea>
                 </label>
+                <div class="grid gap-4 rounded-[1.5rem] border border-stone-200 bg-stone-50 p-5">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Registration Type</p>
+                    <p class="mt-2 text-sm leading-7 text-stone-600">
+                      One member account can submit one main registration per program. Additional registrations are only for another cohort or a module add-on.
+                    </p>
+                  </div>
+                  <label class="grid gap-2 font-semibold text-stone-900">
+                    <span>Registration type</span>
+                    <select
+                      id="registrationKind"
+                      name="registrationKind"
+                      class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+                    >
+                      <option value="program">Main program registration</option>
+                      <option value="cohort_extension">Additional cohort / รุ่นเพิ่มเติม</option>
+                      <option value="module_addon">Module add-on / เพิ่มโมดูล</option>
+                    </select>
+                  </label>
+                  <label id="cohortLabelField" class="hidden grid gap-2 font-semibold text-stone-900">
+                    <span>Cohort detail</span>
+                    <input
+                      id="cohortLabel"
+                      name="cohortLabel"
+                      type="text"
+                      placeholder="Example: Cohort 2, Executive Weekend"
+                      class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+                    />
+                  </label>
+                  <label id="moduleLabelField" class="hidden grid gap-2 font-semibold text-stone-900">
+                    <span>Module detail</span>
+                    <input
+                      id="moduleLabel"
+                      name="moduleLabel"
+                      type="text"
+                      placeholder="Example: Module 3, Leadership Practice Lab"
+                      class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+                    />
+                  </label>
+                </div>
                 <label class="flex items-start gap-3 text-sm leading-6 text-stone-700">
                   <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 rounded border-stone-300 text-red-700 focus:ring-red-700" />
                   <span>I agree to share my details for this registration.</span>
@@ -168,9 +209,51 @@ if (!program) {
         const submitButton = form?.querySelector('button[type="submit"]');
         const nameInput = document.getElementById('fullName');
         const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const registrationKindInput = document.getElementById('registrationKind');
+        const cohortLabelField = document.getElementById('cohortLabelField');
+        const moduleLabelField = document.getElementById('moduleLabelField');
+        const cohortLabelInput = document.getElementById('cohortLabel');
+        const moduleLabelInput = document.getElementById('moduleLabel');
         const googleState = document.getElementById('google-account-state');
+        const authTokenStorageKey = 'concMemberToken';
         let googleProfile = null;
         let notificationTimer = null;
+
+        function syncRegistrationKindFields() {
+          const registrationKind = registrationKindInput?.value || 'program';
+          const showCohort = registrationKind === 'cohort_extension';
+          const showModule = registrationKind === 'module_addon';
+
+          cohortLabelField?.classList.toggle('hidden', !showCohort);
+          moduleLabelField?.classList.toggle('hidden', !showModule);
+
+          if (cohortLabelInput instanceof HTMLInputElement) {
+            cohortLabelInput.required = showCohort;
+            if (!showCohort) cohortLabelInput.value = '';
+          }
+
+          if (moduleLabelInput instanceof HTMLInputElement) {
+            moduleLabelInput.required = showModule;
+            if (!showModule) moduleLabelInput.value = '';
+          }
+        }
+
+        function lockMemberIdentity(profile) {
+          if (profile?.fullName && nameInput instanceof HTMLInputElement) {
+            nameInput.value = profile.fullName;
+            nameInput.readOnly = true;
+          }
+          if (profile?.email && emailInput instanceof HTMLInputElement) {
+            emailInput.value = profile.email;
+            emailInput.readOnly = true;
+          }
+          if (profile?.phone && phoneInput instanceof HTMLInputElement) {
+            phoneInput.value = profile.phone;
+            phoneInput.readOnly = true;
+          }
+          showNotification('Member data loaded. Name, email, and phone are tied to your member account.', 'success');
+        }
 
         function showNotification(message, type = 'success') {
           if (!notification) return;
@@ -232,6 +315,29 @@ if (!program) {
           document.head.appendChild(script);
         }
 
+        syncRegistrationKindFields();
+        registrationKindInput?.addEventListener('change', syncRegistrationKindFields);
+
+        const existingMemberToken = window.localStorage.getItem(authTokenStorageKey);
+        if (existingMemberToken) {
+          fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
+            headers: {
+              Authorization: `Bearer ${existingMemberToken}`,
+            },
+          })
+            .then(async (response) => {
+              const result = await response.json().catch(() => ({}));
+              if (!response.ok || !result?.data?.member) {
+                throw new Error('Member session is no longer valid');
+              }
+
+              lockMemberIdentity(result.data.member);
+            })
+            .catch(() => {
+              window.localStorage.removeItem(authTokenStorageKey);
+            });
+        }
+
         form?.addEventListener('submit', async (event) => {
           event.preventDefault();
           if (notification) {
@@ -254,6 +360,7 @@ if (!program) {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                ...(existingMemberToken ? { Authorization: `Bearer ${existingMemberToken}` } : {}),
               },
               body: JSON.stringify({ data: payload }),
             });
@@ -269,9 +376,12 @@ if (!program) {
               googleState.hidden = true;
               googleState.textContent = '';
             }
-            showNotification('Registration submitted successfully. Redirecting you to the program page.', 'success');
+            if (result?.data?.memberAuth?.token) {
+              window.localStorage.setItem(authTokenStorageKey, result.data.memberAuth.token);
+            }
+            showNotification('Registration submitted and member access is ready. Redirecting you to your member portal.', 'success');
             window.setTimeout(() => {
-              window.location.href = `/programs/${programSlug}`;
+              window.location.href = '/member-portal';
             }, 1400);
           } catch (error) {
             showNotification(error instanceof Error ? error.message : 'Registration failed', 'error');

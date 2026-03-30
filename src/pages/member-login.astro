@@ -4,81 +4,226 @@ import { getSiteSetting } from "../lib/api";
 
 const siteSetting = await getSiteSetting();
 const title = siteSetting?.siteName ? `Member Login | ${siteSetting.siteName}` : "Member Login | CONC";
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
 ---
 
 <MainLayout title={title} siteSetting={siteSetting}>
   <section class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-start">
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(21rem,0.95fr)] lg:items-start">
       <div>
         <p class="inline-flex rounded-full border border-red-700/20 bg-red-50 px-4 py-1 text-sm font-semibold uppercase tracking-[0.18em] text-red-700">
           Member Portal
         </p>
         <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
-          Member Login
+          Program Member Access
         </h1>
         <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">
-          A dedicated access point for participants, alumni, and members who need to reach course information, documents, and member-only resources.
+          Participants become members automatically after registering for a program. This page is for signing in later or setting a password for the first time.
         </p>
 
-        <div class="mt-10 rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)] md:p-8">
-          <div class="grid gap-5">
-            <label class="grid gap-2">
-              <span class="text-sm font-medium text-stone-700">Email</span>
-              <input
-                type="email"
-                placeholder="name@example.com"
-                class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-              />
-            </label>
+        <div class="mt-10 grid gap-6 md:grid-cols-2">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)] md:p-8">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">First-time access</p>
+            <h2 class="mt-4 text-2xl font-semibold text-stone-900">Set your password</h2>
+            <p class="mt-3 text-sm leading-7 text-stone-600">
+              If you just completed a program registration, you are already a member. Use the same email and phone number from the registration form to set a password for future sign-ins.
+            </p>
 
-            <label class="grid gap-2">
-              <span class="text-sm font-medium text-stone-700">Password</span>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-              />
-            </label>
-          </div>
+            <form id="member-activate-form" class="mt-6 grid gap-4">
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-stone-700">Email</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="name@example.com"
+                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-stone-700">Phone</span>
+                <input
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder="0800000000"
+                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-stone-700">New password</span>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  minlength="8"
+                  placeholder="At least 8 characters"
+                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-stone-700">Confirm password</span>
+                <input
+                  name="passwordConfirmation"
+                  type="password"
+                  required
+                  minlength="8"
+                  placeholder="Repeat the new password"
+                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                />
+              </label>
+              <button class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Set password</button>
+            </form>
+          </article>
 
-          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Request Member Access</a>
-            <a class="text-sm font-medium text-red-700 transition hover:text-red-800" href="/contact">
-              Need assistance with your account?
-            </a>
-          </div>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)] md:p-8">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Returning member</p>
+            <h2 class="mt-4 text-2xl font-semibold text-stone-900">Sign in</h2>
+            <p class="mt-3 text-sm leading-7 text-stone-600">
+              After activation, use your email and password to open your member portal and see the programs linked to your registration.
+            </p>
+            <p class="mt-3 text-sm leading-7">
+              <a class="font-semibold text-red-700 underline" href="/member-forgot-password">Forgot your password?</a>
+            </p>
 
-          <p class="mt-6 text-sm leading-7 text-stone-600">
-            This page is prepared for the upcoming CONC member system integration. If your account has not yet been activated, please contact the team through the Contact page.
-          </p>
+            <form id="member-login-form" class="mt-6 grid gap-4">
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-stone-700">Email</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="name@example.com"
+                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                />
+              </label>
+              <label class="grid gap-2">
+                <span class="text-sm font-medium text-stone-700">Password</span>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Enter your password"
+                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                />
+              </label>
+              <button class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Sign in</button>
+            </form>
+          </article>
         </div>
       </div>
 
       <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)] md:p-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Available Member Resources</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">What the portal includes</p>
         <div class="mt-6 grid gap-4">
           <article class="rounded-2xl border border-stone-200 bg-white p-5">
-            <h2 class="text-lg font-semibold text-stone-900">Learning materials</h2>
+            <h2 class="text-lg font-semibold text-stone-900">Registered programs</h2>
             <p class="mt-2 text-sm leading-7 text-stone-600">
-              Course documents, supporting files, and related resources for the programs you have registered for.
+              Review the programs you have registered for, with dates, format, location, and the submitted registration timeline.
             </p>
           </article>
 
           <article class="rounded-2xl border border-stone-200 bg-white p-5">
-            <h2 class="text-lg font-semibold text-stone-900">Program updates</h2>
+            <h2 class="text-lg font-semibold text-stone-900">Member status</h2>
             <p class="mt-2 text-sm leading-7 text-stone-600">
-              Schedule changes, supplemental materials, and important announcements for participants and alumni.
+              Keep one member account per email instead of repeating access requests each time you join a new CONC program.
             </p>
           </article>
 
           <article class="rounded-2xl border border-stone-200 bg-white p-5">
-            <h2 class="text-lg font-semibold text-stone-900">Support and coordination</h2>
+            <h2 class="text-lg font-semibold text-stone-900">Support path</h2>
             <p class="mt-2 text-sm leading-7 text-stone-600">
-              Direct support for access permissions, certification documents, and member system coordination.
+              If your registration email or phone does not match, contact the team so your member record can be corrected.
             </p>
           </article>
         </div>
+
+        <div
+          id="member-auth-notification"
+          class="mt-6 hidden rounded-2xl bg-emerald-700 px-4 py-4 text-sm font-semibold leading-6 text-white data-[type=error]:bg-red-700"
+          hidden
+          aria-live="polite"
+        ></div>
       </aside>
     </div>
   </section>
+
+  <script is:inline define:vars={{ strapiBaseUrl }}>
+    const authTokenStorageKey = 'concMemberToken';
+    const notification = document.getElementById('member-auth-notification');
+    const activateForm = document.getElementById('member-activate-form');
+    const loginForm = document.getElementById('member-login-form');
+
+    function showNotification(message, type = 'success') {
+      if (!notification) return;
+      notification.hidden = false;
+      notification.classList.remove('hidden');
+      notification.dataset.type = type;
+      notification.textContent = message;
+    }
+
+    function setSubmitting(form, isSubmitting, activeLabel) {
+      const button = form?.querySelector('button[type="submit"]');
+      if (!(button instanceof HTMLButtonElement)) return;
+      button.disabled = isSubmitting;
+      button.textContent = isSubmitting ? activeLabel : button.dataset.defaultLabel || button.textContent;
+    }
+
+    function rememberDefaultButtonLabel(form) {
+      const button = form?.querySelector('button[type="submit"]');
+      if (button instanceof HTMLButtonElement && !button.dataset.defaultLabel) {
+        button.dataset.defaultLabel = button.textContent || '';
+      }
+    }
+
+    async function submitMemberAuthForm(form, path, loadingLabel) {
+      rememberDefaultButtonLabel(form);
+      setSubmitting(form, true, loadingLabel);
+      showNotification('', 'success');
+      if (notification) {
+        notification.hidden = true;
+        notification.classList.add('hidden');
+      }
+
+      try {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}${path}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: payload }),
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result?.data?.token) {
+          throw new Error(result?.error?.message || result?.message || 'Member request failed');
+        }
+
+        window.localStorage.setItem(authTokenStorageKey, result.data.token);
+        showNotification('Member access is ready. Redirecting to your portal.', 'success');
+        window.setTimeout(() => {
+          window.location.href = '/member-portal';
+        }, 600);
+      } catch (error) {
+        showNotification(error instanceof Error ? error.message : 'Member request failed', 'error');
+      } finally {
+        setSubmitting(form, false, loadingLabel);
+      }
+    }
+
+    if (window.localStorage.getItem(authTokenStorageKey)) {
+      window.location.href = '/member-portal';
+    }
+
+    activateForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      await submitMemberAuthForm(activateForm, '/member-accounts/activate-public', 'Activating...');
+    });
+
+    loginForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      await submitMemberAuthForm(loginForm, '/member-accounts/login-public', 'Signing in...');
+    });
+  </script>
 </MainLayout>

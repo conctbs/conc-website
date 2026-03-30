@@ -1,0 +1,299 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+const title = siteSetting?.siteName ? `Member Portal | ${siteSetting.siteName}` : "Member Portal | CONC";
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+---
+
+<MainLayout title={title} siteSetting={siteSetting}>
+  <section class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Member Portal</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Your registered programs</h1>
+        <p class="mt-4 max-w-3xl text-lg leading-8 text-stone-600">
+          This portal is tied to the email address used in your program registrations. It shows the programs currently linked to your member account.
+        </p>
+      </div>
+
+      <button id="member-logout-button" class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" type="button">
+        Log out
+      </button>
+    </div>
+
+    <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(18rem,0.78fr)_minmax(0,1.22fr)]">
+      <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)] md:p-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Member Profile</p>
+        <div id="member-profile" class="mt-5 grid gap-3 text-sm leading-7 text-stone-700">
+          <p>Loading your member profile...</p>
+        </div>
+
+        <form id="member-profile-form" class="mt-6 grid gap-4 rounded-2xl border border-stone-200 bg-white p-5">
+          <p class="text-sm font-semibold text-stone-900">Update profile</p>
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-stone-700">Full name</span>
+            <input
+              name="fullName"
+              type="text"
+              required
+              class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+            />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-stone-700">Phone</span>
+            <input
+              name="phone"
+              type="tel"
+              required
+              class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+            />
+          </label>
+          <button class="btn-primary !rounded-md !px-5 !py-3 !border-0 !text-sm" type="submit">Save profile</button>
+        </form>
+
+        <form id="member-password-form" class="mt-6 grid gap-4 rounded-2xl border border-stone-200 bg-white p-5">
+          <p class="text-sm font-semibold text-stone-900">Set or change password</p>
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-stone-700">Current password</span>
+            <input
+              name="currentPassword"
+              type="password"
+              placeholder="Required only if you already set a password"
+              class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+            />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-stone-700">New password</span>
+            <input
+              name="password"
+              type="password"
+              minlength="8"
+              required
+              class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+            />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-sm font-medium text-stone-700">Confirm new password</span>
+            <input
+              name="passwordConfirmation"
+              type="password"
+              minlength="8"
+              required
+              class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+            />
+          </label>
+          <button class="btn-primary !rounded-md !px-5 !py-3 !border-0 !text-sm" type="submit">Update password</button>
+        </form>
+      </aside>
+
+      <div class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)] md:p-8">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Program Registrations</p>
+            <h2 class="mt-3 text-2xl font-semibold text-stone-900">Programs linked to your account</h2>
+          </div>
+        </div>
+
+        <div id="member-portal-error" class="mt-5 hidden rounded-2xl bg-red-700 px-4 py-4 text-sm font-semibold leading-6 text-white" hidden></div>
+        <div id="member-portal-loading" class="mt-5 rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-5 py-6 text-sm leading-7 text-stone-600">
+          Loading your registrations...
+        </div>
+        <div id="member-registrations" class="mt-6 grid gap-4"></div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ strapiBaseUrl }}>
+    const authTokenStorageKey = 'concMemberToken';
+    const token = window.localStorage.getItem(authTokenStorageKey);
+    const profileTarget = document.getElementById('member-profile');
+    const registrationsTarget = document.getElementById('member-registrations');
+    const loadingTarget = document.getElementById('member-portal-loading');
+    const errorTarget = document.getElementById('member-portal-error');
+    const logoutButton = document.getElementById('member-logout-button');
+    const profileForm = document.getElementById('member-profile-form');
+    const passwordForm = document.getElementById('member-password-form');
+
+    function showMessage(message, type = 'error') {
+      if (!errorTarget) return;
+      errorTarget.hidden = false;
+      errorTarget.classList.remove('hidden');
+      errorTarget.textContent = message;
+      if (type !== 'error') {
+        errorTarget.classList.remove('bg-red-700');
+        errorTarget.classList.add('bg-emerald-700');
+      } else {
+        errorTarget.classList.remove('bg-emerald-700');
+        errorTarget.classList.add('bg-red-700');
+      }
+    }
+
+    function redirectToLogin() {
+      window.location.href = '/member-login';
+    }
+
+    function showError(message) {
+      if (loadingTarget) {
+        loadingTarget.hidden = true;
+      }
+      if (errorTarget) {
+        errorTarget.hidden = false;
+        errorTarget.classList.remove('hidden');
+        errorTarget.textContent = message;
+      }
+    }
+
+    function formatDate(value) {
+      if (!value) return 'TBC';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+    }
+
+    logoutButton?.addEventListener('click', () => {
+      window.localStorage.removeItem(authTokenStorageKey);
+      redirectToLogin();
+    });
+
+    if (!token) {
+      redirectToLogin();
+    } else {
+      fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then(async (response) => {
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || !result?.data?.member) {
+            throw new Error(result?.error?.message || result?.message || 'Member session is no longer valid');
+          }
+
+          return result.data;
+        })
+        .then((data) => {
+          if (loadingTarget) {
+            loadingTarget.hidden = true;
+          }
+
+          if (profileTarget) {
+            profileTarget.innerHTML = `
+              <div class="rounded-2xl border border-stone-200 bg-white px-4 py-4">
+                <p><span class="font-semibold text-stone-900">Name:</span> ${data.member.fullName || '-'}</p>
+                <p><span class="font-semibold text-stone-900">Email:</span> ${data.member.email || '-'}</p>
+                <p><span class="font-semibold text-stone-900">Phone:</span> ${data.member.phone || '-'}</p>
+                <p><span class="font-semibold text-stone-900">Activated:</span> ${formatDate(data.member.activatedAt)}</p>
+                <p><span class="font-semibold text-stone-900">Last login:</span> ${formatDate(data.member.lastLoginAt)}</p>
+                <p><span class="font-semibold text-stone-900">Password set:</span> ${data.member.hasPassword ? 'Yes' : 'No'}</p>
+              </div>
+            `;
+          }
+
+          if (profileForm instanceof HTMLFormElement) {
+            const fullNameInput = profileForm.elements.namedItem('fullName');
+            const phoneInput = profileForm.elements.namedItem('phone');
+            if (fullNameInput instanceof HTMLInputElement) fullNameInput.value = data.member.fullName || '';
+            if (phoneInput instanceof HTMLInputElement) phoneInput.value = data.member.phone || '';
+          }
+
+          if (!registrationsTarget) {
+            return;
+          }
+
+          if (!Array.isArray(data.registrations) || data.registrations.length === 0) {
+            registrationsTarget.innerHTML = `
+              <div class="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-5 py-6 text-sm leading-7 text-stone-600">
+                No registrations are linked to this member account yet.
+              </div>
+            `;
+            return;
+          }
+
+          registrationsTarget.innerHTML = data.registrations.map((registration) => `
+            <article class="rounded-2xl border border-stone-200 bg-stone-50 p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Registered</p>
+              <h3 class="mt-3 text-xl font-semibold text-stone-900">${registration.programTitle || registration.program?.title || 'Program'}</h3>
+              <div class="mt-4 grid gap-3 text-sm leading-7 text-stone-700 md:grid-cols-2">
+                <p><span class="font-semibold text-stone-900">Type:</span> ${
+                  registration.registrationKind === 'cohort_extension'
+                    ? 'Additional cohort'
+                    : registration.registrationKind === 'module_addon'
+                      ? 'Module add-on'
+                      : 'Main program'
+                }</p>
+                <p><span class="font-semibold text-stone-900">Submitted:</span> ${formatDate(registration.submittedAt)}</p>
+                <p><span class="font-semibold text-stone-900">Date:</span> ${registration.program?.dateLabel || registration.program?.startsAt || 'TBC'}</p>
+                <p><span class="font-semibold text-stone-900">Format:</span> ${registration.program?.format || 'TBC'}</p>
+                <p><span class="font-semibold text-stone-900">Location:</span> ${registration.program?.location || 'TBC'}</p>
+                ${
+                  registration.cohortLabel
+                    ? `<p><span class="font-semibold text-stone-900">Cohort:</span> ${registration.cohortLabel}</p>`
+                    : ''
+                }
+                ${
+                  registration.moduleLabel
+                    ? `<p><span class="font-semibold text-stone-900">Module:</span> ${registration.moduleLabel}</p>`
+                    : ''
+                }
+              </div>
+              ${registration.program?.summary ? `<p class="mt-4 text-sm leading-7 text-stone-600">${registration.program.summary}</p>` : ''}
+              ${registration.program?.slug ? `<div class="mt-5"><a class="btn-primary !rounded-md !px-5 !py-2.5 !text-sm !border-0" href="/programs/${registration.program.slug}">Open program page</a></div>` : ''}
+            </article>
+          `).join('');
+        })
+        .catch((error) => {
+          window.localStorage.removeItem(authTokenStorageKey);
+          showError(error instanceof Error ? error.message : 'Unable to load member data');
+          window.setTimeout(() => {
+            redirectToLogin();
+          }, 1200);
+        });
+    }
+
+    profileForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/profile-public`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ data: Object.fromEntries(new FormData(profileForm).entries()) }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result?.data?.member) {
+          throw new Error(result?.error?.message || result?.message || 'Profile update failed');
+        }
+        showMessage('Profile updated successfully.', 'success');
+        window.location.reload();
+      } catch (error) {
+        showMessage(error instanceof Error ? error.message : 'Profile update failed', 'error');
+      }
+    });
+
+    passwordForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/change-password-public`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ data: Object.fromEntries(new FormData(passwordForm).entries()) }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result?.data?.member) {
+          throw new Error(result?.error?.message || result?.message || 'Password update failed');
+        }
+        passwordForm.reset();
+        showMessage('Password updated successfully.', 'success');
+        window.location.reload();
+      } catch (error) {
+        showMessage(error instanceof Error ? error.message : 'Password update failed', 'error');
+      }
+    });
+  </script>
+</MainLayout>

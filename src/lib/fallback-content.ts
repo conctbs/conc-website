@@ -265,6 +265,12 @@ const siteSetting: SiteSettingDto = {
   siteDescription: "Sample content for a Strapi-powered service website with a reusable page builder.",
   contactEmail: "hello@conc.example",
   contactPhone: "+66 2 000 0000",
+  paymentBankName: "Bangkok Bank",
+  paymentAccountName: "Conc Website",
+  paymentAccountNumber: "123-4-56789-0",
+  paymentPromptpayId: "0800000000",
+  paymentInstructions:
+    "Transfer the fee, then submit the payment reference and optional slip URL through the payment page so the team can verify your seat.",
   address: "Bangkok, Thailand",
   facebookUrl: "https://facebook.com/",
   lineUrl: "https://line.me/",

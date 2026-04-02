@@ -1,0 +1,405 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { MEMBER_PORTAL_DISABLED, getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+const title = siteSetting?.siteName ? `Member Payment | ${siteSetting.siteName}` : "Member Payment | CONC";
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
+---
+
+<MainLayout title={title} siteSetting={siteSetting}>
+  {MEMBER_PORTAL_DISABLED ? (
+    <section class="mx-auto max-w-5xl px-4 py-16 md:px-6 md:py-20">
+      <div class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)] md:p-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Member Payment</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Payment portal is temporarily offline</h1>
+        <p class="mt-4 max-w-3xl text-lg leading-8 text-stone-600">
+          Contact <a class="font-semibold text-red-700 underline" href={`mailto:${supportEmail}`}>{supportEmail}</a> if you need manual payment coordination while the backend is unavailable.
+        </p>
+      </div>
+    </section>
+  ) : (
+    <section class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+      <div class="max-w-4xl">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Member Payment</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Confirm your program fee payment</h1>
+        <p class="mt-4 max-w-3xl text-lg leading-8 text-stone-600">
+          Submit the transfer reference after registration so the team can verify your seat and reconcile the payment with your member account.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(18rem,0.82fr)_minmax(0,1.18fr)]">
+        <aside class="grid gap-6">
+          <div class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Transfer details</p>
+            <div class="mt-5 grid gap-3 text-sm leading-7 text-stone-700">
+              <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+                <p class="font-semibold text-stone-900">Bank</p>
+                <p>{siteSetting?.paymentBankName ?? "Bank to be confirmed"}</p>
+              </div>
+              <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+                <p class="font-semibold text-stone-900">Account name</p>
+                <p>{siteSetting?.paymentAccountName ?? "Account name to be confirmed"}</p>
+              </div>
+              <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+                <p class="font-semibold text-stone-900">Account number</p>
+                <p>{siteSetting?.paymentAccountNumber ?? "Account number to be confirmed"}</p>
+              </div>
+              <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+                <p class="font-semibold text-stone-900">PromptPay</p>
+                <p>{siteSetting?.paymentPromptpayId ?? "PromptPay ID to be confirmed"}</p>
+              </div>
+            </div>
+            <div class="mt-5 rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-4 py-4 text-sm leading-7 text-stone-600">
+              {siteSetting?.paymentInstructions ?? "Transfer the fee, then submit your payment reference below for manual verification."}
+            </div>
+          </div>
+
+          <div id="payment-summary" class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)]">
+            <p class="text-sm leading-7 text-stone-600">Loading registration and payment details...</p>
+          </div>
+        </aside>
+
+        <div class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+          <div id="payment-notification" class="hidden rounded-2xl bg-red-700 px-4 py-4 text-sm font-semibold leading-6 text-white" hidden></div>
+
+          <form id="member-payment-form" class="mt-2 grid gap-5">
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Payment method</span>
+              <select
+                name="paymentMethod"
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              >
+                <option value="bank_transfer">Bank transfer</option>
+                <option value="promptpay">PromptPay</option>
+                <option value="cash">Cash</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Payer name</span>
+              <input
+                name="payerName"
+                type="text"
+                required
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              />
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Payer email</span>
+              <input
+                name="payerEmail"
+                type="email"
+                required
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              />
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Reference code / transfer number</span>
+              <input
+                name="referenceCode"
+                type="text"
+                required
+                placeholder="Example: TRX20260402001"
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              />
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Payment date and time</span>
+              <input
+                name="paidAt"
+                type="datetime-local"
+                required
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              />
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Slip file</span>
+              <input
+                id="slipAttachment"
+                name="slipAttachment"
+                type="file"
+                accept="image/*,.pdf"
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition file:mr-4 file:rounded-xl file:border-0 file:bg-stone-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white focus:border-red-700"
+              />
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Slip URL</span>
+              <input
+                name="slipUrl"
+                type="url"
+                placeholder="https://..."
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              />
+            </label>
+            <label class="grid gap-2 font-semibold text-stone-900">
+              <span>Payment note</span>
+              <textarea
+                name="paymentNote"
+                rows="4"
+                placeholder="Anything the team should know about this payment"
+                class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+              ></textarea>
+            </label>
+
+            <div class="flex flex-wrap gap-3">
+              <button id="member-payment-submit" class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Submit payment confirmation</button>
+              <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href="/member-portal">Back to member portal</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <script is:inline define:vars={{ strapiBaseUrl }}>
+        const authTokenStorageKey = 'concMemberToken';
+        const token = window.localStorage.getItem(authTokenStorageKey);
+        const params = new URLSearchParams(window.location.search);
+        const registrationId = params.get('registrationId');
+        const summaryTarget = document.getElementById('payment-summary');
+        const form = document.getElementById('member-payment-form');
+        const notification = document.getElementById('payment-notification');
+        const submitButton = document.getElementById('member-payment-submit');
+        const slipAttachmentInput = document.getElementById('slipAttachment');
+        let isPaymentLocked = false;
+
+        function redirectToLogin() {
+          window.location.href = '/member-login';
+        }
+
+        function escapeHtml(value) {
+          return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+        }
+
+        function formatDate(value) {
+          if (!value) return 'TBC';
+          const date = new Date(value);
+          return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+        }
+
+        function toDatetimeLocalValue(value) {
+          if (!value) return '';
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return '';
+          const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+          return local.toISOString().slice(0, 16);
+        }
+
+        function resolveMediaUrl(url) {
+          if (!url) return null;
+          if (/^https?:\/\//i.test(url)) return url;
+          const origin = String(strapiBaseUrl).replace(/\/api\/?$/, '');
+          return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
+        }
+
+        function showNotification(message, type = 'error') {
+          if (!notification) return;
+          notification.hidden = false;
+          notification.classList.remove('hidden');
+          notification.textContent = message;
+          if (type === 'success') {
+            notification.classList.remove('bg-red-700');
+            notification.classList.add('bg-emerald-700');
+          } else {
+            notification.classList.remove('bg-emerald-700');
+            notification.classList.add('bg-red-700');
+          }
+        }
+
+        function setFormDisabled(disabled) {
+          isPaymentLocked = disabled;
+          if (!(form instanceof HTMLFormElement)) return;
+
+          for (const element of Array.from(form.elements)) {
+            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement || element instanceof HTMLButtonElement) {
+              if (element.tagName === 'BUTTON' && element.id !== 'member-payment-submit') {
+                continue;
+              }
+              element.disabled = disabled;
+            }
+          }
+
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.textContent = disabled ? 'Payment already settled' : 'Submit payment confirmation';
+          }
+        }
+
+        function renderSummary(data) {
+          if (!summaryTarget) return;
+          const registration = data?.registration ?? {};
+          const payment = data?.payment ?? {};
+          const program = registration.program ?? {};
+          const paymentStatus =
+            payment.status === 'submitted'
+              ? 'Payment submitted for review'
+              : payment.status === 'paid'
+                ? 'Paid'
+                : payment.status === 'waived'
+                  ? 'Waived'
+                  : payment.status === 'cancelled'
+                    ? 'Cancelled'
+                    : 'Awaiting payment';
+          const isSettled = payment.status === 'paid' || payment.status === 'waived';
+          setFormDisabled(isSettled);
+
+          summaryTarget.innerHTML = `
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Registration summary</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">${escapeHtml(registration.programTitle || program.title || 'Program')}</h2>
+            <div class="mt-5 grid gap-3 text-sm leading-7 text-stone-700">
+              <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Fee:</span> ${escapeHtml(payment.amountLabel || program.fee || 'To be confirmed')}</div>
+              <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Payment status:</span> ${escapeHtml(paymentStatus)}</div>
+              <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Program date:</span> ${escapeHtml(program.dateLabel || program.startsAt || 'TBC')}</div>
+              <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Format:</span> ${escapeHtml(program.format || 'TBC')}</div>
+              <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Location:</span> ${escapeHtml(program.location || 'TBC')}</div>
+              ${
+                payment.submittedAt
+                  ? `<div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Submitted:</span> ${escapeHtml(formatDate(payment.submittedAt))}</div>`
+                  : ''
+              }
+              ${
+                payment.confirmedAt
+                  ? `<div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Confirmed:</span> ${escapeHtml(formatDate(payment.confirmedAt))}</div>`
+                  : ''
+              }
+              ${
+                payment.slipAttachment?.url || payment.slipUrl
+                  ? `<div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Slip:</span> <a class="font-semibold text-red-700 underline" href="${escapeHtml(resolveMediaUrl(payment.slipAttachment?.url) || payment.slipUrl)}" target="_blank" rel="noreferrer">${escapeHtml(payment.slipAttachment?.name || 'Open uploaded slip')}</a></div>`
+                  : ''
+              }
+            </div>
+            ${
+              payment.reviewNote
+                ? `<div class="mt-5 rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-4 py-4 text-sm leading-7 text-stone-600"><span class="font-semibold text-stone-900">Review note:</span> ${escapeHtml(payment.reviewNote)}</div>`
+                : ''
+            }
+            ${
+              isSettled
+                ? `<div class="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-semibold leading-7 text-emerald-900">This fee has already been settled. The form is locked to avoid duplicate payment submissions.</div>`
+                : ''
+            }
+          `;
+        }
+
+        if (!token) {
+          redirectToLogin();
+        } else if (!registrationId) {
+          showNotification('Registration ID is missing. Open this page from your registration or member portal.');
+          if (summaryTarget) {
+            summaryTarget.innerHTML = '<p class="text-sm leading-7 text-stone-600">A registration ID is required to load payment details.</p>';
+          }
+        } else {
+          fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then(async (response) => {
+              const result = await response.json().catch(() => ({}));
+              if (!response.ok || !result?.data?.registration) {
+                throw new Error(result?.error?.message || result?.message || 'Unable to load payment details');
+              }
+
+              const data = result.data;
+              renderSummary(data);
+
+              if (form instanceof HTMLFormElement) {
+                const payment = data.payment ?? {};
+                const member = data.member ?? {};
+                const setInputValue = (name, value) => {
+                  const field = form.elements.namedItem(name);
+                  if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+                    field.value = value || '';
+                  }
+                };
+
+                setInputValue('paymentMethod', payment.paymentMethod || 'bank_transfer');
+                setInputValue('payerName', payment.payerName || member.fullName || '');
+                setInputValue('payerEmail', payment.payerEmail || member.email || '');
+                setInputValue('referenceCode', payment.referenceCode || '');
+                setInputValue('paidAt', toDatetimeLocalValue(payment.paidAt));
+                setInputValue('slipUrl', payment.slipUrl || '');
+                setInputValue('paymentNote', payment.paymentNote || '');
+              }
+            })
+            .catch((error) => {
+              showNotification(error instanceof Error ? error.message : 'Unable to load payment details');
+            });
+        }
+
+        form?.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (isPaymentLocked) {
+            showNotification('This fee has already been settled.', 'success');
+            return;
+          }
+          if (!registrationId) {
+            showNotification('Registration ID is missing.');
+            return;
+          }
+
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+          }
+
+          try {
+            const slipFile =
+              slipAttachmentInput instanceof HTMLInputElement && slipAttachmentInput.files
+                ? slipAttachmentInput.files[0]
+                : null;
+
+            if (slipFile) {
+              const uploadData = new FormData();
+              uploadData.append('file', slipFile);
+
+              const uploadResponse = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}/upload-slip`, {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                body: uploadData,
+              });
+
+              const uploadResult = await uploadResponse.json().catch(() => ({}));
+              if (!uploadResponse.ok) {
+                throw new Error(uploadResult?.error?.message || uploadResult?.message || 'Slip upload failed');
+              }
+            }
+
+            const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}/submit`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ data: Object.fromEntries(new FormData(form).entries()) }),
+            });
+
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result?.data?.payment) {
+              throw new Error(result?.error?.message || result?.message || 'Payment submission failed');
+            }
+
+            renderSummary(result.data);
+            if (slipAttachmentInput instanceof HTMLInputElement) {
+              slipAttachmentInput.value = '';
+            }
+            showNotification('Payment confirmation submitted. The team can now verify your fee.', 'success');
+          } catch (error) {
+            showNotification(error instanceof Error ? error.message : 'Payment submission failed');
+          } finally {
+            if (submitButton instanceof HTMLButtonElement) {
+              submitButton.disabled = false;
+              submitButton.textContent = 'Submit payment confirmation';
+            }
+          }
+        });
+      </script>
+    </section>
+  )}
+</MainLayout>

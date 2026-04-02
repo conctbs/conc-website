@@ -50,7 +50,7 @@ export const headerData = {
       ],
     },
   ],
-  actions: [{ text: 'Contact Us', href: '/contact', variant: 'secondary' as const }],
+  actions: [{ text: 'Contact Us', href: '/contact', variant: 'secondary' as const, icon: 'tabler:mail' }],
 };
 
 export const footerData = {

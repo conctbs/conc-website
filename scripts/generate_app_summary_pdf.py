@@ -151,7 +151,7 @@ def build_pdf() -> None:
                 ListItem(Paragraph(item, styles["bullet"]), bulletColor=colors.HexColor("#9f2d20"))
                 for item in [
                     "If dependencies are missing, run `npm install` in this repo.",
-                    "Start the sibling backend at `/home/saton/my-strapi-concwebsite` with `npm run develop`.",
+                    "Start the sibling backend at `/home/saton/mynew-project-strapi` with `npm run develop`.",
                     "Use `PUBLIC_STRAPI_URL=http://127.0.0.1:1337/api` (the local `.env` already points there per README).",
                     "Run `npm run dev` here, then open `localhost:4321`.",
                     "Optional checks: `npm run smoke:endpoints` or `npm run smoke:local`.",

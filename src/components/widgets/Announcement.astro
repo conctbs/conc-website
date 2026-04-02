@@ -1,4 +1,5 @@
 ---
+import { Icon } from 'astro-icon/components';
 ---
 
 <div
@@ -13,6 +14,9 @@
   <span class="text-white/40">|</span>
   <a class="font-medium text-white/90 transition hover:text-white" href="tel:+66000000000">+66 (0)0 000 0000</a>
   <span class="text-white/40">|</span>
-  <a class="font-medium text-white/90 transition hover:text-white" href="/member-login">Member Login</a>
+  <a class="inline-flex items-center gap-1.5 font-medium text-white/90 transition hover:text-white" href="/member-login">
+    <Icon name="tabler:user-circle" class="h-4 w-4 shrink-0" />
+    Member Login
+  </a>
   <span class="ml-auto text-white/70">Executive education, consulting, and lifelong learning</span>
 </div>

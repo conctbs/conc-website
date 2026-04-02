@@ -5,7 +5,21 @@ Astro frontend for the CONC website. It consumes the Strapi API exposed by the b
 Local development API target via `.env`: `http://127.0.0.1:1337/api`
 Smoke-test API target: `http://127.0.0.1:1338/api`
 
-The local `.env` also enables `STRAPI_STRICT_MODE=true`, so Astro will fail fast instead of silently using fallback content when the PostgreSQL-backed Strapi API is unavailable.
+Copy `.env.example` to `.env` if you want a clean local starting point.
+
+For full integration testing, enable `STRAPI_STRICT_MODE=true` so Astro fails fast instead of silently using fallback content when the PostgreSQL-backed Strapi API is unavailable.
+
+If the backend is currently unavailable and you only need the frontend to stay online, switch to frontend-only mode:
+
+```env
+STRAPI_STRICT_MODE=false
+PUBLIC_DISABLE_BACKEND=true
+PUBLIC_DISABLE_MEMBER_PORTAL=true
+```
+
+In that mode, content pages use fallback data and member/registration flows render a non-interactive maintenance state instead of calling the broken backend.
+
+When `PUBLIC_DISABLE_BACKEND=false` and Strapi is simply down, Astro still falls back to bundled content in development. The dev server now logs a short warning instead of printing a full fetch stack trace for every request.
 
 ## Commands
 
@@ -20,20 +34,22 @@ The local `.env` also enables `STRAPI_STRICT_MODE=true`, so Astro will fail fast
 
 ## Local Development
 
-The project includes a local `.env` file that points `PUBLIC_STRAPI_URL` to `http://127.0.0.1:1337/api`, which matches the main Strapi development server, and enables strict API mode for real-data integration checks.
+The project includes a local `.env` file that points `PUBLIC_STRAPI_URL` to `http://127.0.0.1:1337/api`, which matches the main Strapi development server.
 
-1. In `/home/saton/my-strapi-concwebsite`, run `npm run develop`.
+When frontend-only mode is enabled, `npm run dev` no longer depends on a healthy Strapi instance.
+
+1. In `/home/saton/mynew-project-strapi`, run `npm run develop`.
 2. In this project, run `npm run dev`.
 
 ## Local Smoke Flow
 
-1. In `/home/saton/my-strapi-concwebsite`, run `npm run smoke:start`.
+1. In `/home/saton/mynew-project-strapi`, run `npm run smoke:start`.
 2. In this project, run `npm run smoke:local`.
 
 The backend smoke script starts Strapi on `127.0.0.1:1338` with seeded SQLite sample data, including a closed-registration program used by the negative registration test.
 
 If you want one command that manages both steps, run `npm run smoke:local:e2e`.
-It expects the backend repo at `/home/saton/my-strapi-concwebsite` by default, or you can override it with `BACKEND_DIR=/path/to/backend`.
+It expects the backend repo at `/home/saton/mynew-project-strapi` by default, or you can override it with `BACKEND_DIR=/path/to/backend`.
 
 ## CI
 

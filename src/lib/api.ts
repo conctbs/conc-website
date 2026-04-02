@@ -2,9 +2,15 @@ import { fallbackContent } from "./fallback-content";
 
 const STRAPI_BASE_URL = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
+export const BACKEND_DISABLED = import.meta.env.PUBLIC_DISABLE_BACKEND === "true";
+export const MEMBER_PORTAL_DISABLED =
+  BACKEND_DISABLED || import.meta.env.PUBLIC_DISABLE_MEMBER_PORTAL === "true";
+const FALLBACK_LOG_TTL_MS = 15_000;
+const fallbackLogTimestamps = new Map<string, number>();
 // Keep local dev usable with fallback content when Strapi is offline,
 // but preserve strict failures for build/CI when explicitly enabled.
-const STRAPI_STRICT_MODE = import.meta.env.STRAPI_STRICT_MODE === "true" && !import.meta.env.DEV;
+const STRAPI_STRICT_MODE =
+  !BACKEND_DISABLED && import.meta.env.STRAPI_STRICT_MODE === "true" && !import.meta.env.DEV;
 
 function isSandboxNetworkError(error: unknown) {
   if (!error || typeof error !== "object") {
@@ -16,6 +22,68 @@ function isSandboxNetworkError(error: unknown) {
     record.cause && typeof record.cause === "object" ? (record.cause as { code?: unknown }) : null;
 
   return cause?.code === "EPERM";
+}
+
+function getErrorCode(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return null;
+  }
+
+  const record = error as { code?: unknown; cause?: unknown };
+  if (typeof record.code === "string") {
+    return record.code;
+  }
+
+  if (record.cause && typeof record.cause === "object") {
+    const nestedCode = (record.cause as { code?: unknown }).code;
+    return typeof nestedCode === "string" ? nestedCode : null;
+  }
+
+  return null;
+}
+
+function getFallbackLogKey(path: string, error: unknown) {
+  return `${path}:${getErrorCode(error) ?? "unknown"}`;
+}
+
+function shouldLogFallback(path: string, error: unknown) {
+  const key = getFallbackLogKey(path, error);
+  const now = Date.now();
+  const lastLoggedAt = fallbackLogTimestamps.get(key) ?? 0;
+
+  if (now - lastLoggedAt < FALLBACK_LOG_TTL_MS) {
+    return false;
+  }
+
+  fallbackLogTimestamps.set(key, now);
+  return true;
+}
+
+function formatFallbackReason(error: unknown) {
+  const code = getErrorCode(error);
+  if (code === "ECONNREFUSED") {
+    return `connection refused at ${STRAPI_BASE_URL}`;
+  }
+
+  if (code === "EPERM") {
+    return `network access blocked for ${STRAPI_BASE_URL}`;
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return "unknown error";
+}
+
+function logFallback(path: string, error: unknown) {
+  if (!import.meta.env.DEV || !shouldLogFallback(path, error)) {
+    return;
+  }
+
+  console.warn(
+    `[api] Falling back for ${path} because Strapi is unavailable: ${formatFallbackReason(error)}`,
+  );
 }
 
 export type Media = {
@@ -267,6 +335,11 @@ export type SiteSettingDto = {
   siteDescription: string | null;
   contactEmail: string | null;
   contactPhone: string | null;
+  paymentBankName: string | null;
+  paymentAccountName: string | null;
+  paymentAccountNumber: string | null;
+  paymentPromptpayId: string | null;
+  paymentInstructions: string | null;
   address: string | null;
   facebookUrl: string | null;
   lineUrl: string | null;
@@ -395,6 +468,10 @@ function getFallbackCollection<T>(path: string): T[] {
 }
 
 async function fetchJson<T>(path: string): Promise<T | null> {
+  if (BACKEND_DISABLED) {
+    return getFallbackJson<T>(path);
+  }
+
   try {
     const response = await fetch(`${STRAPI_BASE_URL}${path}`);
 
@@ -411,14 +488,16 @@ async function fetchJson<T>(path: string): Promise<T | null> {
     if (STRAPI_STRICT_MODE && !isSandboxNetworkError(error)) {
       throw error;
     }
-    if (import.meta.env.DEV) {
-      console.warn(`[api] Falling back for ${path} because Strapi is unavailable.`, error);
-    }
+    logFallback(path, error);
     return getFallbackJson<T>(path);
   }
 }
 
 async function fetchCollection<T>(path: string): Promise<T[]> {
+  if (BACKEND_DISABLED) {
+    return getFallbackCollection<T>(path);
+  }
+
   try {
     const response = await fetch(`${STRAPI_BASE_URL}${path}`);
 
@@ -435,9 +514,7 @@ async function fetchCollection<T>(path: string): Promise<T[]> {
     if (STRAPI_STRICT_MODE && !isSandboxNetworkError(error)) {
       throw error;
     }
-    if (import.meta.env.DEV) {
-      console.warn(`[api] Falling back for ${path} because Strapi is unavailable.`, error);
-    }
+    logFallback(path, error);
     return getFallbackCollection<T>(path);
   }
 }

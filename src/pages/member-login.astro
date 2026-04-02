@@ -1,10 +1,11 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { getSiteSetting } from "../lib/api";
+import { MEMBER_PORTAL_DISABLED, getSiteSetting } from "../lib/api";
 
 const siteSetting = await getSiteSetting();
 const title = siteSetting?.siteName ? `Member Login | ${siteSetting.siteName}` : "Member Login | CONC";
 const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
 ---
 
 <MainLayout title={title} siteSetting={siteSetting}>
@@ -15,10 +16,12 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
           Member Portal
         </p>
         <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
-          Program Member Access
+          {MEMBER_PORTAL_DISABLED ? "Member access is temporarily unavailable" : "Program Member Access"}
         </h1>
         <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">
-          Participants become members automatically after registering for a program. This page is for signing in later or setting a password for the first time.
+          {MEMBER_PORTAL_DISABLED
+            ? "The frontend is running in standalone mode while the member backend is unavailable. Login, first-time activation, and password setup are temporarily disabled."
+            : "Participants become members automatically after registering for a program. This page is for signing in later or setting a password for the first time."}
         </p>
 
         <div class="mt-10 grid gap-6 md:grid-cols-2">
@@ -26,89 +29,108 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">First-time access</p>
             <h2 class="mt-4 text-2xl font-semibold text-stone-900">Set your password</h2>
             <p class="mt-3 text-sm leading-7 text-stone-600">
-              If you just completed a program registration, you are already a member. Use the same email and phone number from the registration form to set a password for future sign-ins.
+              {MEMBER_PORTAL_DISABLED
+                ? "The activation endpoint is disabled until the backend member service is restored."
+                : "If you just completed a program registration, you are already a member. Use the same email and phone number from the registration form to set a password for future sign-ins."}
             </p>
 
-            <form id="member-activate-form" class="mt-6 grid gap-4">
-              <label class="grid gap-2">
-                <span class="text-sm font-medium text-stone-700">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="name@example.com"
-                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                />
-              </label>
-              <label class="grid gap-2">
-                <span class="text-sm font-medium text-stone-700">Phone</span>
-                <input
-                  name="phone"
-                  type="tel"
-                  required
-                  placeholder="0800000000"
-                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                />
-              </label>
-              <label class="grid gap-2">
-                <span class="text-sm font-medium text-stone-700">New password</span>
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  minlength="8"
-                  placeholder="At least 8 characters"
-                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                />
-              </label>
-              <label class="grid gap-2">
-                <span class="text-sm font-medium text-stone-700">Confirm password</span>
-                <input
-                  name="passwordConfirmation"
-                  type="password"
-                  required
-                  minlength="8"
-                  placeholder="Repeat the new password"
-                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                />
-              </label>
-              <button class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Set password</button>
-            </form>
+            {MEMBER_PORTAL_DISABLED ? (
+              <div class="mt-6 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-5 text-sm leading-7 text-stone-600">
+                Contact the team at <a class="font-semibold text-red-700 underline" href={`mailto:${supportEmail}`}>{supportEmail}</a> if you need manual help with account access while the backend is offline.
+              </div>
+            ) : (
+              <form id="member-activate-form" class="mt-6 grid gap-4">
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-stone-700">Email</span>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="name@example.com"
+                    class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-stone-700">Phone</span>
+                  <input
+                    name="phone"
+                    type="tel"
+                    required
+                    placeholder="0800000000"
+                    class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-stone-700">New password</span>
+                  <input
+                    name="password"
+                    type="password"
+                    required
+                    minlength="8"
+                    placeholder="At least 8 characters"
+                    class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-stone-700">Confirm password</span>
+                  <input
+                    name="passwordConfirmation"
+                    type="password"
+                    required
+                    minlength="8"
+                    placeholder="Repeat the new password"
+                    class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
+                <button class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Set password</button>
+              </form>
+            )}
           </article>
 
           <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.22)] md:p-8">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Returning member</p>
             <h2 class="mt-4 text-2xl font-semibold text-stone-900">Sign in</h2>
             <p class="mt-3 text-sm leading-7 text-stone-600">
-              After activation, use your email and password to open your member portal and see the programs linked to your registration.
-            </p>
-            <p class="mt-3 text-sm leading-7">
-              <a class="font-semibold text-red-700 underline" href="/member-forgot-password">Forgot your password?</a>
+              {MEMBER_PORTAL_DISABLED
+                ? "Sign-in is disabled until the backend member service comes back."
+                : "After activation, use your email and password to open your member portal and see the programs linked to your registration."}
             </p>
 
-            <form id="member-login-form" class="mt-6 grid gap-4">
-              <label class="grid gap-2">
-                <span class="text-sm font-medium text-stone-700">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="name@example.com"
-                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                />
-              </label>
-              <label class="grid gap-2">
-                <span class="text-sm font-medium text-stone-700">Password</span>
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  placeholder="Enter your password"
-                  class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
-                />
-              </label>
-              <button class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Sign in</button>
-            </form>
+            {!MEMBER_PORTAL_DISABLED && (
+              <p class="mt-3 text-sm leading-7">
+                <a class="font-semibold text-red-700 underline" href="/member-forgot-password">Forgot your password?</a>
+              </p>
+            )}
+
+            {MEMBER_PORTAL_DISABLED ? (
+              <div class="mt-6 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-5 text-sm leading-7 text-stone-600">
+                Use the support path below for urgent member access requests. This page is intentionally non-interactive while the backend is unavailable.
+              </div>
+            ) : (
+              <form id="member-login-form" class="mt-6 grid gap-4">
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-stone-700">Email</span>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="name@example.com"
+                    class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-stone-700">Password</span>
+                  <input
+                    name="password"
+                    type="password"
+                    required
+                    placeholder="Enter your password"
+                    class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
+                <button class="btn-primary !rounded-md !px-7 !py-3.5 !border-0" type="submit">Sign in</button>
+              </form>
+            )}
           </article>
         </div>
       </div>
@@ -133,22 +155,24 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
           <article class="rounded-2xl border border-stone-200 bg-white p-5">
             <h2 class="text-lg font-semibold text-stone-900">Support path</h2>
             <p class="mt-2 text-sm leading-7 text-stone-600">
-              If your registration email or phone does not match, contact the team so your member record can be corrected.
+              If your registration email or phone does not match, or if the member backend is offline, contact <a class="font-semibold text-red-700 underline" href={`mailto:${supportEmail}`}>{supportEmail}</a>.
             </p>
           </article>
         </div>
 
-        <div
-          id="member-auth-notification"
-          class="mt-6 hidden rounded-2xl bg-emerald-700 px-4 py-4 text-sm font-semibold leading-6 text-white data-[type=error]:bg-red-700"
-          hidden
-          aria-live="polite"
-        ></div>
+        {!MEMBER_PORTAL_DISABLED && (
+          <div
+            id="member-auth-notification"
+            class="mt-6 hidden rounded-2xl bg-emerald-700 px-4 py-4 text-sm font-semibold leading-6 text-white data-[type=error]:bg-red-700"
+            hidden
+            aria-live="polite"
+          ></div>
+        )}
       </aside>
     </div>
   </section>
 
-  <script is:inline define:vars={{ strapiBaseUrl }}>
+  {!MEMBER_PORTAL_DISABLED && <script is:inline define:vars={{ strapiBaseUrl }}>
     const authTokenStorageKey = 'concMemberToken';
     const notification = document.getElementById('member-auth-notification');
     const activateForm = document.getElementById('member-activate-form');
@@ -225,5 +249,5 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
       event.preventDefault();
       await submitMemberAuthForm(loginForm, '/member-accounts/login-public', 'Signing in...');
     });
-  </script>
+  </script>}
 </MainLayout>

@@ -1,7 +1,7 @@
 ---
 import MainLayout from '../../../layouts/MainLayout.astro';
 import PageCover from '../../../components/PageCover.astro';
-import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../../lib/api';
+import { MEMBER_PORTAL_DISABLED, getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../../lib/api';
 
 export async function getStaticPaths() {
   const slugs = await getProgramSlugs();
@@ -12,6 +12,8 @@ const { slug = '' } = Astro.params;
 const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
 const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID ?? '';
 const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1338/api';
+const supportEmail = siteSetting?.contactEmail ?? 'contact@conc.th';
+const registrationAvailable = Boolean(program?.registrationEnabled) && !MEMBER_PORTAL_DISABLED;
 
 if (!program) {
   Astro.response.status = 404;
@@ -27,8 +29,10 @@ if (!program) {
           Register for {program.title}
         </h1>
         <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">
-          {program.registrationEnabled
+          {registrationAvailable
             ? 'Fill the short form manually or use a Google account to prefill name and email before sending the registration into Strapi.'
+            : MEMBER_PORTAL_DISABLED
+              ? 'Program registrations are temporarily disabled because the member backend is unavailable. You can still review the program details and contact the team for manual follow-up.'
             : 'Registration is currently closed for this program. You can still review the details or contact the team for the next intake.'}
         </p>
       </div>
@@ -66,7 +70,7 @@ if (!program) {
         </div>
 
         <div class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
-          {program.registrationEnabled ? (
+          {registrationAvailable ? (
             <>
               <form id="registration-form" class="grid gap-5">
                 <input type="hidden" name="programSlug" value={program.slug} />
@@ -184,6 +188,20 @@ if (!program) {
                 aria-live="polite"
               ></div>
             </>
+          ) : MEMBER_PORTAL_DISABLED ? (
+            <div class="grid gap-4">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Temporarily unavailable</p>
+              <h2 class="text-3xl font-semibold leading-tight text-stone-900">Online registration is paused</h2>
+              <p class="max-w-2xl text-base leading-8 text-stone-600">
+                The registration and member APIs are offline right now. Contact <a class="font-semibold text-red-700 underline" href={`mailto:${supportEmail}`}>{supportEmail}</a> if you want the team to record your interest manually.
+              </p>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact the team</a>
+                <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href={`/programs/${program.slug}`}>
+                  Back to program details
+                </a>
+              </div>
+            </div>
           ) : (
             <div class="grid gap-4">
               <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Closed</p>
@@ -202,7 +220,7 @@ if (!program) {
         </div>
       </div>
 
-      {program.registrationEnabled && (
+      {registrationAvailable && (
         <script is:inline define:vars={{ googleClientId, strapiBaseUrl, programSlug: program.slug }}>
         const form = document.getElementById('registration-form');
         const notification = document.getElementById('form-notification');
@@ -379,9 +397,10 @@ if (!program) {
             if (result?.data?.memberAuth?.token) {
               window.localStorage.setItem(authTokenStorageKey, result.data.memberAuth.token);
             }
-            showNotification('Registration submitted and member access is ready. Redirecting you to your member portal.', 'success');
+            const registrationId = result?.data?.id;
+            showNotification('Registration submitted. Redirecting you to the payment page.', 'success');
             window.setTimeout(() => {
-              window.location.href = '/member-portal';
+              window.location.href = registrationId ? `/member-payment?registrationId=${encodeURIComponent(String(registrationId))}` : '/member-portal';
             }, 1400);
           } catch (error) {
             showNotification(error instanceof Error ? error.message : 'Registration failed', 'error');

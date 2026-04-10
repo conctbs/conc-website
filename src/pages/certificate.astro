@@ -1,0 +1,279 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+const title = siteSetting?.siteName ? `Certificate | ${siteSetting.siteName}` : "Certificate | CONC";
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+---
+
+<MainLayout title={title} siteSetting={siteSetting}>
+  <section class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Certificate Verification</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Certificate of Completion</h1>
+      <p class="mt-4 text-lg leading-8 text-stone-600">
+        Open a CONC certificate by using the verification link from the member portal or by adding a certificate code to this page.
+      </p>
+    </div>
+
+    <div class="mx-auto mt-10 max-w-3xl rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)] md:p-8">
+      <form id="certificate-lookup-form" class="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <label class="grid gap-2">
+          <span class="text-sm font-medium text-stone-700">Certificate code</span>
+          <input
+            id="certificate-code-input"
+            name="code"
+            type="text"
+            placeholder="CONC-2026-ABC123"
+            class="rounded-2xl border border-stone-300 px-4 py-3 text-stone-900 outline-none transition focus:border-red-600 focus:ring-2 focus:ring-red-100"
+          />
+        </label>
+        <button class="btn-primary !rounded-md !px-6 !py-3 !border-0" type="submit">Open certificate</button>
+      </form>
+
+      <div id="certificate-feedback" class="mt-5 hidden rounded-2xl px-4 py-4 text-sm font-semibold leading-6" hidden></div>
+    </div>
+
+    <div id="certificate-loading" class="mx-auto mt-8 hidden max-w-5xl rounded-[1.75rem] border border-dashed border-stone-300 bg-stone-50 px-6 py-10 text-center text-sm leading-7 text-stone-600" hidden>
+      Loading certificate...
+    </div>
+
+    <article id="certificate-card" class="certificate-card mx-auto mt-8 hidden max-w-5xl overflow-hidden rounded-[2rem] border border-[#d7c7a0] bg-[#fffaf0] shadow-[0_30px_90px_-40px_rgba(41,37,36,0.28)]" hidden>
+      <div class="certificate-frame p-4 md:p-7">
+        <div class="certificate-inner rounded-[1.7rem] border border-[#c8b37a] px-6 py-8 md:px-12 md:py-12">
+          <div class="flex flex-wrap items-start justify-between gap-6">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-amber-800">CONC Certificate</p>
+              <p class="mt-4 text-sm uppercase tracking-[0.16em] text-stone-500">This certifies that</p>
+            </div>
+            <button id="certificate-print-button" class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-2.5 !text-sm !text-stone-800 print:hidden" type="button">
+              Print / Save PDF
+            </button>
+          </div>
+
+          <h2 id="certificate-recipient" class="mt-8 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl"></h2>
+          <p class="mt-8 text-lg leading-8 text-stone-700">
+            has successfully completed the learning program
+          </p>
+          <p id="certificate-program-title" class="mt-4 text-2xl font-semibold leading-snug text-amber-900 md:text-4xl"></p>
+
+          <div class="mt-10 grid gap-4 border-t border-[#d7c7a0] pt-8 text-sm leading-7 text-stone-700 md:grid-cols-2">
+            <div class="rounded-2xl bg-white/70 px-5 py-4">
+              <p class="font-semibold text-stone-900">Program date</p>
+              <p id="certificate-program-date" class="mt-1"></p>
+            </div>
+            <div class="rounded-2xl bg-white/70 px-5 py-4">
+              <p class="font-semibold text-stone-900">Format / location</p>
+              <p id="certificate-program-format" class="mt-1"></p>
+            </div>
+            <div class="rounded-2xl bg-white/70 px-5 py-4">
+              <p class="font-semibold text-stone-900">Completed on</p>
+              <p id="certificate-completed-at" class="mt-1"></p>
+            </div>
+            <div class="rounded-2xl bg-white/70 px-5 py-4">
+              <p class="font-semibold text-stone-900">Issued on</p>
+              <p id="certificate-issued-at" class="mt-1"></p>
+            </div>
+          </div>
+
+          <div class="mt-10 flex flex-wrap items-end justify-between gap-6 border-t border-[#d7c7a0] pt-8">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Certificate code</p>
+              <p id="certificate-code" class="mt-2 text-base font-semibold tracking-[0.08em] text-stone-900"></p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Issued by</p>
+              <p class="mt-2 text-xl font-semibold text-stone-900">CONC</p>
+              <p class="text-sm text-stone-600">College of Innovation, Thammasat University</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <style>
+    .certificate-card {
+      background:
+        radial-gradient(circle at top left, rgba(217, 119, 6, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(180, 83, 9, 0.08), transparent 24%),
+        #fffaf0;
+    }
+
+    .certificate-frame {
+      background:
+        linear-gradient(135deg, rgba(200, 179, 122, 0.12), rgba(255, 255, 255, 0.75)),
+        #fffdf7;
+    }
+
+    @media print {
+      header,
+      footer,
+      nav,
+      .print\:hidden {
+        display: none !important;
+      }
+
+      main {
+        padding: 0 !important;
+      }
+
+      .certificate-card {
+        display: block !important;
+        margin: 0 !important;
+        max-width: none !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+    }
+  </style>
+
+  <script is:inline define:vars={{ strapiBaseUrl }}>
+    const feedbackTarget = document.getElementById('certificate-feedback');
+    const loadingTarget = document.getElementById('certificate-loading');
+    const certificateCard = document.getElementById('certificate-card');
+    const lookupForm = document.getElementById('certificate-lookup-form');
+    const codeInput = document.getElementById('certificate-code-input');
+    const printButton = document.getElementById('certificate-print-button');
+
+    const fieldTargets = {
+      recipient: document.getElementById('certificate-recipient'),
+      programTitle: document.getElementById('certificate-program-title'),
+      programDate: document.getElementById('certificate-program-date'),
+      programFormat: document.getElementById('certificate-program-format'),
+      completedAt: document.getElementById('certificate-completed-at'),
+      issuedAt: document.getElementById('certificate-issued-at'),
+      code: document.getElementById('certificate-code'),
+    };
+
+    function showFeedback(message, type = 'error') {
+      if (!feedbackTarget) return;
+      feedbackTarget.hidden = false;
+      feedbackTarget.classList.remove('hidden', 'bg-red-700', 'text-white', 'bg-emerald-700');
+      feedbackTarget.textContent = message;
+
+      if (type === 'success') {
+        feedbackTarget.classList.add('bg-emerald-700', 'text-white');
+      } else {
+        feedbackTarget.classList.add('bg-red-700', 'text-white');
+      }
+    }
+
+    function clearFeedback() {
+      if (!feedbackTarget) return;
+      feedbackTarget.hidden = true;
+      feedbackTarget.classList.add('hidden');
+      feedbackTarget.textContent = '';
+    }
+
+    function setLoading(loading) {
+      if (!loadingTarget) return;
+      loadingTarget.hidden = !loading;
+      loadingTarget.classList.toggle('hidden', !loading);
+    }
+
+    function hideCertificate() {
+      if (!certificateCard) return;
+      certificateCard.hidden = true;
+      certificateCard.classList.add('hidden');
+    }
+
+    function showCertificate() {
+      if (!certificateCard) return;
+      certificateCard.hidden = false;
+      certificateCard.classList.remove('hidden');
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime())
+        ? value
+        : date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Asia/Bangkok',
+          });
+    }
+
+    function setText(target, value) {
+      if (!target) return;
+      target.textContent = value || '-';
+    }
+
+    function updateUrl(code) {
+      const nextUrl = new URL(window.location.href);
+      if (code) {
+        nextUrl.searchParams.set('code', code);
+      } else {
+        nextUrl.searchParams.delete('code');
+      }
+      window.history.replaceState({}, '', nextUrl);
+    }
+
+    async function loadCertificate(rawCode) {
+      const code = String(rawCode || '').trim().toUpperCase();
+      if (!code) {
+        hideCertificate();
+        showFeedback('Enter a certificate code to open a certificate.');
+        updateUrl('');
+        return;
+      }
+
+      clearFeedback();
+      hideCertificate();
+      setLoading(true);
+      updateUrl(code);
+
+      try {
+        if (codeInput instanceof HTMLInputElement) {
+          codeInput.value = code;
+        }
+
+        const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/program-registrations/certificates/${encodeURIComponent(code)}`);
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result?.data) {
+          throw new Error(result?.error?.message || result?.message || 'Certificate was not found');
+        }
+
+        const certificate = result.data;
+        const program = certificate.program ?? {};
+
+        setText(fieldTargets.recipient, certificate.recipientName || '-');
+        setText(fieldTargets.programTitle, program.title || '-');
+        setText(fieldTargets.programDate, program.dateLabel || program.startsAt || '-');
+        setText(
+          fieldTargets.programFormat,
+          [program.format, program.location].filter(Boolean).join(' | ') || '-',
+        );
+        setText(fieldTargets.completedAt, formatDate(certificate.completedAt));
+        setText(fieldTargets.issuedAt, formatDate(certificate.issuedAt));
+        setText(fieldTargets.code, certificate.code || code);
+
+        showCertificate();
+      } catch (error) {
+        showFeedback(error instanceof Error ? error.message : 'Certificate was not found');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    lookupForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(lookupForm);
+      void loadCertificate(formData.get('code'));
+    });
+
+    printButton?.addEventListener('click', () => {
+      window.print();
+    });
+
+    const initialCode = new URL(window.location.href).searchParams.get('code');
+    if (initialCode) {
+      void loadCertificate(initialCode);
+    }
+  </script>
+</MainLayout>

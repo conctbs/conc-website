@@ -271,6 +271,11 @@ const siteSetting: SiteSettingDto = {
   paymentPromptpayId: "0800000000",
   paymentInstructions:
     "Transfer the fee, then submit the payment reference and optional slip URL through the payment page so the team can verify your seat.",
+  paymentScbQrEnabled: false,
+  paymentScbQrInstructions:
+    "SCB QR can be enabled later by adding the SCB QR payment template and image URL template in site settings.",
+  paymentScbQrPayloadTemplate: null,
+  paymentScbQrImageUrlTemplate: null,
   address: "Bangkok, Thailand",
   facebookUrl: "https://facebook.com/",
   lineUrl: "https://line.me/",

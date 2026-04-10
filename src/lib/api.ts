@@ -340,6 +340,10 @@ export type SiteSettingDto = {
   paymentAccountNumber: string | null;
   paymentPromptpayId: string | null;
   paymentInstructions: string | null;
+  paymentScbQrEnabled: boolean;
+  paymentScbQrInstructions: string | null;
+  paymentScbQrPayloadTemplate: string | null;
+  paymentScbQrImageUrlTemplate: string | null;
   address: string | null;
   facebookUrl: string | null;
   lineUrl: string | null;

@@ -56,6 +56,47 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
             </div>
           </div>
 
+          <div id="scb-qr-panel" class="rounded-[1.75rem] border border-[#d8dff5] bg-[#f6f8ff] p-6 text-stone-900 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.16)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#4f46e5]">SCB QR</p>
+                <h2 class="mt-3 text-2xl font-semibold leading-tight text-stone-900">Personal payment reference</h2>
+              </div>
+              <span class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#4338ca]">Per registration</span>
+            </div>
+
+            <div class="mt-5 grid gap-4">
+              <div id="scb-qr-disabled-note" class="rounded-2xl border border-dashed border-[#c7d2fe] bg-white/80 px-4 py-4 text-sm leading-7 text-stone-600">
+                SCB QR is not active for this payment yet. When enabled, this section will show the learner-specific QR reference, payload, and QR image here.
+              </div>
+              <div class="rounded-2xl border border-white/80 bg-white px-4 py-4">
+                <p class="text-sm font-semibold text-stone-900">Reference code</p>
+                <p id="scb-qr-reference" class="mt-2 break-all text-lg font-semibold tracking-[0.08em] text-[#312e81]">-</p>
+              </div>
+              <div class="rounded-2xl border border-white/80 bg-white px-4 py-4">
+                <p class="text-sm font-semibold text-stone-900">Instructions</p>
+                <p id="scb-qr-instructions" class="mt-2 text-sm leading-7 text-stone-600">-</p>
+              </div>
+              <div id="scb-qr-required-note" class="hidden rounded-2xl border border-[#c7d2fe] bg-white px-4 py-4 text-sm font-semibold leading-7 text-[#312e81]" hidden>
+                This registration is set to use SCB QR only. Other payment methods are disabled for this learner.
+              </div>
+              <div id="scb-qr-image-wrap" class="hidden rounded-2xl border border-white/80 bg-white px-4 py-4" hidden>
+                <p class="text-sm font-semibold text-stone-900">QR image</p>
+                <img id="scb-qr-image" alt="SCB QR for this registration" class="mt-3 w-full rounded-2xl border border-stone-200 bg-white object-contain" />
+              </div>
+              <div id="scb-qr-payload-wrap" class="hidden rounded-2xl border border-white/80 bg-white px-4 py-4" hidden>
+                <div class="flex items-center justify-between gap-4">
+                  <p class="text-sm font-semibold text-stone-900">QR payload / deep link</p>
+                  <button id="scb-qr-copy-button" type="button" class="btn-secondary !rounded-md !border-stone-300 !px-4 !py-2 !text-xs !text-stone-800">Copy</button>
+                </div>
+                <p id="scb-qr-payload" class="mt-3 break-all text-sm leading-7 text-stone-600">-</p>
+              </div>
+              <div id="scb-qr-pending-note" class="hidden rounded-2xl border border-dashed border-[#c7d2fe] bg-white/80 px-4 py-4 text-sm leading-7 text-stone-600" hidden>
+                SCB QR is enabled for this payment flow, but the QR template has not been configured yet. You can still use the reference code below for manual reconciliation.
+              </div>
+            </div>
+          </div>
+
           <div id="payment-summary" class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-32px_rgba(41,37,36,0.18)]">
             <p class="text-sm leading-7 text-stone-600">Loading registration and payment details...</p>
           </div>
@@ -73,6 +114,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
               >
                 <option value="bank_transfer">Bank transfer</option>
                 <option value="promptpay">PromptPay</option>
+                <option value="scb_qr">SCB QR</option>
                 <option value="cash">Cash</option>
                 <option value="other">Other</option>
               </select>
@@ -161,6 +203,20 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         const notification = document.getElementById('payment-notification');
         const submitButton = document.getElementById('member-payment-submit');
         const slipAttachmentInput = document.getElementById('slipAttachment');
+        const paymentMethodInput = form instanceof HTMLFormElement ? form.elements.namedItem('paymentMethod') : null;
+        const referenceCodeInput = form instanceof HTMLFormElement ? form.elements.namedItem('referenceCode') : null;
+        const scbQrPanel = document.getElementById('scb-qr-panel');
+        const scbQrDisabledNote = document.getElementById('scb-qr-disabled-note');
+        const scbQrReference = document.getElementById('scb-qr-reference');
+        const scbQrInstructions = document.getElementById('scb-qr-instructions');
+        const scbQrImageWrap = document.getElementById('scb-qr-image-wrap');
+        const scbQrImage = document.getElementById('scb-qr-image');
+        const scbQrPayloadWrap = document.getElementById('scb-qr-payload-wrap');
+        const scbQrPayload = document.getElementById('scb-qr-payload');
+        const scbQrPendingNote = document.getElementById('scb-qr-pending-note');
+        const scbQrRequiredNote = document.getElementById('scb-qr-required-note');
+        const scbQrCopyButton = document.getElementById('scb-qr-copy-button');
+        let latestScbQr = null;
         let isPaymentLocked = false;
 
         function redirectToLogin() {
@@ -211,6 +267,79 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
           }
         }
 
+        function setElementText(target, value) {
+          if (!target) return;
+          target.textContent = value || '-';
+        }
+
+        function renderScbQr(data) {
+          latestScbQr = data ?? null;
+
+          if (!scbQrPanel) return;
+
+          const enabled = Boolean(data?.enabled);
+          if (scbQrDisabledNote) {
+            scbQrDisabledNote.hidden = enabled;
+            scbQrDisabledNote.classList.toggle('hidden', enabled);
+          }
+
+          setElementText(scbQrReference, enabled ? data?.referenceCode || '-' : '-');
+          setElementText(
+            scbQrInstructions,
+            enabled ? data?.instructions || 'Use this reference code for SCB QR payment.' : 'Enable SCB QR in Site Profile to populate this area.',
+          );
+
+          const imageUrl = data?.imageUrl || '';
+          if (scbQrImageWrap && scbQrImage instanceof HTMLImageElement) {
+            const hasImage = enabled && Boolean(imageUrl);
+            scbQrImageWrap.hidden = !hasImage;
+            scbQrImageWrap.classList.toggle('hidden', !hasImage);
+            if (hasImage) {
+              scbQrImage.src = imageUrl;
+            } else {
+              scbQrImage.removeAttribute('src');
+            }
+          }
+
+          const payload = data?.payload || '';
+          if (scbQrPayloadWrap) {
+            const hasPayload = enabled && Boolean(payload);
+            scbQrPayloadWrap.hidden = !hasPayload;
+            scbQrPayloadWrap.classList.toggle('hidden', !hasPayload);
+            setElementText(scbQrPayload, payload || '-');
+          }
+
+          if (scbQrPendingNote) {
+            const shouldShowPending = enabled && !data?.configured;
+            scbQrPendingNote.hidden = !shouldShowPending;
+            scbQrPendingNote.classList.toggle('hidden', !shouldShowPending);
+          }
+
+          if (scbQrRequiredNote) {
+            const required = enabled && Boolean(data?.required);
+            scbQrRequiredNote.hidden = !required;
+            scbQrRequiredNote.classList.toggle('hidden', !required);
+          }
+
+          if (
+            paymentMethodInput instanceof HTMLSelectElement
+          ) {
+            if (enabled && data?.required) {
+              paymentMethodInput.value = 'scb_qr';
+              paymentMethodInput.disabled = true;
+            } else {
+              paymentMethodInput.disabled = isPaymentLocked;
+              if (enabled && paymentMethodInput.value !== 'scb_qr' && !paymentMethodInput.value) {
+                paymentMethodInput.value = 'scb_qr';
+              }
+            }
+          }
+
+          if (referenceCodeInput instanceof HTMLInputElement && enabled && data?.referenceCode && !referenceCodeInput.value.trim()) {
+            referenceCodeInput.value = data.referenceCode;
+          }
+        }
+
         function setFormDisabled(disabled) {
           isPaymentLocked = disabled;
           if (!(form instanceof HTMLFormElement)) return;
@@ -246,6 +375,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                     : 'Awaiting payment';
           const isSettled = payment.status === 'paid' || payment.status === 'waived';
           setFormDisabled(isSettled);
+          renderScbQr(payment.scbQr ?? null);
 
           summaryTarget.innerHTML = `
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Registration summary</p>
@@ -253,6 +383,11 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
             <div class="mt-5 grid gap-3 text-sm leading-7 text-stone-700">
               <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Fee:</span> ${escapeHtml(payment.amountLabel || program.fee || 'To be confirmed')}</div>
               <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Payment status:</span> ${escapeHtml(paymentStatus)}</div>
+              ${
+                payment.scbQr?.referenceCode
+                  ? `<div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">SCB QR reference:</span> ${escapeHtml(payment.scbQr.referenceCode)}</div>`
+                  : ''
+              }
               <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Program date:</span> ${escapeHtml(program.dateLabel || program.startsAt || 'TBC')}</div>
               <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Format:</span> ${escapeHtml(program.format || 'TBC')}</div>
               <div class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3"><span class="font-semibold text-stone-900">Location:</span> ${escapeHtml(program.location || 'TBC')}</div>
@@ -318,9 +453,12 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                 };
 
                 setInputValue('paymentMethod', payment.paymentMethod || 'bank_transfer');
+                if (!payment.paymentMethod && payment.scbQr?.enabled) {
+                  setInputValue('paymentMethod', 'scb_qr');
+                }
                 setInputValue('payerName', payment.payerName || member.fullName || '');
                 setInputValue('payerEmail', payment.payerEmail || member.email || '');
-                setInputValue('referenceCode', payment.referenceCode || '');
+                setInputValue('referenceCode', payment.referenceCode || payment.scbQr?.referenceCode || '');
                 setInputValue('paidAt', toDatetimeLocalValue(payment.paidAt));
                 setInputValue('slipUrl', payment.slipUrl || '');
                 setInputValue('paymentNote', payment.paymentNote || '');
@@ -397,6 +535,31 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
               submitButton.disabled = false;
               submitButton.textContent = 'Submit payment confirmation';
             }
+          }
+        });
+
+        paymentMethodInput?.addEventListener('change', () => {
+          if (!(paymentMethodInput instanceof HTMLSelectElement) || !(referenceCodeInput instanceof HTMLInputElement)) {
+            return;
+          }
+
+          if (paymentMethodInput.value === 'scb_qr' && latestScbQr?.referenceCode && !referenceCodeInput.value.trim()) {
+            referenceCodeInput.value = latestScbQr.referenceCode;
+          }
+        });
+
+        scbQrCopyButton?.addEventListener('click', async () => {
+          const payload = latestScbQr?.payload || latestScbQr?.referenceCode || '';
+          if (!payload) {
+            showNotification('No SCB QR payload is available yet.');
+            return;
+          }
+
+          try {
+            await navigator.clipboard.writeText(payload);
+            showNotification('SCB QR data copied.', 'success');
+          } catch (_error) {
+            showNotification('Unable to copy the SCB QR data automatically.');
           }
         });
       </script>

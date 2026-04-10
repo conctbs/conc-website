@@ -246,6 +246,15 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                 : payment?.status === 'paid'
                   ? 'View payment'
                   : 'Pay fee';
+            const certificate = registration.certificate ?? null;
+            const certificateStatus =
+              certificate?.completionStatus === 'completed'
+                ? certificate?.issued
+                  ? 'Certificate issued'
+                  : 'Completed'
+                : certificate?.completionStatus === 'not_completed'
+                  ? 'Not completed'
+                  : 'In progress';
 
             return `
               <article class="rounded-2xl border border-stone-200 bg-stone-50 p-5">
@@ -259,10 +268,11 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                   <p><span class="font-semibold text-stone-900">Location:</span> ${escapeHtml(program.location || 'TBC')}</p>
                   <p><span class="font-semibold text-stone-900">Fee:</span> ${escapeHtml(payment?.amountLabel || program.fee || 'To be confirmed')}</p>
                   <p><span class="font-semibold text-stone-900">Payment:</span> ${escapeHtml(paymentStatus)}</p>
+                  <p><span class="font-semibold text-stone-900">Completion:</span> ${escapeHtml(certificateStatus)}</p>
                   ${
                     registration.cohortLabel
                       ? `<p><span class="font-semibold text-stone-900">Cohort:</span> ${escapeHtml(registration.cohortLabel)}</p>`
-                      : ''
+                    : ''
                   }
                   ${
                     registration.moduleLabel
@@ -279,6 +289,21 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                       ? `<p><span class="font-semibold text-stone-900">Payment confirmed:</span> ${escapeHtml(formatDate(payment.confirmedAt))}</p>`
                       : ''
                   }
+                  ${
+                    certificate?.completedAt
+                      ? `<p><span class="font-semibold text-stone-900">Completed at:</span> ${escapeHtml(formatDate(certificate.completedAt))}</p>`
+                      : ''
+                  }
+                  ${
+                    certificate?.issuedAt
+                      ? `<p><span class="font-semibold text-stone-900">Certificate issued:</span> ${escapeHtml(formatDate(certificate.issuedAt))}</p>`
+                      : ''
+                  }
+                  ${
+                    certificate?.code
+                      ? `<p><span class="font-semibold text-stone-900">Certificate code:</span> ${escapeHtml(certificate.code)}</p>`
+                      : ''
+                  }
                 </div>
                 ${program.summary ? `<p class="mt-4 text-sm leading-7 text-stone-600">${escapeHtml(program.summary)}</p>` : ''}
                 ${
@@ -291,9 +316,21 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                     ? `<p class="mt-4 text-sm leading-7 text-stone-600"><a class="font-semibold text-red-700 underline" href="${escapeHtml(resolveMediaUrl(payment?.slipAttachment?.url) || payment?.slipUrl)}" target="_blank" rel="noreferrer">Open payment slip</a></p>`
                     : ''
                 }
+                ${
+                  certificate?.issued
+                    ? `<p class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-7 text-emerald-900"><span class="font-semibold">Certificate ready:</span> Your certificate of completion has been issued and can be opened from the button below.</p>`
+                    : certificate?.completionStatus === 'completed'
+                      ? `<p class="mt-4 rounded-2xl border border-stone-200 bg-white px-4 py-4 text-sm leading-7 text-stone-600"><span class="font-semibold text-stone-900">Completion recorded:</span> Your completion is on record. The certificate will appear here as soon as it is issued.</p>`
+                      : ''
+                }
                 <div class="mt-5 flex flex-wrap gap-3">
                   ${program.slug ? `<a class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-2.5 !text-sm !text-stone-800" href="/programs/${encodeURIComponent(program.slug)}">Open program page</a>` : ''}
                   <a class="btn-primary !rounded-md !px-5 !py-2.5 !text-sm !border-0" href="/member-payment?registrationId=${encodeURIComponent(String(registration.id))}">${paymentButtonLabel}</a>
+                  ${
+                    certificate?.issued && certificate?.code
+                      ? `<a class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-2.5 !text-sm !text-stone-800" href="/certificate?code=${encodeURIComponent(certificate.code)}" target="_blank" rel="noreferrer">Open certificate</a>`
+                      : ''
+                  }
                 </div>
               </article>
             `;

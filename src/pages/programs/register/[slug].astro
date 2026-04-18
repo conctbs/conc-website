@@ -14,6 +14,10 @@ const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID ?? '';
 const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1338/api';
 const supportEmail = siteSetting?.contactEmail ?? 'contact@conc.th';
 const registrationAvailable = Boolean(program?.registrationEnabled) && !MEMBER_PORTAL_DISABLED;
+const registrationGoalLabel = program?.isForumEvent ? 'What do you want to discuss or learn from this forum?' : 'What do you want to solve?';
+const registrationGoalPlaceholder = program?.isForumEvent
+  ? 'Briefly describe the issues, questions, or sector context you want to bring into the forum'
+  : 'Briefly describe your training objective';
 
 if (!program) {
   Astro.response.status = 404;
@@ -30,7 +34,9 @@ if (!program) {
         </h1>
         <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">
           {registrationAvailable
-            ? 'Fill the short form manually or use a Google account to prefill name and email before sending the registration into Strapi.'
+            ? program.isForumEvent
+              ? 'Submit your seminar registration details here. The data is stored in Strapi with the selected forum topic, participant profile, and follow-up notes for review.'
+              : 'Fill the short form manually or use a Google account to prefill name and email before sending the registration into Strapi.'
             : MEMBER_PORTAL_DISABLED
               ? 'Program registrations are temporarily disabled because the member backend is unavailable. You can still review the program details and contact the team for manual follow-up.'
             : 'Registration is currently closed for this program. You can still review the details or contact the team for the next intake.'}
@@ -44,6 +50,7 @@ if (!program) {
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Program Summary</p>
             <h2 class="mt-4 text-3xl font-semibold leading-tight">{program.title}</h2>
             <p class="mt-4 text-base leading-8 text-stone-600">{program.summary}</p>
+            {program.registrationNote && <p class="mt-4 text-sm leading-7 text-stone-500">{program.registrationNote}</p>}
             <div class="mt-6 grid gap-3">
               <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm">
                 <span class="text-stone-500">Date</span>
@@ -113,11 +120,37 @@ if (!program) {
                   />
                 </label>
                 <label class="grid gap-2 font-semibold text-stone-900">
-                  <span>What do you want to solve?</span>
+                  <span>Position / Job title</span>
+                  <input
+                    name="jobTitle"
+                    type="text"
+                    class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+                  />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>{registrationGoalLabel}</span>
                   <textarea
                     name="goal"
                     rows="4"
-                    placeholder="Briefly describe your training objective"
+                    placeholder={registrationGoalPlaceholder}
+                    class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+                  ></textarea>
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Dietary requirements / accessibility notes</span>
+                  <textarea
+                    name="dietaryRequirements"
+                    rows="3"
+                    placeholder="Optional"
+                    class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
+                  ></textarea>
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Additional note</span>
+                  <textarea
+                    name="additionalNote"
+                    rows="3"
+                    placeholder="Anything the team should know before confirming your seat"
                     class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"
                   ></textarea>
                 </label>
@@ -209,6 +242,11 @@ if (!program) {
               <p class="max-w-2xl text-base leading-8 text-stone-600">
                 Please contact the team if you want to join the next cohort or need a private session for your organization.
               </p>
+              {program.seats != null && program.seats > 0 && (
+                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-stone-500">
+                  Capacity: {program.seats} seats
+                </p>
+              )}
               <div class="mt-3 flex flex-wrap gap-3">
                 <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact the team</a>
                 <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href={`/programs/${program.slug}`}>

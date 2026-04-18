@@ -2,16 +2,23 @@
 import InfoPage from "../../components/InfoPage.astro";
 import SectionRenderer from "../../components/SectionRenderer.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getPageBySlug, getSiteSetting } from "../../lib/api";
+import { getForumPrograms, getPageBySlug, getSiteSetting } from "../../lib/api";
 
-const [page, siteSetting] = await Promise.all([getPageBySlug("past-conc-thammasat-forum"), getSiteSetting()]);
+const [page, siteSetting, forumPrograms] = await Promise.all([
+  getPageBySlug("past-conc-thammasat-forum"),
+  getSiteSetting(),
+  getForumPrograms(),
+]);
+
 const title = page?.seo?.metaTitle ?? page?.title ?? "Past CONC Thammasat Forum | CONC";
+const today = new Date().toISOString().slice(0, 10);
+const archivedPrograms = forumPrograms.filter(
+  (program) => !program.registrationEnabled || (program.startsAt != null && program.startsAt < today),
+);
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? (
-    <SectionRenderer sections={page.sections} />
-  ) : (
+  {page ? <SectionRenderer sections={page.sections} /> : (
     <InfoPage
       eyebrow="Life Long Learning"
       title="Past CONC Thammasat Forum"
@@ -32,4 +39,36 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Past CONC Thammasat Forum 
       ]}
     />
   )}
+
+  <section class="mx-auto max-w-7xl px-4 pb-14 md:px-6 md:pb-20">
+    <div class="max-w-3xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Archive</p>
+      <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900 md:text-4xl">Past forum themes and seminar records</h2>
+      <p class="mt-4 text-base leading-8 text-stone-600">
+        Archived items stay in the same database structure, so topic history, speakers, agendas, and media can be reused or analyzed later.
+      </p>
+    </div>
+
+    <div class="mt-8 grid gap-5">
+      {archivedPrograms.map((program) => (
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white px-6 py-6 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.28)]">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-3xl">
+              <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+                <span class="rounded-full bg-stone-900 px-3 py-1 text-white">{program.forumSeriesLabel ?? "Forum Archive"}</span>
+                {program.dateLabel && <span>{program.dateLabel}</span>}
+                {program.location && <span>{program.location}</span>}
+                {program.seats != null && program.seats > 0 && <span>{program.seats} seats</span>}
+              </div>
+              <h3 class="mt-4 text-2xl font-semibold leading-tight text-stone-900">{program.title}</h3>
+              <p class="mt-3 text-base leading-8 text-stone-600">{program.summary}</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={`/programs/${program.slug}`}>Open archive details</a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 </MainLayout>

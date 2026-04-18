@@ -24,6 +24,8 @@ const { slug = '' } = Astro.params;
 const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
 const sampleContent = program ? programDetailContent[program.slug] ?? null : null;
 const heroImage = program ? programHeroImageBySlug[program.slug] ?? null : null;
+const backHref = program?.isForumEvent ? '/life-long-learning/conc-thammasat-forum' : '/programs';
+const backLabel = program?.isForumEvent ? 'Back to CONC Thammasat Forum' : 'Back to programs';
 
 if (!program) {
   Astro.response.status = 404;
@@ -33,18 +35,19 @@ if (!program) {
 <MainLayout title={program?.seo?.metaTitle ?? program?.title ?? 'Program'} seo={program?.seo} siteSetting={siteSetting}>
   {program ? (
     <article class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
-      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/programs">Back to programs</a>
+      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href={backHref}>{backLabel}</a>
 
       <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(20rem,0.92fr)]">
         <div>
           <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-            <span class="rounded-full bg-red-700 px-3 py-1 text-white">{program.category ?? 'Program'}</span>
+            <span class="rounded-full bg-red-700 px-3 py-1 text-white">{program.forumSeriesLabel ?? program.category ?? 'Program'}</span>
             {program.format && <span>{program.format}</span>}
             {program.dateLabel && <span>{program.dateLabel}</span>}
           </div>
           <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
             {program.title}
           </h1>
+          {program.tagline && <p class="mt-4 max-w-3xl text-xl leading-8 text-red-700">{program.tagline}</p>}
           <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{program.summary}</p>
           <div class="mt-8 flex flex-wrap gap-3">
             {program.registrationEnabled ? (
@@ -61,7 +64,16 @@ if (!program) {
         </div>
 
         <div class="grid gap-6">
-          {heroImage ? (
+          {program.coverImage?.url ? (
+            <figure class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+              <img
+                class="h-full w-full object-cover"
+                src={program.coverImage.url}
+                alt={program.coverImage.alternativeText ?? program.title}
+                loading="eager"
+              />
+            </figure>
+          ) : heroImage ? (
             <figure class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
               <img
                 class="h-full w-full object-cover"
@@ -102,6 +114,12 @@ if (!program) {
                 <p class="text-sm text-stone-500">Seats</p>
                 <p class="mt-2 text-base font-medium text-stone-900">{program.seats ? `${program.seats} seats` : 'TBC'}</p>
               </div>
+              {!program.registrationEnabled && (
+                <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <p class="text-sm text-red-600">Registration</p>
+                  <p class="mt-2 text-base font-medium text-red-700">Closed</p>
+                </div>
+              )}
             </div>
           </aside>
         </div>
@@ -123,6 +141,54 @@ if (!program) {
           </ul>
         </article>
       </section>
+
+      {(program.speakers.length > 0 || program.agendaItems.length > 0) && (
+        <section class="mt-6 grid gap-6 lg:grid-cols-2">
+          {program.speakers.length > 0 && (
+            <article class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Speakers</p>
+              <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Session contributors</h2>
+              <div class="mt-6 grid gap-4">
+                {program.speakers.map((speaker) => (
+                  <div class="rounded-2xl border border-stone-200 bg-stone-50 p-5">
+                    <p class="text-lg font-semibold text-stone-900">{speaker.name}</p>
+                    <p class="mt-1 text-sm font-medium text-red-700">{[speaker.role, speaker.organization].filter(Boolean).join(' | ')}</p>
+                    {speaker.bio && <p class="mt-3 text-sm leading-7 text-stone-600">{speaker.bio}</p>}
+                  </div>
+                ))}
+              </div>
+            </article>
+          )}
+          {program.agendaItems.length > 0 && (
+            <article class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Agenda</p>
+              <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Forum flow</h2>
+              <div class="mt-6 grid gap-4">
+                {program.agendaItems.map((item) => (
+                  <div class="rounded-2xl border border-stone-200 bg-stone-50 p-5">
+                    {item.timeLabel && <p class="text-xs font-semibold uppercase tracking-[0.16em] text-red-700">{item.timeLabel}</p>}
+                    <p class="mt-2 text-lg font-semibold text-stone-900">{item.title}</p>
+                    {item.speakerName && <p class="mt-1 text-sm font-medium text-stone-500">{item.speakerName}</p>}
+                    {item.description && <p class="mt-3 text-sm leading-7 text-stone-600">{item.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </article>
+          )}
+        </section>
+      )}
+
+      {program.gallery.length > 0 && (
+        <section class="mt-6 rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Gallery</p>
+          <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Event visuals</h2>
+          <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {program.gallery.map((image) => (
+              image?.url ? <img class="h-64 w-full rounded-2xl object-cover" src={image.url} alt={image.alternativeText ?? program.title} /> : null
+            ))}
+          </div>
+        </section>
+      )}
 
       {sampleContent && (
         <section class="mt-6 grid gap-6 lg:grid-cols-2">
@@ -158,14 +224,15 @@ if (!program) {
         <p class="mt-5 max-w-3xl text-base leading-8 text-stone-600">
           Use this program as a reference point for a private cohort, tailored scope, or a workshop designed around a current delivery challenge.
         </p>
+        {program.registrationNote && <p class="mt-4 max-w-3xl text-sm leading-7 text-stone-500">{program.registrationNote}</p>}
         <div class="mt-8 flex flex-wrap gap-3">
           {program.registrationEnabled ? (
             <a class="btn-primary !rounded-md !px-7 !py-3.5" href={`/programs/register/${program.slug}`}>Register</a>
           ) : (
             <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact Us</a>
           )}
-          <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href="/programs">
-            Back to programs
+          <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href={backHref}>
+            {backLabel}
           </a>
         </div>
       </section>

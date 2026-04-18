@@ -104,6 +104,23 @@ export type Seo = {
   metaImage: Media;
 } | null;
 
+export type ProgramSpeaker = {
+  id: number | null;
+  name: string | null;
+  role: string | null;
+  organization: string | null;
+  bio: string | null;
+  photo: Media;
+};
+
+export type ProgramAgendaItem = {
+  id: number | null;
+  timeLabel: string | null;
+  title: string | null;
+  description: string | null;
+  speakerName: string | null;
+};
+
 export type Service = {
   id: number;
   name: string;
@@ -162,10 +179,18 @@ export type Program = {
   fee: string | null;
   audience: string | null;
   summary: string | null;
+  tagline: string | null;
   overview: string[];
   outcomes: string[];
   seats: number | null;
   registrationEnabled: boolean;
+  isForumEvent: boolean;
+  forumSeriesLabel: string | null;
+  registrationNote: string | null;
+  coverImage: Media;
+  gallery: Media[];
+  speakers: ProgramSpeaker[];
+  agendaItems: ProgramAgendaItem[];
   seo: Seo;
 };
 
@@ -580,6 +605,18 @@ export async function getPrograms(): Promise<Program[]> {
   });
 }
 
+export async function getForumPrograms(): Promise<Program[]> {
+  const programs = await fetchCollection<Program>("/programs/forum");
+  return programs.sort((left, right) => {
+    const dateDiff = parseProgramTimestamp(left) - parseProgramTimestamp(right);
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+
+    return left.title.localeCompare(right.title);
+  });
+}
+
 export async function getProgramBySlug(slug: string): Promise<Program | null> {
   return fetchJson<Program>(`/programs/by-slug/${slug}`);
 }
@@ -609,7 +646,22 @@ export async function getNewsBySlug(slug: string): Promise<NewsEntry | null> {
 }
 
 export async function getProgramSlugs(): Promise<string[]> {
-  return getCollectionSlugs("programs");
+  const [programs, forumPrograms] = await Promise.all([
+    fetchCollection<Record<string, unknown>>("/programs?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc"),
+    fetchCollection<Record<string, unknown>>("/programs/forum?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc"),
+  ]);
+
+  const slugs = [...programs, ...forumPrograms]
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
+
+  if (slugs.length > 0) {
+    return [...new Set(slugs)].sort((left, right) => left.localeCompare(right));
+  }
+
+  return getFallbackCollection<Record<string, unknown>>(`/programs`)
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
 }
 
 export async function getServiceSlugs(): Promise<string[]> {

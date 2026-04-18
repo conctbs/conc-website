@@ -1,6 +1,5 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getForumPrograms, getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -13,106 +12,98 @@ const [page, siteSetting, forumPrograms] = await Promise.all([
 const title = page?.seo?.metaTitle ?? page?.title ?? "CONC Thammasat Forum | CONC";
 const now = new Date().toISOString().slice(0, 10);
 const upcomingPrograms = forumPrograms.filter((program) => (program.startsAt ?? "9999-12-31") >= now);
+const heroSection = page?.sections?.find((section) => section.type === "hero");
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? <SectionRenderer sections={page.sections} /> : (
-    <InfoPage
-      eyebrow="Life Long Learning"
-      title="CONC Thammasat Forum"
-      intro="The CONC Thammasat Forum convenes leaders, experts, and participants around current management, communication, and organizational topics that benefit from cross-sector discussion."
-      sections={[
-        {
-          title: "Current Issues",
-          body: "Forum sessions focus on timely questions in leadership, transformation, communication, and strategic execution so participants can compare ideas against current realities.",
-        },
-        {
-          title: "Cross-Sector Dialogue",
-          body: "The format encourages exchange between academic, public, and private-sector perspectives to sharpen judgment and reveal practical constraints.",
-        },
-        {
-          title: "Continuing Engagement",
-          body: "Each forum acts as a continuing-learning touchpoint that extends relationships beyond one-off courses and supports long-term professional development.",
-        },
-      ]}
-    />
-  )}
-
-  <section class="mx-auto max-w-7xl px-4 pb-14 md:px-6 md:pb-20">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div class="max-w-3xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Upcoming Seminar Topics</p>
-        <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900 md:text-4xl">
-          Current CONC Thammasat Forum sessions open for review and registration
-        </h2>
-        <p class="mt-4 text-base leading-8 text-stone-600">
-          Each record is managed from Strapi as a structured seminar entry with topic summary, speakers, agenda items, images, and registration status.
+  <section class="border-b border-gray-200 bg-white">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">
+          {heroSection?.eyebrow ?? "Life Long Learning"}
+        </p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
+          {heroSection?.title ?? "CONC Thammasat Forum"}
+        </h1>
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+          {heroSection?.description ??
+            "A forum series for leaders, experts, and participants to exchange perspectives on current organizational, communication, and management questions."}
         </p>
       </div>
+      <PageCover eyebrow="Forum" title="Timely seminar sessions, cross-sector dialogue, and executive learning" theme="programs" />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Current Sessions</p>
+        <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900 md:text-4xl">
+          CONC Thammasat Forum sessions currently available
+        </h2>
+      </div>
+      <p class="max-w-2xl text-base leading-7 text-stone-600">
+        Forum sessions are managed separately from the general programs listing so this page focuses only on CONC Thammasat Forum activity.
+      </p>
+    </div>
+
+    <div class="mt-6 flex justify-start">
       <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href="/life-long-learning/past-conc-thammasat-forum">
         View past forum sessions
       </a>
     </div>
 
     {upcomingPrograms.length > 0 ? (
-      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <div class="mt-10 grid gap-6 lg:grid-cols-2">
         {upcomingPrograms.map((program) => (
-          <article class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
-            {program.coverImage?.url ? (
-              <img class="h-64 w-full object-cover" src={program.coverImage.url} alt={program.coverImage.alternativeText ?? program.title} />
-            ) : (
-              <div class="flex h-64 items-end bg-[linear-gradient(135deg,#7f1d1d,transparent_62%),linear-gradient(160deg,#111827,#78716c)] p-8 text-white">
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-100">{program.forumSeriesLabel ?? "CONC Thammasat Forum"}</p>
-                  <h3 class="mt-3 text-3xl font-semibold leading-tight">{program.title}</h3>
-                </div>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3">
+              <span
+                class:list={[
+                  "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]",
+                  program.registrationEnabled ? "bg-red-700 text-white" : "border border-stone-300 bg-white text-stone-700",
+                ]}
+              >
+                {program.registrationEnabled ? "Registration Open" : "Registration Closed"}
+              </span>
+              <span class="text-sm text-stone-500">{program.forumSeriesLabel ?? "CONC Thammasat Forum"}</span>
+              {program.dateLabel && <span class="text-sm text-stone-500">{program.dateLabel}</span>}
+            </div>
+
+            <div class="mt-5">
+              <h3 class="text-2xl font-semibold leading-snug text-stone-900">{program.title}</h3>
+              <p class="mt-4 text-sm leading-7 text-stone-600">{program.tagline ?? program.summary}</p>
+            </div>
+
+            <div class="mt-6 flex flex-wrap gap-2 text-xs text-stone-600">
+              {program.format && <span class="rounded-full bg-stone-100 px-3 py-2">{program.format}</span>}
+              {program.location && <span class="rounded-full bg-stone-100 px-3 py-2">{program.location}</span>}
+              {program.seats != null && program.seats > 0 && (
+                <span class="rounded-full bg-stone-100 px-3 py-2">{program.seats} seats</span>
+              )}
+              {program.fee && <span class="rounded-full bg-stone-100 px-3 py-2">{program.fee}</span>}
+            </div>
+
+            {program.speakers.length > 0 && (
+              <div>
+                <p class="mt-6 text-sm font-semibold uppercase tracking-[0.16em] text-red-700">Speakers</p>
+                <p class="mt-2 text-sm leading-7 text-stone-600">
+                  {program.speakers
+                    .map((speaker) => [speaker.name, speaker.role].filter(Boolean).join(" | "))
+                    .filter(Boolean)
+                    .slice(0, 3)
+                    .join(", ")}
+                </p>
               </div>
             )}
-            <div class="grid gap-5 p-7">
-              <div>
-                <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
-                  <span class="rounded-full bg-red-700 px-3 py-1 text-white">{program.category ?? "Forum"}</span>
-                  {program.dateLabel && <span>{program.dateLabel}</span>}
-                  {program.location && <span>{program.location}</span>}
-                  {program.seats != null && program.seats > 0 && <span>{program.seats} seats</span>}
-                </div>
-                <h3 class="mt-4 text-2xl font-semibold leading-tight text-stone-900">{program.title}</h3>
-                <p class="mt-3 text-base leading-8 text-stone-600">{program.tagline ?? program.summary}</p>
-              </div>
 
-              {program.speakers.length > 0 && (
-                <div class="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-5">
-                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Featured Speakers</p>
-                  <ul class="mt-4 grid gap-3">
-                    {program.speakers.slice(0, 3).map((speaker) => (
-                      <li class="rounded-2xl bg-white px-4 py-3 text-sm text-stone-700">
-                        <p class="font-semibold text-stone-900">{speaker.name}</p>
-                        <p>{[speaker.role, speaker.organization].filter(Boolean).join(" | ")}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div class="mt-7 flex flex-wrap gap-3">
+              <a class="btn-primary !rounded-md !px-6 !py-3" href={`/programs/${program.slug}`}>View details</a>
+              {program.registrationEnabled && (
+                <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={`/programs/register/${program.slug}`}>
+                  Register
+                </a>
               )}
-
-              <div class="flex flex-wrap gap-3">
-                <a class="btn-primary !rounded-md !px-6 !py-3.5" href={`/programs/${program.slug}`}>View seminar details</a>
-                {program.registrationEnabled ? (
-                  <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3.5 !text-stone-800" href={`/programs/register/${program.slug}`}>
-                    Register
-                  </a>
-                ) : (
-                  <>
-                    <span class="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-red-700">
-                      Registration closed
-                    </span>
-                    {program.seats != null && program.seats > 0 && (
-                      <span class="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-stone-600">
-                        {program.seats} seats
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
             </div>
           </article>
         ))}

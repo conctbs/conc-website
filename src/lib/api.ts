@@ -595,14 +595,16 @@ export async function getSiteSetting(): Promise<SiteSettingDto | null> {
 
 export async function getPrograms(): Promise<Program[]> {
   const programs = await fetchCollection<Program>("/programs?sort[0]=title:asc");
-  return programs.sort((left, right) => {
+  return programs
+    .filter((program) => !program.isForumEvent)
+    .sort((left, right) => {
     const dateDiff = parseProgramTimestamp(left) - parseProgramTimestamp(right);
     if (dateDiff !== 0) {
       return dateDiff;
     }
 
     return left.title.localeCompare(right.title);
-  });
+    });
 }
 
 export async function getForumPrograms(): Promise<Program[]> {

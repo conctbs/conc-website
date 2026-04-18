@@ -326,9 +326,9 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
           ) {
             if (enabled && data?.required) {
               paymentMethodInput.value = 'scb_qr';
-              paymentMethodInput.disabled = true;
+              paymentMethodInput.setAttribute('aria-disabled', 'true');
             } else {
-              paymentMethodInput.disabled = isPaymentLocked;
+              paymentMethodInput.removeAttribute('aria-disabled');
               if (enabled && paymentMethodInput.value !== 'scb_qr' && !paymentMethodInput.value) {
                 paymentMethodInput.value = 'scb_qr';
               }
@@ -351,6 +351,11 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
               }
               element.disabled = disabled;
             }
+          }
+
+          if (!disabled && paymentMethodInput instanceof HTMLSelectElement && latestScbQr?.enabled && latestScbQr?.required) {
+            paymentMethodInput.value = 'scb_qr';
+            paymentMethodInput.setAttribute('aria-disabled', 'true');
           }
 
           if (submitButton instanceof HTMLButtonElement) {
@@ -540,6 +545,12 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
 
         paymentMethodInput?.addEventListener('change', () => {
           if (!(paymentMethodInput instanceof HTMLSelectElement) || !(referenceCodeInput instanceof HTMLInputElement)) {
+            return;
+          }
+
+          if (latestScbQr?.enabled && latestScbQr?.required && paymentMethodInput.value !== 'scb_qr') {
+            paymentMethodInput.value = 'scb_qr';
+            showNotification('This registration must be paid with SCB QR.');
             return;
           }
 

@@ -12,6 +12,30 @@ import type {
 
 const noMedia: Media = null;
 
+function buildAvatarMedia(initials: string, background: string, foreground: string, label: string): Media {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="${label}">
+      <rect width="256" height="256" rx="128" fill="${background}" />
+      <circle cx="128" cy="98" r="56" fill="${foreground}" opacity="0.92" />
+      <path d="M48 224c14-42 45-62 80-62s66 20 80 62" fill="${foreground}" opacity="0.92" />
+      <text x="128" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="${background}">
+        ${initials}
+      </text>
+    </svg>
+  `.trim();
+  const encoded = typeof Buffer !== "undefined" ? Buffer.from(svg).toString("base64") : btoa(svg);
+
+  return {
+    id: null,
+    url: `data:image/svg+xml;base64,${encoded}`,
+    alternativeText: label,
+    caption: null,
+    width: 256,
+    height: 256,
+    mime: "image/svg+xml",
+  };
+}
+
 const services: Service[] = [
   {
     id: 1,
@@ -191,6 +215,26 @@ const programs: Program[] = [
     gallery: [],
     speakers: [],
     agendaItems: [],
+    testimonials: [
+      {
+        id: 1,
+        quote:
+          "The program helped us turn scattered publishing requests into a workflow the marketing and product teams could actually run together.",
+        authorName: "Kornkanok S.",
+        authorRole: "Content Lead",
+        authorCompany: "Regional Education Brand",
+        authorAvatar: buildAvatarMedia("KS", "#7f1d1d", "#fecaca", "Kornkanok S. avatar"),
+      },
+      {
+        id: 2,
+        quote:
+          "We left with a practical governance model, not just inspiration. It clarified ownership, review points, and what to standardize first.",
+        authorName: "Piyawat L.",
+        authorRole: "Digital Transformation Manager",
+        authorCompany: "Service Operations Team",
+        authorAvatar: buildAvatarMedia("PL", "#0f766e", "#99f6e4", "Piyawat L. avatar"),
+      },
+    ],
     seo: {
       metaTitle: "Strategic Content Operations Bootcamp",
       metaDescription: "A practical bootcamp on content planning, governance, and delivery systems for digital teams.",
@@ -232,6 +276,26 @@ const programs: Program[] = [
     gallery: [],
     speakers: [],
     agendaItems: [],
+    testimonials: [
+      {
+        id: 3,
+        quote:
+          "This was the first workshop where editorial and frontend teams aligned on the same content model without talking past each other.",
+        authorName: "Nattida P.",
+        authorRole: "Product Owner",
+        authorCompany: "Professional Services Firm",
+        authorAvatar: buildAvatarMedia("NP", "#1d4ed8", "#bfdbfe", "Nattida P. avatar"),
+      },
+      {
+        id: 4,
+        quote:
+          "The API-shaping exercises made it obvious where our frontend coupling came from and how to reduce it before migration.",
+        authorName: "Thanawat K.",
+        authorRole: "Frontend Engineer",
+        authorCompany: "B2B Platform Team",
+        authorAvatar: buildAvatarMedia("TK", "#9333ea", "#e9d5ff", "Thanawat K. avatar"),
+      },
+    ],
     seo: {
       metaTitle: "Headless CMS Implementation for Service Teams",
       metaDescription: "A workshop on content modeling, API design, and frontend integration for service teams.",
@@ -273,6 +337,26 @@ const programs: Program[] = [
     gallery: [],
     speakers: [],
     agendaItems: [],
+    testimonials: [
+      {
+        id: 5,
+        quote:
+          "The session gave our leadership team a much cleaner structure for updates. Decisions moved faster because the ask was visible earlier.",
+        authorName: "Warisa T.",
+        authorRole: "Strategy Office Lead",
+        authorCompany: "Technology Group",
+        authorAvatar: buildAvatarMedia("WT", "#be185d", "#fbcfe8", "Warisa T. avatar"),
+      },
+      {
+        id: 6,
+        quote:
+          "It was concise but immediately useful. We reused the communication checklist in our next steering committee deck.",
+        authorName: "Phuwanat R.",
+        authorRole: "Program Manager",
+        authorCompany: "Enterprise Transformation Office",
+        authorAvatar: buildAvatarMedia("PR", "#b45309", "#fde68a", "Phuwanat R. avatar"),
+      },
+    ],
     seo: {
       metaTitle: "Executive Communication Design for Digital Teams",
       metaDescription: "A short training session on message framing, narrative sequencing, and executive communication.",
@@ -358,6 +442,26 @@ const programs: Program[] = [
         speakerName: "Assoc. Prof. Dr. Narin Vachirakul and Ms. Ploy Chutima",
       },
     ],
+    testimonials: [
+      {
+        id: 7,
+        quote:
+          "The forum balanced academic perspective with operational reality. It helped our team frame AI adoption as a leadership issue, not only a tooling issue.",
+        authorName: "Sirinya M.",
+        authorRole: "HR Development Director",
+        authorCompany: "Public Enterprise",
+        authorAvatar: buildAvatarMedia("SM", "#0f766e", "#ccfbf1", "Sirinya M. avatar"),
+      },
+      {
+        id: 8,
+        quote:
+          "The roundtable format surfaced practical concerns we were already facing internally, especially around communication trust and capability gaps.",
+        authorName: "Aekkachai V.",
+        authorRole: "Communication Manager",
+        authorCompany: "University Administration",
+        authorAvatar: buildAvatarMedia("AV", "#334155", "#cbd5e1", "Aekkachai V. avatar"),
+      },
+    ],
     seo: {
       metaTitle: "CONC Thammasat Forum: Future-Ready Leadership in the Age of AI",
       metaDescription: "A one-day cross-sector forum on leadership, trust, and execution in AI-shaped organizations.",
@@ -421,6 +525,17 @@ const programs: Program[] = [
         title: "Case discussion",
         description: "Participants reviewed examples of public communication breakdown and recovery.",
         speakerName: null,
+      },
+    ],
+    testimonials: [
+      {
+        id: 9,
+        quote:
+          "The archived session remains useful because the case discussion exposed the exact tension between speed and message discipline.",
+        authorName: "Patcharee N.",
+        authorRole: "Public Affairs Lead",
+        authorCompany: "Institutional Communications Office",
+        authorAvatar: buildAvatarMedia("PN", "#9f1239", "#fecdd3", "Patcharee N. avatar"),
       },
     ],
     seo: {
@@ -494,6 +609,17 @@ const programs: Program[] = [
         title: "Roundtable synthesis",
         description: "A moderated exchange on translating foresight work into institutional action.",
         speakerName: null,
+      },
+    ],
+    testimonials: [
+      {
+        id: 10,
+        quote:
+          "This forum pushed our planning team to think beyond annual cycles and compare multiple scenarios before locking decisions.",
+        authorName: "Dr. Chanin P.",
+        authorRole: "Policy Planning Advisor",
+        authorCompany: "Public Sector Strategy Unit",
+        authorAvatar: buildAvatarMedia("CP", "#166534", "#bbf7d0", "Dr. Chanin P. avatar"),
       },
     ],
     seo: {

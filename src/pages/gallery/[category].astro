@@ -1,0 +1,41 @@
+---
+import GalleryArchive from '../../components/GalleryArchive.astro';
+import { getGalleryEntries, getPageBySlug, getSiteSetting, type GalleryCategory } from '../../lib/api';
+import { galleryCategoryDefinitions, type GalleryCategorySlug } from '../../lib/gallery';
+
+export function getStaticPaths() {
+  return (Object.entries(galleryCategoryDefinitions) as Array<[string, { path: string }]>)
+    .filter(([slug]) => slug !== 'all')
+    .map(([slug]) => ({ params: { category: slug } }));
+}
+
+const { category = '' } = Astro.params;
+const config = galleryCategoryDefinitions[category as GalleryCategorySlug];
+
+if (!config || !('apiCategory' in config)) {
+  Astro.response.status = 404;
+}
+
+const [page, siteSetting, entries] = await Promise.all([
+  config ? getPageBySlug(config.pageSlug) : Promise.resolve(null),
+  getSiteSetting(),
+  config && 'apiCategory' in config ? getGalleryEntries(config.apiCategory as GalleryCategory) : Promise.resolve([]),
+]);
+
+const title = page?.seo?.metaTitle ?? config?.label ?? 'Gallery | CONC';
+const heading = config?.label ?? 'Gallery';
+const description =
+  page?.sections?.find((section) => section.type === 'rich-text')?.body?.replace(/<[^>]*>/g, ' ').trim() ??
+  config?.description ??
+  'Gallery archive.';
+---
+
+<GalleryArchive
+  title={title}
+  page={page}
+  siteSetting={siteSetting}
+  entries={entries}
+  heading={heading}
+  description={description}
+  activePath={config?.path ?? '/gallery'}
+/>

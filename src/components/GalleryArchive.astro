@@ -1,0 +1,124 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import PageCover from './PageCover.astro';
+import DetailLink from './ui/DetailLink.astro';
+import type { GalleryEntry, PageDto, SiteSettingDto } from '../lib/api';
+import { getGalleryCategoryEntries } from '../lib/gallery';
+
+interface Props {
+  title: string;
+  page?: PageDto | null;
+  siteSetting?: SiteSettingDto | null;
+  entries: GalleryEntry[];
+  eyebrow?: string;
+  heading: string;
+  description: string;
+  activePath: string;
+}
+
+const {
+  title,
+  page = null,
+  siteSetting = null,
+  entries = [],
+  eyebrow = 'Gallery',
+  heading,
+  description,
+  activePath,
+} = Astro.props;
+
+const categoryLinks = getGalleryCategoryEntries().map(([, item]) => item);
+
+function formatOccurredOn(value: string | null) {
+  if (!value) {
+    return 'Gallery Archive';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+---
+
+<MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
+  <section class="border-b border-gray-200 bg-white">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">{eyebrow}</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">{heading}</h1>
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">{description}</p>
+      </div>
+      <PageCover eyebrow="Gallery" title="Activities, seminars, curriculum moments, and knowledge sharing archives" theme="editorial" />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-8 md:px-6">
+    <div class="flex flex-wrap gap-3">
+      {categoryLinks.map((item) => (
+        <a
+          href={item.path}
+          class:list={[
+            'inline-flex items-center rounded-full border px-4 py-2 text-sm font-semibold transition',
+            item.path === activePath
+              ? 'border-red-700 bg-red-700 text-white'
+              : 'border-stone-300 bg-stone-100 text-stone-800 hover:border-red-700 hover:text-red-700',
+          ]}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 pb-14 md:px-6">
+    {entries.length > 0 ? (
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {entries.map((entry) => (
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-sm">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-red-700">
+                {formatOccurredOn(entry.occurredOn)}
+              </span>
+              {entry.videoUrl && (
+                <span class="rounded-full border border-stone-300 bg-stone-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
+                  Video
+                </span>
+              )}
+            </div>
+            <h2 class="mt-5 text-2xl font-semibold text-stone-900">{entry.title}</h2>
+            <p class="mt-4 text-sm leading-7 text-stone-600">
+              {entry.summary ?? 'Gallery entry published from the CONC gallery archive.'}
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <DetailLink compact href={`/gallery/item/${entry.slug}`} />
+              {entry.videoUrl && (
+                <a
+                  class="btn-secondary !rounded-md !px-5 !py-2.5 !text-sm"
+                  href={entry.videoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Watch video
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="rounded-[1.75rem] border border-dashed border-stone-300 bg-stone-50 px-8 py-12 text-center">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">No gallery entries yet</p>
+        <p class="mt-4 text-base leading-8 text-stone-600">
+          Publish gallery content in Strapi to show entries in this category.
+        </p>
+      </div>
+    )}
+  </section>
+</MainLayout>

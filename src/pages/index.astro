@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import DetailLink from "../components/ui/DetailLink.astro";
 import {
   getHomePage,
   getNews,
@@ -116,7 +117,7 @@ const homeHeroImage = {
             <div class="service-label">Service Area</div>
             <h3>{service.name}</h3>
             <p>{service.description}</p>
-            <a href={`/services/${service.slug}`}>Read more</a>
+            <DetailLink href={`/services/${service.slug}`} />
           </article>
         ))}
       </div>
@@ -146,7 +147,7 @@ const homeHeroImage = {
             <h3>{program.title}</h3>
             <p>{program.summary}</p>
             <div class="program-actions">
-              <a href={`/programs/${program.slug}`}>View details</a>
+              <DetailLink href={`/programs/${program.slug}`} compact />
               {program.registrationEnabled && <a href={`/programs/register/${program.slug}`}>Register</a>}
             </div>
           </article>
@@ -482,7 +483,7 @@ const homeHeroImage = {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .service-card a,
+  .detail-link,
   .program-actions a,
   .project-link,
   .news-card {
@@ -490,13 +491,13 @@ const homeHeroImage = {
     font-weight: 700;
   }
 
-  .service-card a,
+  .detail-link,
   .program-actions a:first-child,
   .news-card {
     color: var(--accent-2);
   }
 
-  .service-card a {
+  .detail-link {
     display: inline-flex;
     margin-top: 1rem;
   }

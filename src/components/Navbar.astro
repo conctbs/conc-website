@@ -35,6 +35,14 @@ const lifelongLinks = [
   { href: "/life-long-learning/class-observation", label: "Class Observation" },
 ];
 
+const galleryLinks = [
+  { href: "/gallery", label: "All Gallery" },
+  { href: "/gallery/activities", label: "Activities" },
+  { href: "/gallery/past-seminar", label: "Past Seminar" },
+  { href: "/gallery/past-curriculum-activities", label: "Past Curriculum Activities" },
+  { href: "/gallery/knowledge-sharing-videos", label: "Knowledge Sharing Videos" },
+];
+
 const newsLinks = [
   { href: "/news", label: "News" },
   { href: "/announcement", label: "Announcement" },
@@ -54,6 +62,7 @@ const aboutActive = isSectionActive(aboutLinks);
 const trainingActive = isSectionActive(trainingLinks);
 const consultingActive = isSectionActive(consultingLinks);
 const lifelongActive = isSectionActive(lifelongLinks);
+const galleryActive = isSectionActive(galleryLinks);
 const newsActive = isSectionActive(newsLinks);
 ---
 
@@ -527,6 +536,20 @@ const newsActive = isSectionActive(newsLinks);
       </div>
       <div class="submenu" id="lifelong-submenu">
         {lifelongLinks.map((item) => (
+          <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </div>
+    </div>
+
+    <div class="nav-item has-submenu" data-submenu-open="false">
+      <div class="nav-item-shell">
+        <a class:list={["nav-parent-link", galleryActive && "is-active"]} href="/gallery" aria-current={isCurrentPath("/gallery") ? "page" : undefined}>Gallery</a>
+        <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="gallery-submenu" aria-label="Toggle Gallery menu">
+          <span class="sr-only">Open Gallery submenu</span>
+        </button>
+      </div>
+      <div class="submenu" id="gallery-submenu">
+        {galleryLinks.map((item) => (
           <a href={item.href} class:list={[isCurrentPath(item.href) && "is-active"]} aria-current={isCurrentPath(item.href) ? "page" : undefined}>{item.label}</a>
         ))}
       </div>

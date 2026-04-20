@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import PageCover from '../components/PageCover.astro';
+import DetailLink from '../components/ui/DetailLink.astro';
 import { getPageBySlug, getServices, getSiteSetting } from '../lib/api';
 
 const [page, siteSetting, services] = await Promise.all([getPageBySlug('services'), getSiteSetting(), getServices()]);
@@ -31,10 +32,7 @@ const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'S
           <div class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Service Area</div>
           <h2 class="mt-4 text-2xl font-semibold text-stone-900">{service.name}</h2>
           <p class="mt-4 text-sm leading-7 text-stone-600">{service.description}</p>
-          <a class="mt-6 inline-flex items-center text-sm font-semibold text-red-700" href={`/services/${service.slug}`}>
-            Read more
-            <span class="ml-2">→</span>
-          </a>
+          <DetailLink class="mt-6" compact href={`/services/${service.slug}`} />
         </article>
       ))}
     </div>

@@ -214,6 +214,27 @@ export type NewsEntry = {
   coverImage: Media;
 };
 
+export type GalleryCategory =
+  | "activities"
+  | "past-seminar"
+  | "past-curriculum-activities"
+  | "knowledge-sharing-videos";
+
+export type GalleryEntry = {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string | null;
+  category: GalleryCategory | null;
+  occurredOn: string | null;
+  featured: boolean;
+  seo: Seo;
+  coverImage: Media;
+  gallery: Media[];
+  videoUrl: string | null;
+};
+
 type Section =
   | {
       type: "hero";
@@ -483,6 +504,11 @@ function getFallbackJson<T>(path: string): T | null {
     return (fallbackContent.newsEntries.find((entry) => entry.slug === slug) ?? null) as T | null;
   }
 
+  if (path.startsWith("/gallery-entries/by-slug/")) {
+    const slug = path.slice("/gallery-entries/by-slug/".length);
+    return (fallbackContent.galleryEntries.find((entry) => entry.slug === slug) ?? null) as T | null;
+  }
+
   return null;
 }
 
@@ -501,6 +527,18 @@ function getFallbackCollection<T>(path: string): T[] {
 
   if (path.startsWith("/news")) {
     return [...fallbackContent.newsList] as T[];
+  }
+
+  if (path.startsWith("/gallery-entries")) {
+    const [, queryString = ""] = path.split("?");
+    const query = new URLSearchParams(queryString);
+    const category = query.get("filters[category][$eq]");
+
+    if (category) {
+      return fallbackContent.galleryEntries.filter((entry) => entry.category === category) as T[];
+    }
+
+    return [...fallbackContent.galleryEntries] as T[];
   }
 
   return [];
@@ -655,6 +693,36 @@ export async function getNews(): Promise<NewsListItem[]> {
 
 export async function getNewsBySlug(slug: string): Promise<NewsEntry | null> {
   return fetchJson<NewsEntry>(`/news/by-slug/${slug}`);
+}
+
+export async function getGalleryEntries(category?: GalleryCategory): Promise<GalleryEntry[]> {
+  const query = category
+    ? `/gallery-entries?filters[category][$eq]=${encodeURIComponent(category)}&sort[0]=occurredOn:desc&sort[1]=createdAt:desc`
+    : "/gallery-entries?sort[0]=occurredOn:desc&sort[1]=createdAt:desc";
+
+  return fetchCollection<GalleryEntry>(query);
+}
+
+export async function getGalleryEntryBySlug(slug: string): Promise<GalleryEntry | null> {
+  return fetchJson<GalleryEntry>(`/gallery-entries/by-slug/${slug}`);
+}
+
+export async function getGalleryEntrySlugs(): Promise<string[]> {
+  const entries = await fetchCollection<Record<string, unknown>>(
+    "/gallery-entries?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc",
+  );
+
+  const slugs = entries
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
+
+  if (slugs.length > 0) {
+    return slugs;
+  }
+
+  return getFallbackCollection<Record<string, unknown>>("/gallery-entries")
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
 }
 
 export async function getProgramSlugs(): Promise<string[]> {

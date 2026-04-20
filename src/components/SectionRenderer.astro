@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import DetailLink from './ui/DetailLink.astro';
 
 const { sections = [] } = Astro.props;
 
@@ -408,9 +409,7 @@ const subtleCardClass =
                 </div>
 
                 <div class="mt-7 flex flex-wrap gap-3">
-                  <a class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-2.5 !text-sm !text-stone-800" href={`/programs/${program.slug}`}>
-                    View details
-                  </a>
+                  <DetailLink href={`/programs/${program.slug}`} compact />
                   {program.registrationEnabled && (
                     <a class="btn-primary !rounded-md !px-5 !py-2.5 !text-sm" href={`/programs/register/${program.slug}`}>
                       Register

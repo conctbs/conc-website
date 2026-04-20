@@ -26,6 +26,7 @@ const sampleContent = program ? programDetailContent[program.slug] ?? null : nul
 const heroImage = program ? programHeroImageBySlug[program.slug] ?? null : null;
 const backHref = program?.isForumEvent ? '/life-long-learning/conc-thammasat-forum' : '/programs';
 const backLabel = program?.isForumEvent ? 'Back to CONC Thammasat Forum' : 'Back to programs';
+const testimonialCarouselId = program ? `testimonial-carousel-${program.slug}` : '';
 
 if (!program) {
   Astro.response.status = 404;
@@ -142,6 +143,101 @@ if (!program) {
         </article>
       </section>
 
+      {program.testimonials.length > 0 && (
+        <section class="mt-6 overflow-hidden rounded-[2rem] border border-stone-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_42%,#f5f5f4_100%)] p-8 shadow-[0_24px_70px_-36px_rgba(41,37,36,0.4)] md:p-10">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="relative max-w-3xl">
+              <div class="pointer-events-none absolute -left-4 -top-6 text-7xl leading-none text-red-100 md:text-8xl">“</div>
+              <p class="relative text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Testimonials</p>
+              <h2 class="relative mt-4 text-3xl font-semibold leading-tight text-stone-900 md:text-4xl">What participants took back to work</h2>
+              <p class="mt-4 text-base leading-8 text-stone-600">
+                Participant feedback from this program and related cohorts.
+              </p>
+            </div>
+            {program.testimonials.length > 1 && (
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  class="testimonial-nav-button"
+                  data-carousel-prev={testimonialCarouselId}
+                  aria-label="Show previous testimonial"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  class="testimonial-nav-button"
+                  data-carousel-next={testimonialCarouselId}
+                  aria-label="Show next testimonial"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+          <div
+            class="mt-8"
+            data-testimonial-carousel={testimonialCarouselId}
+            data-carousel-count={program.testimonials.length}
+          >
+            <div class="overflow-hidden">
+              <div class="flex transition-transform duration-500 ease-out" data-carousel-track>
+                {program.testimonials.map((testimonial) => (
+                  <div class="w-full shrink-0" data-carousel-slide>
+                    <article class="group relative overflow-hidden rounded-[1.6rem] border border-stone-200/80 bg-white/90 p-6 shadow-[0_18px_48px_-32px_rgba(120,53,15,0.45)] backdrop-blur md:p-7">
+                      <div class="absolute right-5 top-4 text-5xl leading-none text-red-100 transition group-hover:text-red-200">”</div>
+                      <div class="relative flex h-full flex-col">
+                        <blockquote class="max-w-[42rem] text-lg leading-8 text-stone-800 md:text-[1.15rem]">
+                          {testimonial.quote}
+                        </blockquote>
+                        <div class="mt-6 flex items-center gap-4 border-t border-stone-200 pt-5">
+                          {testimonial.authorAvatar?.url ? (
+                            <img
+                              class="h-16 w-16 rounded-full border border-stone-200 object-cover shadow-[0_10px_25px_-18px_rgba(41,37,36,0.9)]"
+                              src={testimonial.authorAvatar.url}
+                              alt={testimonial.authorAvatar.alternativeText ?? testimonial.authorName ?? program.title}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-sm font-semibold uppercase tracking-[0.12em] text-red-700">
+                              {(testimonial.authorName ?? '?').slice(0, 2)}
+                            </div>
+                          )}
+                          <div class="min-w-0">
+                            <p class="text-base font-semibold text-stone-900">{testimonial.authorName}</p>
+                            <p class="mt-1 text-sm leading-6 text-stone-500">
+                              {[testimonial.authorRole, testimonial.authorCompany].filter(Boolean).join(' | ')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {program.testimonials.length > 1 && (
+              <div class="mt-5 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                  {program.testimonials.map((_, index) => (
+                    <button
+                      type="button"
+                      class:list={['testimonial-dot', index === 0 && 'is-active']}
+                      data-carousel-dot={index}
+                      data-carousel-target={testimonialCarouselId}
+                      aria-label={`Show testimonial ${index + 1}`}
+                    />
+                  ))}
+                </div>
+                <p class="text-sm text-stone-500">
+                  <span data-carousel-current>1</span> / {program.testimonials.length}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {(program.speakers.length > 0 || program.agendaItems.length > 0) && (
         <section class="mt-6 grid gap-6 lg:grid-cols-2">
           {program.speakers.length > 0 && (
@@ -245,3 +341,85 @@ if (!program) {
     </section>
   )}
 </MainLayout>
+
+<script is:inline>
+  {`
+    (() => {
+      const carousels = Array.from(document.querySelectorAll('[data-testimonial-carousel]'));
+      for (const carousel of carousels) {
+        const id = carousel.getAttribute('data-testimonial-carousel');
+        const track = carousel.querySelector('[data-carousel-track]');
+        const dots = Array.from(document.querySelectorAll('[data-carousel-target="' + id + '"]'));
+        const prevButton = document.querySelector('[data-carousel-prev="' + id + '"]');
+        const nextButton = document.querySelector('[data-carousel-next="' + id + '"]');
+        const currentLabel = carousel.querySelector('[data-carousel-current]');
+        const count = Number(carousel.getAttribute('data-carousel-count') || '0');
+        let index = 0;
+
+        if (!id || !track || count <= 1) continue;
+
+        const update = () => {
+          track.style.transform = 'translate3d(-' + index * 100 + '%, 0, 0)';
+          dots.forEach((dot, dotIndex) => {
+            dot.classList.toggle('is-active', dotIndex === index);
+          });
+          if (currentLabel) currentLabel.textContent = String(index + 1);
+        };
+
+        prevButton?.addEventListener('click', () => {
+          index = index === 0 ? count - 1 : index - 1;
+          update();
+        });
+
+        nextButton?.addEventListener('click', () => {
+          index = index === count - 1 ? 0 : index + 1;
+          update();
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          dot.addEventListener('click', () => {
+            index = dotIndex;
+            update();
+          });
+        });
+
+        update();
+      }
+    })();
+  `}
+</script>
+
+<style>
+  .testimonial-nav-button {
+    border: 1px solid rgb(214 211 209 / 1);
+    background: rgba(255, 255, 255, 0.9);
+    color: rgb(28 25 23 / 1);
+    border-radius: 999px;
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  }
+
+  .testimonial-nav-button:hover {
+    border-color: rgb(185 28 28 / 1);
+    color: rgb(185 28 28 / 1);
+    transform: translateY(-1px);
+  }
+
+  .testimonial-dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 999px;
+    border: 0;
+    background: rgb(229 231 235 / 1);
+    transition: transform 160ms ease, background-color 160ms ease;
+  }
+
+  .testimonial-dot.is-active {
+    background: rgb(185 28 28 / 1);
+    transform: scale(1.15);
+  }
+</style>

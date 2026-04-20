@@ -121,6 +121,15 @@ export type ProgramAgendaItem = {
   speakerName: string | null;
 };
 
+export type ProgramTestimonial = {
+  id: number | null;
+  quote: string | null;
+  authorName: string | null;
+  authorRole: string | null;
+  authorCompany: string | null;
+  authorAvatar: Media;
+};
+
 export type Service = {
   id: number;
   name: string;
@@ -191,6 +200,7 @@ export type Program = {
   gallery: Media[];
   speakers: ProgramSpeaker[];
   agendaItems: ProgramAgendaItem[];
+  testimonials: ProgramTestimonial[];
   seo: Seo;
 };
 

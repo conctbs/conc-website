@@ -1,0 +1,26 @@
+---
+import GalleryArchive from '../../components/GalleryArchive.astro';
+import { getGalleryEntries, getPageBySlug, getSiteSetting } from '../../lib/api';
+
+const [page, siteSetting, entries] = await Promise.all([
+  getPageBySlug('gallery'),
+  getSiteSetting(),
+  getGalleryEntries(),
+]);
+
+const title = page?.seo?.metaTitle ?? page?.title ?? 'Gallery | CONC';
+const heading = page?.title ?? 'All Gallery';
+const description =
+  page?.sections?.find((section) => section.type === 'rich-text')?.body?.replace(/<[^>]*>/g, ' ').trim() ??
+  'Browse every published gallery entry from activities, seminars, curriculum activity, and knowledge sharing videos.';
+---
+
+<GalleryArchive
+  title={title}
+  page={page}
+  siteSetting={siteSetting}
+  entries={entries}
+  heading={heading}
+  description={description}
+  activePath="/gallery"
+/>

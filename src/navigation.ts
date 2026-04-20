@@ -41,6 +41,16 @@ export const headerData = {
       ],
     },
     {
+      text: 'Gallery',
+      links: [
+        { text: 'All Gallery', href: '/gallery' },
+        { text: 'Activities', href: '/gallery/activities' },
+        { text: 'Past Seminar', href: '/gallery/past-seminar' },
+        { text: 'Past Curriculum Activities', href: '/gallery/past-curriculum-activities' },
+        { text: 'Knowledge Sharing Videos', href: '/gallery/knowledge-sharing-videos' },
+      ],
+    },
+    {
       text: 'News & Events',
       links: [
         { text: 'News', href: '/news' },
@@ -83,6 +93,7 @@ export const footerData = {
       title: 'Connect',
       links: [
         { text: 'News', href: '/news' },
+        { text: 'Gallery', href: '/gallery' },
         { text: 'Contact Us', href: '/contact' },
         { text: 'Sitemap', href: '/sitemap' },
       ],

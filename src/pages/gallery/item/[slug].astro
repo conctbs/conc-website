@@ -1,0 +1,80 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { getGalleryEntryBySlug, getGalleryEntrySlugs, getSiteSetting } from '../../../lib/api';
+import { galleryCategoryDefinitions } from '../../../lib/gallery';
+
+export async function getStaticPaths() {
+  const slugs = await getGalleryEntrySlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = '' } = Astro.params;
+const [entry, siteSetting] = await Promise.all([getGalleryEntryBySlug(slug), getSiteSetting()]);
+
+if (!entry) {
+  Astro.response.status = 404;
+}
+
+const pageTitle = entry?.seo?.metaTitle ?? entry?.title ?? 'Gallery Item';
+const backPath = entry?.category ? galleryCategoryDefinitions[entry.category].path : '/gallery';
+const backLabel = entry?.category ? `Back to ${galleryCategoryDefinitions[entry.category].label}` : 'Back to gallery';
+
+function formatOccurredOn(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+---
+
+<MainLayout title={pageTitle} seo={entry?.seo} siteSetting={siteSetting}>
+  {entry ? (
+    <article class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href={backPath}>{backLabel}</a>
+
+      <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.06fr)_minmax(20rem,0.94fr)]">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Gallery</p>
+          <h1 class="mt-4 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+            {entry.title}
+          </h1>
+          {entry.summary && <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{entry.summary}</p>}
+          <div class="mt-8 flex flex-wrap gap-3">
+            {entry.occurredOn && (
+              <span class="rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-red-700">
+                {formatOccurredOn(entry.occurredOn)}
+              </span>
+            )}
+            {entry.videoUrl && (
+              <a class="btn-primary !rounded-md !px-7 !py-3.5" href={entry.videoUrl} target="_blank" rel="noreferrer">
+                Watch video
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-8 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Archive Note</p>
+          <p class="mt-4 text-base leading-8 text-stone-600">
+            This entry is managed from the Gallery collection in Strapi and can hold image-based archives or knowledge sharing video references.
+          </p>
+        </div>
+      </section>
+
+      <section class="mt-10 rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Overview</p>
+        <div class="prose prose-stone mt-6 max-w-none" set:html={entry.content ?? `<p>${entry.summary ?? 'Gallery archive entry.'}</p>`} />
+      </section>
+    </article>
+  ) : (
+    <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Gallery entry not found</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">The requested gallery entry slug is not available from Strapi.</p>
+    </section>
+  )}
+</MainLayout>

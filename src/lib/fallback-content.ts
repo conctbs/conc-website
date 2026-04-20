@@ -1,4 +1,5 @@
 import type {
+  GalleryEntry,
   Media,
   NewsEntry,
   NewsListItem,
@@ -178,6 +179,93 @@ const newsEntries: NewsEntry[] = [
       metaImage: null,
     },
     coverImage: noMedia,
+  },
+];
+
+const galleryEntries: GalleryEntry[] = [
+  {
+    id: 1,
+    title: "Leadership Roundtable and Faculty Activity Highlights",
+    slug: "leadership-roundtable-and-faculty-activity-highlights",
+    summary: "A visual archive of faculty exchange, campus activity, and participant engagement across recent CONC activities.",
+    content:
+      "<p>This gallery groups recent activity images from workshops, roundtables, and small group sessions that reflect the center's day-to-day learning environment.</p>",
+    category: "activities",
+    occurredOn: "2026-03-22",
+    featured: true,
+    seo: {
+      metaTitle: "Leadership Roundtable and Faculty Activity Highlights",
+      metaDescription: "Gallery archive for recent CONC activities, roundtables, and faculty engagement.",
+      canonicalUrl: "https://conc.example/gallery/item/leadership-roundtable-and-faculty-activity-highlights",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    gallery: [],
+    videoUrl: null,
+  },
+  {
+    id: 2,
+    title: "Past Seminar Archive: Communication Under Pressure",
+    slug: "past-seminar-archive-communication-under-pressure",
+    summary: "Selected moments, speaker sessions, and audience interaction from a past seminar on communication under pressure.",
+    content:
+      "<p>This archive documents the seminar format, the speaker flow, and the way participants engaged with practical communication scenarios during the session.</p>",
+    category: "past-seminar",
+    occurredOn: "2025-11-18",
+    featured: true,
+    seo: {
+      metaTitle: "Past Seminar Archive: Communication Under Pressure",
+      metaDescription: "Past seminar gallery with speaker sessions and audience interaction highlights.",
+      canonicalUrl: "https://conc.example/gallery/item/past-seminar-archive-communication-under-pressure",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    gallery: [],
+    videoUrl: null,
+  },
+  {
+    id: 3,
+    title: "Curriculum Activity Archive: Strategic Content Operations Bootcamp",
+    slug: "curriculum-activity-archive-strategic-content-operations-bootcamp",
+    summary: "A record of in-class exercises, group discussion, and curriculum activity from the bootcamp format.",
+    content:
+      "<p>This gallery captures curriculum-based working sessions, breakout exercises, and facilitator-led review points from the program delivery.</p>",
+    category: "past-curriculum-activities",
+    occurredOn: "2025-09-03",
+    featured: false,
+    seo: {
+      metaTitle: "Curriculum Activity Archive: Strategic Content Operations Bootcamp",
+      metaDescription: "Past curriculum activity gallery covering breakout sessions and facilitator-led exercises.",
+      canonicalUrl: "https://conc.example/gallery/item/curriculum-activity-archive-strategic-content-operations-bootcamp",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    gallery: [],
+    videoUrl: null,
+  },
+  {
+    id: 4,
+    title: "Knowledge Sharing Video: Building Practical Learning Systems",
+    slug: "knowledge-sharing-video-building-practical-learning-systems",
+    summary: "A knowledge sharing video session on structuring practical learning systems and post-session follow-through.",
+    content:
+      "<p>This entry highlights a recorded knowledge sharing session that can be reused as an evergreen learning reference between live programs.</p>",
+    category: "knowledge-sharing-videos",
+    occurredOn: "2026-02-06",
+    featured: true,
+    seo: {
+      metaTitle: "Knowledge Sharing Video: Building Practical Learning Systems",
+      metaDescription: "Knowledge sharing video archive for practical learning systems and post-session follow-through.",
+      canonicalUrl: "https://conc.example/gallery/item/knowledge-sharing-video-building-practical-learning-systems",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    gallery: [],
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   },
 ];
 
@@ -1220,6 +1308,99 @@ const pages: Record<string, PageDto> = {
       },
     ],
   },
+  gallery: buildInfoPage({
+    id: 29,
+    slug: "gallery",
+    title: "Gallery",
+    eyebrow: "Gallery",
+    metaTitle: "Gallery | CONC",
+    metaDescription: "Browse all CONC gallery archives including activities, seminars, curriculum activity, and knowledge sharing videos.",
+    canonicalUrl: "https://conc.example/gallery",
+    intro:
+      "This archive groups visual records and media from activities, past seminars, curriculum-based activity, and knowledge sharing videos in one place.",
+    sections: [
+      {
+        title: "All Gallery",
+        body: "Use this section as the main visual archive for all CONC gallery content, regardless of event type or learning format.",
+      },
+      {
+        title: "Category Navigation",
+        body: "Visitors can move from the full archive into more focused views for activities, past seminars, curriculum activities, and knowledge sharing video content.",
+      },
+      {
+        title: "Editorial Reuse",
+        body: "Each gallery entry can support promotion, documentation, and post-event knowledge sharing from the same backend workflow.",
+      },
+    ],
+  }),
+  "gallery-activities": buildInfoPage({
+    id: 30,
+    slug: "gallery-activities",
+    title: "Gallery Activities",
+    eyebrow: "Gallery",
+    metaTitle: "Activities Gallery | CONC",
+    metaDescription: "Activity gallery archive for workshops, faculty exchange, and participant engagement.",
+    canonicalUrl: "https://conc.example/gallery/activities",
+    intro:
+      "This archive focuses on recent CONC activities including workshop delivery, faculty engagement, and participant interaction.",
+    sections: [
+      {
+        title: "Activity Records",
+        body: "Highlight ongoing activity across campus sessions, partner engagements, and short-format learning events.",
+      },
+    ],
+  }),
+  "gallery-past-seminar": buildInfoPage({
+    id: 31,
+    slug: "gallery-past-seminar",
+    title: "Gallery Past Seminar",
+    eyebrow: "Gallery",
+    metaTitle: "Past Seminar Gallery | CONC",
+    metaDescription: "Past seminar gallery archive covering speaker sessions and audience engagement.",
+    canonicalUrl: "https://conc.example/gallery/past-seminar",
+    intro:
+      "This archive collects image-based records from past seminars, including speakers, audience participation, and program atmosphere.",
+    sections: [
+      {
+        title: "Seminar Archive",
+        body: "Use this space to document completed seminar sessions in a browsable visual archive.",
+      },
+    ],
+  }),
+  "gallery-past-curriculum-activities": buildInfoPage({
+    id: 32,
+    slug: "gallery-past-curriculum-activities",
+    title: "Gallery Past Curriculum Activities",
+    eyebrow: "Gallery",
+    metaTitle: "Past Curriculum Activities Gallery | CONC",
+    metaDescription: "Curriculum activity archive for in-class exercises and learning interaction.",
+    canonicalUrl: "https://conc.example/gallery/past-curriculum-activities",
+    intro:
+      "This archive highlights program exercises, curriculum delivery, and workshop interaction captured during previous cohorts.",
+    sections: [
+      {
+        title: "Curriculum Activity Archive",
+        body: "Document facilitator-led work, breakout activity, and participant collaboration in a category dedicated to program delivery.",
+      },
+    ],
+  }),
+  "gallery-knowledge-sharing-videos": buildInfoPage({
+    id: 33,
+    slug: "gallery-knowledge-sharing-videos",
+    title: "Gallery Knowledge Sharing Videos",
+    eyebrow: "Gallery",
+    metaTitle: "Knowledge Sharing Videos | CONC",
+    metaDescription: "Video archive for recorded knowledge sharing sessions and reusable learning references.",
+    canonicalUrl: "https://conc.example/gallery/knowledge-sharing-videos",
+    intro:
+      "This archive focuses on recorded knowledge sharing content that can be revisited between live sessions and programs.",
+    sections: [
+      {
+        title: "Recorded Sessions",
+        body: "Use this category for replayable knowledge sharing sessions that extend learning beyond live delivery.",
+      },
+    ],
+  }),
   programs: {
     id: 7,
     slug: "programs",
@@ -1752,6 +1933,7 @@ export const fallbackContent = {
   projects,
   programs,
   newsEntries,
+  galleryEntries,
   projectList: projects.map<ProjectListItem>(({ id, title, slug, summary, clientName, completedDate, featured, order }) => ({
     id,
     title,

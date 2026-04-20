@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import PageCover from '../components/PageCover.astro';
+import DetailLink from '../components/ui/DetailLink.astro';
 import { getPageBySlug, getPrograms, getSiteSetting } from '../lib/api';
 
 const [page, siteSetting, programs] = await Promise.all([getPageBySlug('programs'), getSiteSetting(), getPrograms()]);
@@ -87,9 +88,9 @@ const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'P
               </div>
             )}
             <div class="mt-7 flex flex-wrap gap-3">
-              <a class="btn-primary !rounded-md !px-6 !py-3" href={`/programs/${program.slug}`}>View details</a>
+              <DetailLink href={`/programs/${program.slug}`} />
               {program.registrationEnabled && (
-                <a class="btn-secondary !rounded-md !border-stone-300 !px-6 !py-3 !text-stone-800" href={`/programs/register/${program.slug}`}>
+                <a class="btn-primary !rounded-md !px-6 !py-3" href={`/programs/register/${program.slug}`}>
                   Register
                 </a>
               )}

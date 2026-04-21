@@ -47,6 +47,10 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
               <p class="text-xs font-semibold uppercase tracking-[0.28em] text-amber-800">CONC Certificate</p>
               <p class="mt-4 text-sm uppercase tracking-[0.16em] text-stone-500">This certifies that</p>
             </div>
+            <div class="certificate-seal">
+              <span>Verified</span>
+              <span>CONC</span>
+            </div>
             <button id="certificate-print-button" class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-2.5 !text-sm !text-stone-800 print:hidden" type="button">
               Print / Save PDF
             </button>
@@ -57,8 +61,11 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
             has successfully completed the learning program
           </p>
           <p id="certificate-program-title" class="mt-4 text-2xl font-semibold leading-snug text-amber-900 md:text-4xl"></p>
+          <p class="mt-6 max-w-3xl text-base leading-8 text-stone-700">
+            This certificate is issued by the College of Innovation, Thammasat University, as formal recognition that the learner has met the completion requirements recorded by CONC.
+          </p>
 
-          <div class="mt-10 grid gap-4 border-t border-[#d7c7a0] pt-8 text-sm leading-7 text-stone-700 md:grid-cols-2">
+          <div class="mt-10 grid gap-4 border-t border-[#d7c7a0] pt-8 text-sm leading-7 text-stone-700 md:grid-cols-3">
             <div class="rounded-2xl bg-white/70 px-5 py-4">
               <p class="font-semibold text-stone-900">Program date</p>
               <p id="certificate-program-date" class="mt-1"></p>
@@ -75,17 +82,51 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
               <p class="font-semibold text-stone-900">Issued on</p>
               <p id="certificate-issued-at" class="mt-1"></p>
             </div>
+            <div class="rounded-2xl bg-white/70 px-5 py-4">
+              <p class="font-semibold text-stone-900">Duration</p>
+              <p id="certificate-program-duration" class="mt-1"></p>
+            </div>
+            <div class="rounded-2xl bg-white/70 px-5 py-4">
+              <p class="font-semibold text-stone-900">Program category</p>
+              <p id="certificate-program-category" class="mt-1"></p>
+            </div>
           </div>
 
-          <div class="mt-10 flex flex-wrap items-end justify-between gap-6 border-t border-[#d7c7a0] pt-8">
-            <div>
+          <div class="mt-10 grid gap-6 border-t border-[#d7c7a0] pt-8 md:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.7fr)]">
+            <div class="grid gap-6">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Verification URL</p>
+                <p id="certificate-verification-url" class="mt-2 break-all text-sm leading-7 text-stone-700"></p>
+              </div>
               <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Certificate code</p>
               <p id="certificate-code" class="mt-2 text-base font-semibold tracking-[0.08em] text-stone-900"></p>
+              <p class="rounded-2xl bg-white/70 px-5 py-4 text-sm leading-7 text-stone-700">
+                Verify this certificate by scanning the QR code or opening the verification URL. A valid certificate page must show the same certificate code and learner name.
+              </p>
             </div>
-            <div class="text-right">
-              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Issued by</p>
-              <p class="mt-2 text-xl font-semibold text-stone-900">CONC</p>
-              <p class="text-sm text-stone-600">College of Innovation, Thammasat University</p>
+
+            <div class="grid gap-4 justify-items-end text-right">
+              <div class="rounded-[1.5rem] border border-[#d7c7a0] bg-white/80 p-4 text-center">
+                <img
+                  id="certificate-qr-image"
+                  alt="Certificate verification QR code"
+                  class="mx-auto h-40 w-40 object-contain"
+                  hidden
+                />
+                <p id="certificate-qr-fallback" class="max-w-[10rem] text-xs leading-6 text-stone-500">
+                  QR verification will appear here when available.
+                </p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Issued by</p>
+                <p class="mt-2 text-xl font-semibold text-stone-900">CONC</p>
+                <p class="text-sm text-stone-600">College of Innovation, Thammasat University</p>
+              </div>
+              <div>
+                <div class="mx-auto h-px w-40 bg-stone-400 md:ml-auto md:mr-0"></div>
+                <p class="mt-3 text-base font-semibold text-stone-900">Program Administration</p>
+                <p class="text-sm text-stone-600">Authorized certificate issuer</p>
+              </div>
             </div>
           </div>
         </div>
@@ -105,6 +146,27 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
       background:
         linear-gradient(135deg, rgba(200, 179, 122, 0.12), rgba(255, 255, 255, 0.75)),
         #fffdf7;
+    }
+
+    .certificate-seal {
+      display: grid;
+      place-items: center;
+      gap: 0.15rem;
+      min-width: 6.25rem;
+      min-height: 6.25rem;
+      padding: 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(146, 64, 14, 0.28);
+      background:
+        radial-gradient(circle at center, rgba(251, 191, 36, 0.26), rgba(255, 255, 255, 0.8) 62%),
+        #fff;
+      color: #92400e;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1.2;
+      text-transform: uppercase;
+      text-align: center;
     }
 
     @media print {
@@ -144,8 +206,13 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
       programFormat: document.getElementById('certificate-program-format'),
       completedAt: document.getElementById('certificate-completed-at'),
       issuedAt: document.getElementById('certificate-issued-at'),
+      duration: document.getElementById('certificate-program-duration'),
+      category: document.getElementById('certificate-program-category'),
       code: document.getElementById('certificate-code'),
+      verificationUrl: document.getElementById('certificate-verification-url'),
     };
+    const qrImage = document.getElementById('certificate-qr-image');
+    const qrFallback = document.getElementById('certificate-qr-fallback');
 
     function showFeedback(message, type = 'error') {
       if (!feedbackTarget) return;
@@ -203,6 +270,28 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
       target.textContent = value || '-';
     }
 
+    function updateQrImage(verificationUrl) {
+      if (!(qrImage instanceof HTMLImageElement)) return;
+      if (!verificationUrl) {
+        qrImage.hidden = true;
+        if (qrFallback) qrFallback.hidden = false;
+        qrImage.removeAttribute('src');
+        return;
+      }
+
+      const qrServiceUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(verificationUrl)}`;
+      qrImage.hidden = false;
+      qrImage.src = qrServiceUrl;
+      qrImage.onerror = () => {
+        qrImage.hidden = true;
+        qrImage.removeAttribute('src');
+        if (qrFallback) qrFallback.hidden = false;
+      };
+      qrImage.onload = () => {
+        if (qrFallback) qrFallback.hidden = true;
+      };
+    }
+
     function updateUrl(code) {
       const nextUrl = new URL(window.location.href);
       if (code) {
@@ -241,6 +330,7 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
 
         const certificate = result.data;
         const program = certificate.program ?? {};
+        const verificationUrl = certificate.verificationUrl || `${window.location.origin}/certificate?code=${encodeURIComponent(code)}`;
 
         setText(fieldTargets.recipient, certificate.recipientName || '-');
         setText(fieldTargets.programTitle, program.title || '-');
@@ -251,7 +341,11 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
         );
         setText(fieldTargets.completedAt, formatDate(certificate.completedAt));
         setText(fieldTargets.issuedAt, formatDate(certificate.issuedAt));
+        setText(fieldTargets.duration, program.duration || '-');
+        setText(fieldTargets.category, program.category || '-');
         setText(fieldTargets.code, certificate.code || code);
+        setText(fieldTargets.verificationUrl, verificationUrl);
+        updateQrImage(verificationUrl);
 
         showCertificate();
       } catch (error) {

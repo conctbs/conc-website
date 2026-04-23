@@ -1,5 +1,7 @@
 import type {
   GalleryEntry,
+  KnowledgeArticle,
+  KnowledgeArticleListItem,
   Media,
   NewsEntry,
   NewsListItem,
@@ -179,6 +181,101 @@ const newsEntries: NewsEntry[] = [
       metaImage: null,
     },
     coverImage: noMedia,
+  },
+];
+
+const knowledgeArticles: KnowledgeArticle[] = [
+  {
+    id: 1,
+    title: "From Training Room To Working Routine",
+    slug: "from-training-room-to-working-routine",
+    summary:
+      "A practical guide for turning program takeaways into team rituals, follow-up checkpoints, and reusable learning artifacts.",
+    content:
+      "<p>Learning becomes more durable when participants leave a program with a visible routine for applying the idea. Teams can start with one shared practice, one reflection question, and one follow-up checkpoint.</p><p>This CONC Knowledge article outlines a lightweight structure that helps managers convert classroom discussion into repeatable behavior at work.</p>",
+    category: "article",
+    publishedDate: "2026-03-24",
+    featured: true,
+    order: 1,
+    seo: {
+      metaTitle: "From Training Room To Working Routine | CONC Knowledge",
+      metaDescription: "A CONC Knowledge guide for turning training takeaways into practical team routines.",
+      canonicalUrl: "https://conc.example/life-long-learning/conc-knowledge/from-training-room-to-working-routine",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    attachment: noMedia,
+    externalUrl: null,
+  },
+  {
+    id: 2,
+    title: "A Simple Framework For Post-Program Reflection",
+    slug: "simple-framework-post-program-reflection",
+    summary:
+      "A three-question reflection model that helps participants identify what to keep, what to change, and what to share after learning sessions.",
+    content:
+      "<p>Post-program reflection should be easy enough to use within the first week. The model asks participants to identify one useful concept, one behavior to test, and one insight to share with a colleague.</p><p>Using the same reflection structure across programs gives organizations a shared language for learning transfer.</p>",
+    category: "framework",
+    publishedDate: "2026-03-12",
+    featured: false,
+    order: 2,
+    seo: {
+      metaTitle: "A Simple Framework For Post-Program Reflection | CONC Knowledge",
+      metaDescription: "A three-question reflection model for stronger learning transfer after CONC programs.",
+      canonicalUrl: "https://conc.example/life-long-learning/conc-knowledge/simple-framework-post-program-reflection",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    attachment: noMedia,
+    externalUrl: null,
+  },
+  {
+    id: 3,
+    title: "Checklist: Preparing Leaders For Case Discussion",
+    slug: "checklist-preparing-leaders-for-case-discussion",
+    summary:
+      "A reusable checklist for helping leaders prepare for case-method sessions with clearer context, decision criteria, and discussion roles.",
+    content:
+      "<p>Case-method learning works best when participants arrive with a point of view. Before the session, leaders can clarify the business context, list available evidence, and write the decision they would make with current information.</p><p>The checklist supports richer discussion by separating facts, assumptions, tradeoffs, and action choices.</p>",
+    category: "tool",
+    publishedDate: "2026-02-28",
+    featured: false,
+    order: 3,
+    seo: {
+      metaTitle: "Checklist: Preparing Leaders For Case Discussion | CONC Knowledge",
+      metaDescription: "A practical CONC Knowledge checklist for case-method preparation.",
+      canonicalUrl: "https://conc.example/life-long-learning/conc-knowledge/checklist-preparing-leaders-for-case-discussion",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    attachment: noMedia,
+    externalUrl: null,
+  },
+  {
+    id: 4,
+    title: "How To Turn A Forum Insight Into Team Action",
+    slug: "how-to-turn-a-forum-insight-into-team-action",
+    summary:
+      "A short guide for converting one useful idea from a forum or seminar into a practical action plan for a team.",
+    content:
+      "<p>After a forum or seminar, the most important step is choosing one insight that can be tested immediately. Teams should translate that idea into a small action, assign an owner, and set a short review date.</p><p>This article provides a simple follow-through pattern: capture the insight, define the first action, agree on evidence of progress, and share the result with the group.</p>",
+    category: "article",
+    publishedDate: "2026-04-01",
+    featured: false,
+    order: 4,
+    seo: {
+      metaTitle: "How To Turn A Forum Insight Into Team Action | CONC Knowledge",
+      metaDescription: "A CONC Knowledge guide for turning forum insights into practical team action.",
+      canonicalUrl: "https://conc.example/life-long-learning/conc-knowledge/how-to-turn-a-forum-insight-into-team-action",
+      noIndex: false,
+      metaImage: null,
+    },
+    coverImage: noMedia,
+    attachment: noMedia,
+    externalUrl: null,
   },
 ];
 
@@ -2086,6 +2183,7 @@ export const fallbackContent = {
   projects,
   programs,
   newsEntries,
+  knowledgeArticles,
   galleryEntries,
   projectList: projects.map<ProjectListItem>(({ id, title, slug, summary, clientName, completedDate, featured, order }) => ({
     id,
@@ -2104,4 +2202,17 @@ export const fallbackContent = {
     content,
     publishedDate,
   })),
+  knowledgeArticleList: knowledgeArticles.map<KnowledgeArticleListItem>(
+    ({ id, title, slug, summary, content, category, publishedDate, featured, order }) => ({
+      id,
+      title,
+      slug,
+      summary,
+      content,
+      category,
+      publishedDate,
+      featured,
+      order,
+    }),
+  ),
 };

@@ -214,6 +214,36 @@ export type NewsEntry = {
   coverImage: Media;
 };
 
+export type KnowledgeCategory = "article" | "framework" | "tool" | "video" | "research";
+
+export type KnowledgeArticle = {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string | null;
+  category: KnowledgeCategory | null;
+  publishedDate: string | null;
+  featured: boolean;
+  order: number | null;
+  seo: Seo;
+  coverImage: Media;
+  attachment: Media;
+  externalUrl: string | null;
+};
+
+export type KnowledgeArticleListItem = {
+  id: number;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content?: string | null;
+  category: KnowledgeCategory | null;
+  publishedDate: string | null;
+  featured: boolean;
+  order: number | null;
+};
+
 export type GalleryCategory =
   | "activities"
   | "past-seminar"
@@ -504,6 +534,11 @@ function getFallbackJson<T>(path: string): T | null {
     return (fallbackContent.newsEntries.find((entry) => entry.slug === slug) ?? null) as T | null;
   }
 
+  if (path.startsWith("/knowledge-articles/by-slug/")) {
+    const slug = path.slice("/knowledge-articles/by-slug/".length);
+    return (fallbackContent.knowledgeArticles.find((entry) => entry.slug === slug) ?? null) as T | null;
+  }
+
   if (path.startsWith("/gallery-entries/by-slug/")) {
     const slug = path.slice("/gallery-entries/by-slug/".length);
     return (fallbackContent.galleryEntries.find((entry) => entry.slug === slug) ?? null) as T | null;
@@ -527,6 +562,10 @@ function getFallbackCollection<T>(path: string): T[] {
 
   if (path.startsWith("/news")) {
     return [...fallbackContent.newsList] as T[];
+  }
+
+  if (path.startsWith("/knowledge-articles")) {
+    return [...fallbackContent.knowledgeArticleList] as T[];
   }
 
   if (path.startsWith("/gallery-entries")) {
@@ -611,7 +650,9 @@ function extractSlug(entry: Record<string, unknown>): string | null {
   return null;
 }
 
-async function getCollectionSlugs(collection: "services" | "projects" | "news" | "programs"): Promise<string[]> {
+async function getCollectionSlugs(
+  collection: "services" | "projects" | "news" | "programs" | "knowledge-articles",
+): Promise<string[]> {
   const entries = await fetchCollection<Record<string, unknown>>(
     `/${collection}?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc`,
   );
@@ -695,6 +736,16 @@ export async function getNewsBySlug(slug: string): Promise<NewsEntry | null> {
   return fetchJson<NewsEntry>(`/news/by-slug/${slug}`);
 }
 
+export async function getKnowledgeArticles(): Promise<KnowledgeArticleListItem[]> {
+  return fetchCollection<KnowledgeArticleListItem>(
+    "/knowledge-articles?sort[0]=featured:desc&sort[1]=order:asc&sort[2]=publishedDate:desc&sort[3]=createdAt:desc",
+  );
+}
+
+export async function getKnowledgeArticleBySlug(slug: string): Promise<KnowledgeArticle | null> {
+  return fetchJson<KnowledgeArticle>(`/knowledge-articles/by-slug/${slug}`);
+}
+
 export async function getGalleryEntries(category?: GalleryCategory): Promise<GalleryEntry[]> {
   const query = category
     ? `/gallery-entries?filters[category][$eq]=${encodeURIComponent(category)}&sort[0]=occurredOn:desc&sort[1]=createdAt:desc`
@@ -754,4 +805,8 @@ export async function getProjectSlugs(): Promise<string[]> {
 
 export async function getNewsSlugs(): Promise<string[]> {
   return getCollectionSlugs("news");
+}
+
+export async function getKnowledgeArticleSlugs(): Promise<string[]> {
+  return getCollectionSlugs("knowledge-articles");
 }

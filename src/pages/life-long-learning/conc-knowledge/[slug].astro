@@ -1,0 +1,101 @@
+---
+import MainLayout from "../../../layouts/MainLayout.astro";
+import PageCover from "../../../components/PageCover.astro";
+import { getKnowledgeArticleBySlug, getKnowledgeArticleSlugs, getSiteSetting } from "../../../lib/api";
+
+export async function getStaticPaths() {
+  const slugs = await getKnowledgeArticleSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = "" } = Astro.params;
+const [entry, siteSetting] = await Promise.all([getKnowledgeArticleBySlug(slug), getSiteSetting()]);
+
+if (!entry) {
+  Astro.response.status = 404;
+}
+
+function formatDate(value: string | null) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "long", year: "numeric" }).format(date);
+}
+
+function formatCategory(value: string | null) {
+  if (!value) return "Knowledge";
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+const publishedDate = formatDate(entry?.publishedDate ?? null);
+const pageTitle = entry?.seo?.metaTitle ?? entry?.title ?? "CONC Knowledge";
+const pageDescription = entry?.seo?.metaDescription ?? entry?.summary ?? siteSetting?.siteDescription ?? null;
+---
+
+<MainLayout title={pageTitle} seo={entry?.seo} siteSetting={siteSetting}>
+  {entry ? (
+    <article class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/life-long-learning/conc-knowledge">
+        Back to CONC Knowledge
+      </a>
+
+      <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(20rem,0.98fr)]">
+        <div>
+          <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
+            <span class="rounded-full bg-red-700 px-3 py-1 text-white">{formatCategory(entry.category)}</span>
+            {publishedDate && <span>{publishedDate}</span>}
+            {entry.featured && <span>Featured</span>}
+          </div>
+          <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+            {entry.title}
+          </h1>
+          {pageDescription && <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-600">{pageDescription}</p>}
+        </div>
+
+        <div class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+          {entry.coverImage?.url ? (
+            <img class="h-full w-full object-cover" src={entry.coverImage.url} alt={entry.coverImage.alternativeText ?? entry.title} loading="eager" />
+          ) : (
+            <PageCover eyebrow="CONC Knowledge" title={entry.title} theme="editorial" />
+          )}
+        </div>
+      </section>
+
+      <section class="mt-10 rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Knowledge Resource</p>
+        {entry.content ? (
+          <div
+            class="prose prose-stone mt-6 max-w-4xl prose-headings:font-semibold prose-p:leading-8 prose-a:text-red-700"
+            set:html={entry.content}
+          ></div>
+        ) : (
+          <p class="mt-6 max-w-3xl text-base leading-8 text-stone-600">No article body is available for this entry yet.</p>
+        )}
+        <div class="mt-8 flex flex-wrap gap-3">
+          {entry.attachment?.url && (
+            <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href={entry.attachment.url}>
+              Open attachment
+            </a>
+          )}
+          {entry.externalUrl && (
+            <a class="btn-primary !rounded-md !px-7 !py-3.5" href={entry.externalUrl}>
+              Open reference
+            </a>
+          )}
+        </div>
+      </section>
+    </article>
+  ) : (
+    <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Knowledge article not found</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">The requested CONC Knowledge slug is not available from Strapi.</p>
+      <a class="mt-6 inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/life-long-learning/conc-knowledge">
+        Back to CONC Knowledge
+      </a>
+    </section>
+  )}
+</MainLayout>

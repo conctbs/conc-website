@@ -40,7 +40,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Member Portal</p>
             <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Your registered programs and fees</h1>
             <p class="mt-4 max-w-3xl text-lg leading-8 text-stone-600">
-              This portal is tied to the email address used in your program registrations. It shows the programs currently linked to your member account.
+              This portal is tied to the email address used in your program registrations. It shows the programs and E-Documents currently linked to your member account.
             </p>
           </div>
 
@@ -193,6 +193,66 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
           return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
         }
 
+        function getDocumentTypeLabel(type) {
+          const labels = {
+            registration: 'Registration',
+            schedule: 'Schedule',
+            learning_material: 'Learning material',
+            attendance: 'Attendance',
+            assignment: 'Assignment',
+            certificate: 'Certificate',
+            receipt: 'Receipt',
+            other: 'Document',
+          };
+
+          return labels[type] || labels.other;
+        }
+
+        function renderDocumentList(documents) {
+          if (!Array.isArray(documents) || documents.length === 0) {
+            return '';
+          }
+
+          return `
+            <section class="mt-5 rounded-2xl border border-red-100 bg-white px-4 py-4">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm font-semibold text-stone-900">E-Documents for this program</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.16em] text-red-700">${documents.length} item${documents.length === 1 ? '' : 's'}</p>
+              </div>
+              <div class="mt-4 grid gap-3">
+                ${documents.map((document) => {
+                  const fileUrl = resolveMediaUrl(document?.file?.url);
+                  const openUrl = fileUrl || document?.externalUrl || null;
+                  const issuedAt = document?.issuedAt ? formatDate(document.issuedAt) : null;
+                  const expiresAt = document?.expiresAt ? formatDate(document.expiresAt) : null;
+
+                  return `
+                    <article class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-4">
+                      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                        <div>
+                          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-red-700">${escapeHtml(getDocumentTypeLabel(document?.documentType))}</p>
+                          <h4 class="mt-2 text-base font-semibold text-stone-900">${escapeHtml(document?.title || 'Document')}</h4>
+                          ${document?.description ? `<p class="mt-2 text-sm leading-7 text-stone-600">${escapeHtml(document.description)}</p>` : ''}
+                          <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs leading-6 text-stone-500">
+                            ${issuedAt ? `<span>Issued: ${escapeHtml(issuedAt)}</span>` : ''}
+                            ${expiresAt ? `<span>Expires: ${escapeHtml(expiresAt)}</span>` : ''}
+                            ${document?.source ? `<span>Scope: ${escapeHtml(document.source)}</span>` : ''}
+                          </div>
+                        </div>
+                        ${
+                          openUrl
+                            ? `<a class="btn-secondary !rounded-md !border-stone-300 !px-4 !py-2.5 !text-sm !text-stone-800" href="${escapeHtml(openUrl)}" target="_blank" rel="noreferrer">Open document</a>`
+                            : `<span class="rounded-md border border-dashed border-stone-300 px-4 py-2.5 text-sm font-semibold text-stone-500">No file attached</span>`
+                        }
+                      </div>
+                    </article>
+                  `;
+                }).join('')}
+              </div>
+            </section>
+          `;
+        }
+
         function renderProfile(member) {
           if (!profileTarget) return;
           profileTarget.innerHTML = `
@@ -306,6 +366,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
                   }
                 </div>
                 ${program.summary ? `<p class="mt-4 text-sm leading-7 text-stone-600">${escapeHtml(program.summary)}</p>` : ''}
+                ${renderDocumentList(registration.eDocuments)}
                 ${
                   payment?.reviewNote
                     ? `<p class="mt-4 rounded-2xl border border-dashed border-stone-300 bg-white px-4 py-4 text-sm leading-7 text-stone-600"><span class="font-semibold text-stone-900">Review note:</span> ${escapeHtml(payment.reviewNote)}</p>`

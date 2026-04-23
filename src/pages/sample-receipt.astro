@@ -1,0 +1,101 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { getSiteSetting } from "../lib/api";
+
+const siteSetting = await getSiteSetting();
+const title = siteSetting?.siteName ? `Sample Receipt | ${siteSetting.siteName}` : "Sample Receipt | CONC";
+
+const receipt = {
+  receiptNumber: "CONC-SAMPLE-2026-0001",
+  issuedAt: "2026-04-22T15:45:00+07:00",
+  payerName: "CONC Receipt Sample",
+  payerEmail: "conc@tbs.tu.ac.th",
+  programTitle: "Strategic Content Operations Bootcamp",
+  programDateLabel: "May 12-13, 2026",
+  amountLabel: "THB 12,500",
+  paymentMethod: "Bank transfer",
+  referenceCode: "RCPT-DEMO-CONC-001",
+  format: "On-site intensive",
+  location: "Thammasat Business School, Bangkok",
+  reviewNote: "Sample receipt page for internal review and frontend sign-off.",
+};
+
+const issuedAtLabel = new Date(receipt.issuedAt).toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+---
+
+<MainLayout title={title} siteSetting={siteSetting}>
+  <section class="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+    <div class="max-w-4xl">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Receipt Preview</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Sample receipt for internal review</h1>
+      <p class="mt-4 max-w-3xl text-lg leading-8 text-stone-600">
+        This preview mirrors the official payment receipt layout and is prefilled for <span class="font-semibold text-stone-900">{receipt.payerEmail}</span>.
+      </p>
+    </div>
+
+    <div class="mt-10 rounded-[1.9rem] border border-[#d7c7a0] bg-[#fffaf0] p-6 shadow-[0_24px_70px_-38px_rgba(41,37,36,0.24)] md:p-8">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">Receipt</p>
+          <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900">Official payment receipt</h2>
+          <p class="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
+            This example shows how a settled registration payment can be presented to members after finance approval.
+          </p>
+        </div>
+        <div class="text-left md:text-right">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Receipt number</p>
+          <p class="mt-2 text-xl font-semibold tracking-[0.08em] text-stone-900">{receipt.receiptNumber}</p>
+          <p class="mt-2 text-sm leading-7 text-stone-600">Issued {issuedAtLabel}</p>
+        </div>
+      </div>
+
+      <div class="mt-6 grid gap-3 md:grid-cols-2">
+        <div class="rounded-2xl border border-[#e2d5b5] bg-white/80 px-4 py-4">
+          <p class="text-sm font-semibold text-stone-900">Payer</p>
+          <p class="mt-2 text-base text-stone-800">{receipt.payerName}</p>
+          <p class="mt-1 text-sm leading-7 text-stone-600">{receipt.payerEmail}</p>
+        </div>
+        <div class="rounded-2xl border border-[#e2d5b5] bg-white/80 px-4 py-4">
+          <p class="text-sm font-semibold text-stone-900">Program</p>
+          <p class="mt-2 text-base text-stone-800">{receipt.programTitle}</p>
+          <p class="mt-1 text-sm leading-7 text-stone-600">{receipt.programDateLabel}</p>
+        </div>
+        <div class="rounded-2xl border border-[#e2d5b5] bg-white/80 px-4 py-4">
+          <p class="text-sm font-semibold text-stone-900">Amount</p>
+          <p class="mt-2 text-base text-stone-800">{receipt.amountLabel}</p>
+        </div>
+        <div class="rounded-2xl border border-[#e2d5b5] bg-white/80 px-4 py-4">
+          <p class="text-sm font-semibold text-stone-900">Payment method</p>
+          <p class="mt-2 text-base text-stone-800">{receipt.paymentMethod}</p>
+        </div>
+        <div class="rounded-2xl border border-[#e2d5b5] bg-white/80 px-4 py-4">
+          <p class="text-sm font-semibold text-stone-900">Reference code</p>
+          <p class="mt-2 break-all text-base text-stone-800">{receipt.referenceCode}</p>
+        </div>
+        <div class="rounded-2xl border border-[#e2d5b5] bg-white/80 px-4 py-4">
+          <p class="text-sm font-semibold text-stone-900">Delivery format</p>
+          <p class="mt-2 text-base text-stone-800">{receipt.format}</p>
+          <p class="mt-1 text-sm leading-7 text-stone-600">{receipt.location}</p>
+        </div>
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-dashed border-[#d6c7a1] bg-white/70 px-4 py-4 text-sm leading-7 text-stone-600">
+        <span class="font-semibold text-stone-900">Finance note:</span> {receipt.reviewNote}
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-stone-200 bg-white px-4 py-4 text-sm leading-7 text-stone-600">
+        <span class="font-semibold text-stone-900">Preview only:</span> This page is a static example for review and does not depend on a member login or a live payment record.
+      </div>
+
+      <div class="mt-5 flex flex-wrap gap-3 print:hidden">
+        <button class="btn-secondary !rounded-md !border-stone-300 !px-5 !py-3 !text-stone-800" type="button" onclick="window.print()">
+          Print receipt
+        </button>
+      </div>
+    </div>
+  </section>
+</MainLayout>

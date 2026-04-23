@@ -8,6 +8,28 @@ export type ProgramDetailSample = {
 };
 
 export const programDetailContent: Record<string, ProgramDetailSample> = {
+  "tu-x-tda-co-certificate-program-in-business-data-analytics": {
+    highlightTitle: "What This Certificate Covers",
+    highlights: [
+      "Build literacy across the full business analytics workflow, from data acquisition and preparation to interpretation and presentation.",
+      "Work through core tools used in practice, including SQL, Excel, Tableau, and introductory Python-based text analytics.",
+      "Connect technical learning to business decision-making through real use cases, project consulting, and a final presentation.",
+    ],
+    agendaTitle: "Learning Modules",
+    agenda: [
+      "Introduction to Data Science and its Application, Making Sense of Data, and Marketing: Foundation and Trends.",
+      "Basic Statistics, Introduction to Databases and SQL, and Data Acquisition and Cleaning with SQL.",
+      "Excel basics and functions, data analysis and interpretation with Excel, and Tableau for data mining and visualization.",
+      "Basic Text Analytics with Python, Real Business Use Case 1-4, Project Consulting 1-2, and Project Presentation.",
+    ],
+    deliverablesTitle: "Included In The Fee",
+    deliverables: [
+      "Lecture materials for the full program.",
+      "Lunch and refreshments throughout the training period.",
+      "A document folder and notebook for participants.",
+      "A certificate from Thammasat Business School for participants with at least 80% attendance.",
+    ],
+  },
   "strategic-content-operations-bootcamp": {
     highlightTitle: "What The Bootcamp Covers",
     highlights: [

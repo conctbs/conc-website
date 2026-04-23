@@ -3,6 +3,21 @@ import MainLayout from '../../../layouts/MainLayout.astro';
 import PageCover from '../../../components/PageCover.astro';
 import { MEMBER_PORTAL_DISABLED, getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../../lib/api';
 
+const programHeroImageBySlug: Record<string, { src: string; alt: string }> = {
+  'tu-x-tda-co-certificate-program-in-business-data-analytics': {
+    src: '/programs/tu-x-tda-business-data-analytics-hero.png',
+    alt: 'Business data analytics executive education illustration for the TU x TDA co-certificate program',
+  },
+  'strategic-content-operations-bootcamp': {
+    src: '/programs/strategic-content-operations-bootcamp-hero.png',
+    alt: 'Strategic Content Operations Bootcamp course illustration',
+  },
+  'executive-communication-design-for-digital-teams': {
+    src: '/programs/executive-communication-design-for-digital-teams.png',
+    alt: 'Executive Communication Design for Digital Teams course illustration',
+  },
+};
+
 export async function getStaticPaths() {
   const slugs = await getProgramSlugs();
   return slugs.map((slug) => ({ params: { slug } }));
@@ -13,11 +28,13 @@ const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBy
 const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID ?? '';
 const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1338/api';
 const supportEmail = siteSetting?.contactEmail ?? 'contact@conc.th';
+const supportPhone = siteSetting?.contactPhone ?? '09-1119-4503';
 const registrationAvailable = Boolean(program?.registrationEnabled) && !MEMBER_PORTAL_DISABLED;
 const registrationGoalLabel = program?.isForumEvent ? 'What do you want to discuss or learn from this forum?' : 'What do you want to solve?';
 const registrationGoalPlaceholder = program?.isForumEvent
   ? 'Briefly describe the issues, questions, or sector context you want to bring into the forum'
   : 'Briefly describe your training objective';
+const heroImage = program ? programHeroImageBySlug[program.slug] ?? null : null;
 
 if (!program) {
   Astro.response.status = 404;
@@ -45,7 +62,18 @@ if (!program) {
 
       <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(18rem,0.78fr)_minmax(0,1.22fr)]">
         <div class="grid gap-6">
-          <PageCover eyebrow="Registration" title={program.title} theme="programs" />
+          {heroImage ? (
+            <figure class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
+              <img
+                class="h-full w-full object-cover"
+                src={heroImage.src}
+                alt={heroImage.alt}
+                loading="eager"
+              />
+            </figure>
+          ) : (
+            <PageCover eyebrow="Registration" title={program.title} theme="programs" />
+          )}
           <aside class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-6 text-stone-900 shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Program Summary</p>
             <h2 class="mt-4 text-3xl font-semibold leading-tight">{program.title}</h2>
@@ -247,6 +275,16 @@ if (!program) {
                   Capacity: {program.seats} seats
                 </p>
               )}
+              <div class="mt-2 grid gap-3">
+                <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm">
+                  <span class="text-stone-500">Email</span>
+                  <a class="text-right font-medium text-red-700 hover:text-red-800" href={`mailto:${supportEmail}`}>{supportEmail}</a>
+                </div>
+                <div class="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm">
+                  <span class="text-stone-500">Phone</span>
+                  <a class="text-right font-medium text-red-700 hover:text-red-800" href={`tel:${supportPhone.replace(/[^+\d]/g, '')}`}>{supportPhone}</a>
+                </div>
+              </div>
               <div class="mt-3 flex flex-wrap gap-3">
                 <a class="btn-primary !rounded-md !px-7 !py-3.5" href="/contact">Contact the team</a>
                 <a class="btn-secondary !rounded-md !border-stone-300 !px-7 !py-3.5 !text-stone-800" href={`/programs/${program.slug}`}>

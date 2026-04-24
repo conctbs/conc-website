@@ -73,6 +73,36 @@ import { UI } from '~/theme-config';
       localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     });
 
+    const dropdownTriggers = document.querySelectorAll('#header [data-aw-dropdown-trigger]');
+    if (dropdownTriggers.length) {
+      const blurOtherDropdowns = function (activeTrigger) {
+        dropdownTriggers.forEach((trigger) => {
+          if (trigger !== activeTrigger && document.activeElement === trigger) {
+            trigger.blur();
+          }
+        });
+      };
+
+      dropdownTriggers.forEach((trigger) => {
+        const parentDropdown = trigger.closest('.dropdown');
+        if (!parentDropdown) return;
+
+        trigger.addEventListener('mouseenter', function () {
+          blurOtherDropdowns(trigger);
+        });
+
+        trigger.addEventListener('click', function () {
+          blurOtherDropdowns(trigger);
+        });
+
+        parentDropdown.addEventListener('mouseleave', function () {
+          if (document.activeElement === trigger) {
+            trigger.blur();
+          }
+        });
+      });
+    }
+
     attachEvent('[data-aw-social-share]', 'click', function (_, elem) {
       const network = elem.getAttribute('data-aw-social-share');
       const url = encodeURIComponent(elem.getAttribute('data-aw-url'));

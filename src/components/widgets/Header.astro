@@ -24,6 +24,7 @@ export interface Props {
   id?: string;
   links?: Array<MenuLink>;
   actions?: Array<CallToAction>;
+  searchLink?: Link | null;
   isSticky?: boolean;
   isDark?: boolean;
   isFullWidth?: boolean;
@@ -36,6 +37,7 @@ const {
   id = 'header',
   links = [],
   actions = [],
+  searchLink = null,
   isSticky = false,
   isDark = false,
   isFullWidth = false,
@@ -45,6 +47,7 @@ const {
 } = Astro.props;
 
 const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
+const mobileContactHref = '/contact';
 ---
 
 <header
@@ -63,7 +66,7 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
         'md:flex md:justify-between': position !== 'center',
       },
       {
-        'md:grid md:grid-cols-3 md:items-center': position === 'center',
+        'md:grid md:grid-cols-[auto_1fr_auto] md:items-center md:gap-4': position === 'center',
       },
       {
         'max-w-7xl': !isFullWidth,
@@ -78,19 +81,19 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
         <Button
           text="Member Login"
           href="/member-login"
-          variant="secondary"
+          variant="primary"
           icon="tabler:user-circle"
-          class="!border-0 !px-4 !py-2.5 !text-sm !font-semibold !shadow-none"
+          class="!border-0 !rounded-md !px-4 !py-2.5 !text-sm !font-semibold !shadow-none"
         />
         <ToggleMenu />
       </div>
     </div>
     <nav
-      class="hidden w-full items-center overflow-x-hidden overflow-y-auto text-white md:mx-5 md:flex md:w-auto md:justify-self-center md:overflow-x-auto md:overflow-y-visible"
+      class="hidden w-full items-center overflow-x-hidden overflow-y-auto text-white md:ml-auto md:mr-1 md:flex md:w-full md:justify-self-end md:overflow-x-auto md:overflow-y-visible"
       aria-label="Main navigation"
     >
       <ul
-        class="flex flex-col md:flex-row md:self-center w-full md:w-auto text-xl md:text-[0.9375rem] tracking-[0.01rem] font-medium md:justify-center"
+        class="flex w-full flex-col text-xl font-medium tracking-[0.01rem] md:w-auto md:flex-row md:self-center md:justify-end md:gap-0.5 md:text-[0.9375rem]"
       >
         {
           links.map(({ text, href, links }) => (
@@ -100,6 +103,7 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
                   <button
                     type="button"
                     class="flex items-center whitespace-nowrap px-4 py-3 text-white transition hover:text-red-100"
+                    data-aw-dropdown-trigger
                   >
                     {text}{' '}
                     <Icon name="tabler:chevron-down" class="w-3.5 h-3.5 ml-0.5 rtl:ml-0 rtl:mr-0.5 hidden md:inline" />
@@ -134,6 +138,18 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
             </li>
           ))
         }
+        <li class="mt-2 border-t border-white/10 pt-3 md:hidden">
+          <a
+            class:list={[
+              'flex items-center justify-between rounded-full border border-white/25 px-4 py-3 text-base font-medium text-white/90 transition hover:border-white/45 hover:text-white',
+              { 'border-white/60 text-white': mobileContactHref === currentPath },
+            ]}
+            href={mobileContactHref}
+          >
+            <span>Contact Us</span>
+            <Icon name="tabler:arrow-up-right" class="h-4 w-4" />
+          </a>
+        </li>
       </ul>
     </nav>
     <div
@@ -142,8 +158,21 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
         'hidden md:self-center md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0 md:justify-self-end',
       ]}
     >
-      <div class="items-center flex justify-between w-full md:w-auto">
-        <div class="flex">
+      <div class="items-center flex justify-between w-full md:w-auto md:pl-1">
+        <div class="flex items-center gap-1">
+          {searchLink?.href && (
+            <a
+              class:list={[
+                'inline-flex h-11 w-11 items-center justify-center text-white/90 transition hover:text-white',
+                { 'text-white': searchLink.href === currentPath },
+              ]}
+              aria-label={searchLink.ariaLabel ?? searchLink.text ?? 'Search'}
+              href={searchLink.href}
+              title={searchLink.text ?? 'Search'}
+            >
+              <Icon name={searchLink.icon ?? 'tabler:search'} class="h-5 w-5" />
+            </a>
+          )}
           {showToggleTheme && <ToggleTheme iconClass="w-6 h-6 md:w-5 md:h-5 md:inline-block" />}
           {
             showRssFeed && (

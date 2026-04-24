@@ -60,7 +60,8 @@ export const headerData = {
       ],
     },
   ],
-  actions: [{ text: 'Contact Us', href: '/contact', variant: 'secondary' as const, icon: 'tabler:mail' }],
+  actions: [],
+  searchLink: { text: 'Search', href: '/search', ariaLabel: 'Search the site', icon: 'tabler:search' },
 };
 
 export const footerData = {
@@ -94,6 +95,7 @@ export const footerData = {
       links: [
         { text: 'News', href: '/news' },
         { text: 'Gallery', href: '/gallery' },
+        { text: 'Search', href: '/search' },
         { text: 'Contact Us', href: '/contact' },
         { text: 'Sitemap', href: '/sitemap' },
       ],
@@ -101,6 +103,7 @@ export const footerData = {
   ],
   secondaryLinks: [
     { text: 'Privacy Policy', href: '/privacy-policy' },
+    { text: 'Search', href: '/search' },
     { text: 'Sitemap', href: '/sitemap' },
   ],
   socialLinks: [

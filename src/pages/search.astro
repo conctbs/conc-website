@@ -1,0 +1,483 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import {
+  getForumPrograms,
+  getGalleryEntries,
+  getKnowledgeArticles,
+  getNews,
+  getPrograms,
+  getProjects,
+  getServices,
+  getSiteSetting,
+} from "../lib/api";
+
+type SearchEntry = {
+  title: string;
+  href: string;
+  description: string;
+  section: string;
+  keywords: string[];
+};
+
+function cleanText(value: string | null | undefined) {
+  return (value ?? "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function clipText(value: string | null | undefined, limit = 180) {
+  const normalized = cleanText(value);
+  if (normalized.length <= limit) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, limit).trimEnd()}...`;
+}
+
+function createEntry(entry: SearchEntry): SearchEntry {
+  return {
+    ...entry,
+    description: entry.description.trim(),
+    keywords: entry.keywords.filter(Boolean),
+  };
+}
+
+const staticEntries: SearchEntry[] = [
+  createEntry({
+    title: "Home",
+    href: "/",
+    description: "Overview of CONC programs, consulting capabilities, and current highlights.",
+    section: "Main Page",
+    keywords: ["home", "conc", "overview"],
+  }),
+  createEntry({
+    title: "About CONC",
+    href: "/about",
+    description: "Institution profile, positioning, and overview of the center.",
+    section: "About",
+    keywords: ["about", "organization", "center"],
+  }),
+  createEntry({
+    title: "Executive",
+    href: "/about/executive",
+    description: "Leadership and executive team information.",
+    section: "About",
+    keywords: ["executive", "leadership", "team"],
+  }),
+  createEntry({
+    title: "Facilities",
+    href: "/about/facilities",
+    description: "Venue, classrooms, and learning environment details.",
+    section: "About",
+    keywords: ["facilities", "venue", "classroom"],
+  }),
+  createEntry({
+    title: "Philosophy",
+    href: "/about/philosophy",
+    description: "Learning philosophy and institutional approach.",
+    section: "About",
+    keywords: ["philosophy", "mission", "approach"],
+  }),
+  createEntry({
+    title: "Programs",
+    href: "/programs",
+    description: "Open enrollment programs and executive learning opportunities.",
+    section: "Training",
+    keywords: ["programs", "training", "courses"],
+  }),
+  createEntry({
+    title: "Customized Training",
+    href: "/training-service/customized-training",
+    description: "Tailored executive education and in-house learning solutions.",
+    section: "Training",
+    keywords: ["customized training", "in-house", "executive education"],
+  }),
+  createEntry({
+    title: "E-Documents",
+    href: "/training-service/e-documents",
+    description: "Digital documents and training-related online services.",
+    section: "Training",
+    keywords: ["e-documents", "documents", "training service"],
+  }),
+  createEntry({
+    title: "Upload Your Pay-in Slip",
+    href: "/training-service/upload-your-pay-in-slip",
+    description: "Submit payment evidence for training registration.",
+    section: "Training",
+    keywords: ["pay in slip", "payment", "receipt"],
+  }),
+  createEntry({
+    title: "Services",
+    href: "/services",
+    description: "Consulting service overview and focus areas.",
+    section: "Consulting",
+    keywords: ["services", "consulting", "advisory"],
+  }),
+  createEntry({
+    title: "Projects",
+    href: "/projects",
+    description: "Selected consulting and organizational development projects.",
+    section: "Consulting",
+    keywords: ["projects", "case studies", "consulting"],
+  }),
+  createEntry({
+    title: "CONC Knowledge",
+    href: "/life-long-learning/conc-knowledge",
+    description: "Articles, tools, frameworks, and learning resources.",
+    section: "Life Long Learning",
+    keywords: ["knowledge", "articles", "frameworks", "tools"],
+  }),
+  createEntry({
+    title: "CONC Thammasat Forum",
+    href: "/life-long-learning/conc-thammasat-forum",
+    description: "Forum events and public executive learning activities.",
+    section: "Life Long Learning",
+    keywords: ["forum", "events", "lifelong learning"],
+  }),
+  createEntry({
+    title: "Class Observation",
+    href: "/life-long-learning/class-observation",
+    description: "Learning activities and class observation information.",
+    section: "Life Long Learning",
+    keywords: ["class observation", "learning", "observation"],
+  }),
+  createEntry({
+    title: "News",
+    href: "/news",
+    description: "Latest updates, stories, and public announcements from CONC.",
+    section: "Connect",
+    keywords: ["news", "updates", "articles"],
+  }),
+  createEntry({
+    title: "Announcement",
+    href: "/announcement",
+    description: "Official announcements and notices.",
+    section: "Connect",
+    keywords: ["announcement", "notice", "official"],
+  }),
+  createEntry({
+    title: "Event Calendar",
+    href: "/event-calendar",
+    description: "Upcoming schedules and event dates.",
+    section: "Connect",
+    keywords: ["calendar", "events", "schedule"],
+  }),
+  createEntry({
+    title: "Event Programs",
+    href: "/event-programs",
+    description: "Programs and forum-related event listings.",
+    section: "Connect",
+    keywords: ["event programs", "forum", "events"],
+  }),
+  createEntry({
+    title: "Gallery",
+    href: "/gallery",
+    description: "Photos, activities, and media from CONC events and programs.",
+    section: "Connect",
+    keywords: ["gallery", "photos", "media"],
+  }),
+  createEntry({
+    title: "Member Portal",
+    href: "/member-portal",
+    description: "Portal for member account services and related workflows.",
+    section: "Member Services",
+    keywords: ["member portal", "members", "account"],
+  }),
+  createEntry({
+    title: "Contact",
+    href: "/contact",
+    description: "Contact details and ways to reach the CONC team.",
+    section: "Connect",
+    keywords: ["contact", "email", "phone"],
+  }),
+  createEntry({
+    title: "Sitemap",
+    href: "/sitemap",
+    description: "Directory of the website's major sections and public pages.",
+    section: "Reference",
+    keywords: ["sitemap", "directory", "pages"],
+  }),
+  createEntry({
+    title: "Privacy Policy",
+    href: "/privacy-policy",
+    description: "Privacy and data handling information for the website.",
+    section: "Reference",
+    keywords: ["privacy", "policy", "data"],
+  }),
+];
+
+const [siteSetting, programs, forumPrograms, services, projects, news, knowledgeArticles, galleryEntries] =
+  await Promise.all([
+    getSiteSetting(),
+    getPrograms(),
+    getForumPrograms(),
+    getServices(),
+    getProjects(),
+    getNews(),
+    getKnowledgeArticles(),
+    getGalleryEntries(),
+  ]);
+
+const programEntries = [...programs, ...forumPrograms].map((program) =>
+  createEntry({
+    title: program.title,
+    href: `/programs/${program.slug}`,
+    description: clipText(program.summary || program.tagline || program.overview?.[0] || program.audience),
+    section: program.isForumEvent ? "Forum Program" : "Program",
+    keywords: [program.category, program.format, program.location, program.dateLabel].filter(
+      (value): value is string => Boolean(value),
+    ),
+  }),
+);
+
+const serviceEntries = services.map((service) =>
+  createEntry({
+    title: service.name,
+    href: `/services/${service.slug}`,
+    description: clipText(service.description),
+    section: "Service",
+    keywords: ["service", "consulting"],
+  }),
+);
+
+const projectEntries = projects.map((project) =>
+  createEntry({
+    title: project.title,
+    href: `/projects/${project.slug}`,
+    description: clipText(project.summary || project.clientName),
+    section: "Project",
+    keywords: [project.clientName, project.completedDate, "project"].filter(
+      (value): value is string => Boolean(value),
+    ),
+  }),
+);
+
+const newsEntries = news.map((entry) =>
+  createEntry({
+    title: entry.title,
+    href: `/news/${entry.slug}`,
+    description: clipText(entry.content),
+    section: "News",
+    keywords: [entry.publishedDate, "news"].filter((value): value is string => Boolean(value)),
+  }),
+);
+
+const knowledgeEntries = knowledgeArticles.map((entry) =>
+  createEntry({
+    title: entry.title,
+    href: `/life-long-learning/conc-knowledge/${entry.slug}`,
+    description: clipText(entry.summary || entry.content),
+    section: "CONC Knowledge",
+    keywords: [entry.category, entry.publishedDate, "knowledge"].filter(
+      (value): value is string => Boolean(value),
+    ),
+  }),
+);
+
+const gallerySearchEntries = galleryEntries.map((entry) =>
+  createEntry({
+    title: entry.title,
+    href: `/gallery/item/${entry.slug}`,
+    description: clipText(entry.summary || entry.content),
+    section: "Gallery",
+    keywords: [entry.category, entry.occurredOn, "gallery"].filter((value): value is string => Boolean(value)),
+  }),
+);
+
+const dedupedEntries = new Map<string, SearchEntry>();
+
+for (const entry of [
+  ...staticEntries,
+  ...programEntries,
+  ...serviceEntries,
+  ...projectEntries,
+  ...newsEntries,
+  ...knowledgeEntries,
+  ...gallerySearchEntries,
+]) {
+  if (!dedupedEntries.has(entry.href)) {
+    dedupedEntries.set(entry.href, entry);
+  }
+}
+
+const searchEntries = [...dedupedEntries.values()].sort((left, right) => left.title.localeCompare(right.title));
+const title = `Search | ${siteSetting?.siteName ?? "CONC"}`;
+---
+
+<MainLayout title={title} siteSetting={siteSetting}>
+  <section class="border-b border-stone-200 bg-[radial-gradient(circle_at_top,#fff7ed_0%,#ffffff_48%,#f5f5f4_100%)]">
+    <div class="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-start">
+        <div>
+          <p class="inline-flex rounded-full border border-red-700/20 bg-red-50 px-4 py-1 text-sm font-semibold uppercase tracking-[0.18em] text-red-700">
+            Site Search
+          </p>
+          <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
+            Search across programs, services, projects, news, and knowledge.
+          </h1>
+          <p class="mt-6 max-w-3xl text-base leading-8 text-stone-600 md:text-lg">
+            Use keywords, program titles, service names, or topics to jump directly to the section you need.
+          </p>
+
+          <form class="mt-8 rounded-[1.75rem] border border-stone-200 bg-white p-4 shadow-[0_24px_70px_-40px_rgba(41,37,36,0.45)]" action="/search" method="get">
+            <label class="block text-sm font-semibold uppercase tracking-[0.18em] text-stone-500" for="site-search-input">
+              Search the website
+            </label>
+            <div class="mt-3 flex flex-col gap-3 md:flex-row">
+              <input
+                id="site-search-input"
+                name="q"
+                type="search"
+                placeholder="Search for program, service, article, project, or topic"
+                class="min-h-[3.75rem] flex-1 rounded-[1.25rem] border border-stone-300 bg-stone-50 px-5 text-base text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-red-700 focus:bg-white focus:ring-4 focus:ring-red-100"
+              />
+              <button
+                type="submit"
+                class="btn-primary min-h-[3.75rem] !rounded-md !border-0 !px-7 !py-3.5"
+              >
+                Search
+              </button>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-stone-500">
+              Indexed pages: {searchEntries.length}
+            </p>
+          </form>
+        </div>
+
+        <aside class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_24px_70px_-40px_rgba(41,37,36,0.4)]">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Popular routes</p>
+          <div class="mt-5 grid gap-3">
+            {staticEntries.slice(5, 11).map((entry) => (
+              <a
+                class="rounded-[1.25rem] border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-stone-800 transition hover:-translate-y-0.5 hover:border-red-700 hover:bg-white hover:text-red-700"
+                href={entry.href}
+              >
+                {entry.title}
+              </a>
+            ))}
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-stone-50">
+    <div class="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+      <div class="flex flex-col gap-4 border-b border-stone-200 pb-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Results</p>
+          <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900">Find the right page faster</h2>
+        </div>
+        <p id="search-results-summary" class="text-sm leading-6 text-stone-500">
+          Showing featured links until a query is entered.
+        </p>
+      </div>
+
+      <div id="search-empty-state" class="mt-8 rounded-[1.75rem] border border-dashed border-stone-300 bg-white p-7">
+        <p class="text-lg font-semibold text-stone-900">Suggested starting points</p>
+        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {staticEntries.slice(0, 12).map((entry) => (
+            <a
+              class="rounded-[1.5rem] border border-stone-200 bg-stone-50 px-5 py-4 text-base font-semibold text-stone-900 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)] transition hover:-translate-y-1 hover:border-red-700 hover:bg-white hover:text-red-700"
+              href={entry.href}
+            >
+              <span class="block text-xs font-semibold uppercase tracking-[0.18em] text-red-700">{entry.section}</span>
+              <span class="mt-2 block">{entry.title}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div id="search-results" class="mt-8 grid gap-5"></div>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ searchEntries }}>
+    const input = document.querySelector("#site-search-input");
+    const results = document.querySelector("#search-results");
+    const summary = document.querySelector("#search-results-summary");
+    const emptyState = document.querySelector("#search-empty-state");
+
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get("q")?.trim() ?? "";
+
+    const scoreEntry = (entry, terms) => {
+      const haystack = [entry.title, entry.description, entry.section, ...(entry.keywords || [])]
+        .join(" ")
+        .toLowerCase();
+
+      let score = 0;
+
+      for (const term of terms) {
+        if (entry.title.toLowerCase().includes(term)) score += 5;
+        if (entry.section.toLowerCase().includes(term)) score += 2;
+        if (haystack.includes(term)) score += 1;
+      }
+
+      return score;
+    };
+
+    const renderResults = (query) => {
+      const normalized = query.trim().toLowerCase();
+
+      if (!normalized) {
+        results.innerHTML = "";
+        emptyState.hidden = false;
+        summary.textContent = "Showing featured links until a query is entered.";
+        params.delete("q");
+        history.replaceState({}, "", `${window.location.pathname}`);
+        return;
+      }
+
+      const terms = normalized.split(/\s+/).filter(Boolean);
+      const matches = searchEntries
+        .map((entry) => ({ entry, score: scoreEntry(entry, terms) }))
+        .filter(({ score }) => score > 0)
+        .sort((left, right) => right.score - left.score || left.entry.title.localeCompare(right.entry.title))
+        .slice(0, 24)
+        .map(({ entry }) => entry);
+
+      emptyState.hidden = true;
+      params.set("q", query);
+      history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+
+      summary.textContent =
+        matches.length > 0
+          ? `${matches.length} result${matches.length === 1 ? "" : "s"} for "${query}".`
+          : `No results for "${query}".`;
+
+      if (matches.length === 0) {
+        results.innerHTML = `
+          <div class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)]">
+            <p class="text-lg font-semibold text-stone-900">No matching pages found.</p>
+            <p class="mt-3 text-sm leading-7 text-stone-600">Try a broader keyword such as program, project, news, knowledge, or service.</p>
+          </div>
+        `;
+        return;
+      }
+
+      results.innerHTML = matches
+        .map(
+          (entry) => `
+            <a class="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.18)] transition hover:-translate-y-1 hover:border-red-700" href="${entry.href}">
+              <span class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">${entry.section}</span>
+              <h3 class="mt-3 text-2xl font-semibold leading-tight text-stone-900">${entry.title}</h3>
+              <p class="mt-3 text-sm leading-7 text-stone-600">${entry.description || "Open this page for more details."}</p>
+              <span class="mt-4 inline-flex text-sm font-semibold text-red-700">Open page</span>
+            </a>
+          `,
+        )
+        .join("");
+    };
+
+    if (input instanceof HTMLInputElement) {
+      input.value = initialQuery;
+      input.addEventListener("input", (event) => {
+        renderResults(event.currentTarget.value);
+      });
+    }
+
+    renderResults(initialQuery);
+  </script>
+</MainLayout>

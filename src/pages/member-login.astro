@@ -200,6 +200,18 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
       }
     }
 
+    function getRequestErrorMessage(error, fallbackMessage) {
+      if (
+        error instanceof TypeError ||
+        (error instanceof Error &&
+          /failed to fetch|load failed|networkerror|network error|fetch/i.test(error.message))
+      ) {
+        return `Cannot reach the member service at ${String(strapiBaseUrl).replace(/\/+$/, '')}. Please make sure the Strapi backend is running and try again.`;
+      }
+
+      return error instanceof Error ? error.message : fallbackMessage;
+    }
+
     async function submitMemberAuthForm(form, path, loadingLabel) {
       rememberDefaultButtonLabel(form);
       setSubmitting(form, true, loadingLabel);
@@ -230,7 +242,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
           window.location.href = '/member-portal';
         }, 600);
       } catch (error) {
-        showNotification(error instanceof Error ? error.message : 'Member request failed', 'error');
+        showNotification(getRequestErrorMessage(error, 'Member request failed'), 'error');
       } finally {
         setSubmitting(form, false, loadingLabel);
       }

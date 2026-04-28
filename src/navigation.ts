@@ -29,6 +29,7 @@ export const headerData = {
         { text: 'Service Field', href: '/services/service-field' },
         { text: 'Case Method Learning', href: '/services/case-method-learning' },
         { text: 'Client List', href: '/services/client-list' },
+        { text: 'Consulting Project', href: '/services/consulting-project' },
       ],
     },
     {
@@ -86,6 +87,7 @@ export const footerData = {
       title: 'Consulting',
       links: [
         { text: 'Service Field', href: '/services/service-field' },
+        { text: 'Consulting Project', href: '/services/consulting-project' },
         { text: 'Projects', href: '/projects' },
         { text: 'Client List', href: '/services/client-list' },
       ],

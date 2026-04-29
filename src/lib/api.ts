@@ -661,7 +661,7 @@ async function getCollectionSlugs(
     .map((entry) => extractSlug(entry))
     .filter((slug): slug is string => Boolean(slug));
 
-  if (slugs.length > 0) {
+  if (slugs.length > 0 || !BACKEND_DISABLED) {
     return slugs;
   }
 

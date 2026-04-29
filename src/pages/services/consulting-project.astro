@@ -1,35 +1,26 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
 import SectionRenderer from "../../components/SectionRenderer.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
 const [page, siteSetting] = await Promise.all([getPageBySlug("consulting-project"), getSiteSetting()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? "Consulting Project | CONC";
+
+if (!page) {
+  Astro.response.status = 404;
+}
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
     <SectionRenderer sections={page.sections} />
   ) : (
-    <InfoPage
-      eyebrow="Consulting Service"
-      title="Consulting Project"
-      intro="Selected consulting projects can be curated here from the backend to show delivery scope, client context, and practical outcomes."
-      sections={[
-        {
-          title: "Case References",
-          body: "This route is designed to highlight consulting work that helps visitors understand the range and depth of advisory engagements managed by CONC.",
-        },
-        {
-          title: "Backend-Managed Listings",
-          body: "Project entries can be maintained in Strapi so editors can update titles, summaries, client references, and featured order without frontend code changes.",
-        },
-        {
-          title: "Conversion Path",
-          body: "The page can connect past work to the next inquiry step, making it easier for prospective clients to move from browsing examples into a real conversation.",
-        },
-      ]}
-    />
+    <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Consulting project page not found</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+        Publish the <code>consulting-project</code> page in Strapi to render this route from the database.
+      </p>
+    </section>
   )}
 </MainLayout>

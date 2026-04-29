@@ -149,6 +149,7 @@ export type Project = {
   clientName: string | null;
   completedDate: string | null;
   featured: boolean;
+  showOnConsultingProject?: boolean;
   order: number | null;
   seo: Seo;
   coverImage: Media;
@@ -164,6 +165,7 @@ export type ProjectListItem = {
   clientName: string | null;
   completedDate: string | null;
   featured: boolean;
+  showOnConsultingProject?: boolean;
   order: number | null;
 };
 

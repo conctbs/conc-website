@@ -32,6 +32,11 @@ const title = page?.seo?.metaTitle ?? page?.title ?? siteSetting?.siteName ?? 'P
             {project.clientName && <span>{project.clientName}</span>}
             {project.completedDate && <span>{project.completedDate}</span>}
             {project.featured && <span class="rounded-full bg-red-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white">Featured</span>}
+            {project.showOnConsultingProject && (
+              <span class="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-red-700">
+                Consulting Case
+              </span>
+            )}
           </div>
           <h2 class="mt-5 text-2xl font-semibold text-stone-900">{project.title}</h2>
           <p class="mt-4 text-sm leading-7 text-stone-600">{project.summary}</p>

@@ -37,6 +37,9 @@ const pageDescription = project?.seo?.metaDescription ?? project?.summary ?? sit
           <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">
             <span class="rounded-full bg-red-700 px-3 py-1 text-white">{project.clientName ?? 'Selected Work'}</span>
             {completedDate && <span>{completedDate}</span>}
+            {project.showOnConsultingProject && (
+              <span class="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-red-700">Consulting Case</span>
+            )}
           </div>
           <h1 class="mt-5 max-w-4xl text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">
             {project.title}

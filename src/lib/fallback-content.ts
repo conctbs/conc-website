@@ -98,6 +98,7 @@ const projects: Project[] = [
     clientName: "Conc Studio",
     completedDate: "2026-02-14",
     featured: true,
+    showOnConsultingProject: true,
     order: 1,
     seo: {
       metaTitle: "Conc Website Relaunch Project",
@@ -119,6 +120,7 @@ const projects: Project[] = [
     clientName: "Internal Prototype",
     completedDate: "2026-03-05",
     featured: false,
+    showOnConsultingProject: false,
     order: 2,
     seo: {
       metaTitle: "Editorial Operations Toolkit Project",
@@ -132,6 +134,8 @@ const projects: Project[] = [
     services,
   },
 ];
+
+const consultingProjects = projects.filter((project) => project.showOnConsultingProject);
 
 const newsEntries: NewsEntry[] = [
   {
@@ -1358,6 +1362,56 @@ const pages: Record<string, PageDto> = {
       },
     ],
   },
+  "consulting-project": {
+    id: 6,
+    slug: "consulting-project",
+    title: "Consulting Project",
+    seo: {
+      metaTitle: "Consulting Project | CONC",
+      metaDescription: "Browse consulting projects and case references managed from the CONC backend.",
+      canonicalUrl: "https://conc.example/services/consulting-project",
+      noIndex: false,
+      metaImage: null,
+    },
+    sections: [
+      {
+        type: "hero",
+        id: 24,
+        eyebrow: "Consulting Service",
+        title: "Consulting Project",
+        description:
+          "Use this backend-managed page to curate consulting case studies, delivery references, and featured engagements directly from the project database.",
+        primaryButtonText: "Browse All Projects",
+        primaryButtonUrl: "/projects",
+        secondaryButtonText: "Contact Us",
+        secondaryButtonUrl: "/contact",
+        backgroundImage: null,
+      },
+      {
+        type: "projects-list",
+        id: 25,
+        eyebrow: "Project Database",
+        title: "Selected consulting projects",
+        description:
+          "Editors can manage which consulting projects appear here by updating project records and curating this section from the Strapi page builder.",
+        limit: 6,
+        viewAllText: "All projects",
+        viewAllUrl: "/projects",
+        projects: consultingProjects.length > 0 ? consultingProjects : projects,
+      },
+      {
+        type: "call-to-action",
+        id: 26,
+        eyebrow: "Next Step",
+        title: "Need a consulting engagement shaped around a real delivery problem?",
+        description:
+          "Use this page to move from example projects into a scoped conversation about advisory support, implementation priorities, and team outcomes.",
+        buttonText: "Talk To CONC",
+        buttonUrl: "/contact",
+        backgroundImage: null,
+      },
+    ],
+  },
   news: {
     id: 6,
     slug: "news",
@@ -2032,7 +2086,7 @@ export const fallbackContent = {
   newsEntries,
   knowledgeArticles,
   galleryEntries,
-  projectList: projects.map<ProjectListItem>(({ id, title, slug, summary, clientName, completedDate, featured, order }) => ({
+  projectList: projects.map<ProjectListItem>(({ id, title, slug, summary, clientName, completedDate, featured, showOnConsultingProject, order }) => ({
     id,
     title,
     slug,
@@ -2040,6 +2094,7 @@ export const fallbackContent = {
     clientName,
     completedDate,
     featured,
+    showOnConsultingProject,
     order,
   })),
   newsList: newsEntries.map<NewsListItem>(({ id, title, slug, content, publishedDate }) => ({

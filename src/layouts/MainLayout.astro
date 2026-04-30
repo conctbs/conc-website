@@ -1,6 +1,8 @@
 ---
 import '../assets/styles/tailwind.css';
 
+import ConsentModeHead from '~/components/analytics/ConsentModeHead.astro';
+import CookieConsentBanner from '~/components/analytics/CookieConsentBanner.astro';
 import Favicons from '~/components/Favicons.astro';
 import CustomStyles from '~/components/CustomStyles.astro';
 import BasicScripts from '~/components/common/BasicScripts.astro';
@@ -15,7 +17,7 @@ const { title, seo = null, siteSetting = null } = Astro.props;
 const pageTitle = title ?? siteSetting?.siteName ?? SITE.name;
 const pageDescription = seo?.metaDescription ?? siteSetting?.siteDescription ?? null;
 const canonical = seo?.canonicalUrl ?? String(getCanonical(String(Astro.url.pathname)));
-const googleAnalyticsId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? 'G-44Q9S4ZPHC';
+const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
 ---
 
 <!doctype html>
@@ -29,42 +31,30 @@ const googleAnalyticsId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? 'G-44Q9S4Z
     {seo?.noIndex && <meta name="robots" content="noindex,nofollow" />}
     <Favicons />
     <CustomStyles />
-    {googleAnalyticsId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>}
-    {googleAnalyticsId && (
-      <script is:inline define:vars={{ googleAnalyticsId }}>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-          dataLayer.push(arguments);
-        }
-
-        window.gtag = window.gtag || gtag;
-
-        function trackPageView() {
-          window.gtag?.('event', 'page_view', {
-            page_path: window.location.pathname + window.location.search,
-            page_title: document.title,
-            page_location: window.location.href,
-          });
-        }
-
-        window.gtag('js', new Date());
-        window.gtag('config', googleAnalyticsId, {
-          send_page_view: false,
-        });
-
-        trackPageView();
-        document.addEventListener('astro:after-swap', trackPageView);
-      </script>
-    )}
+    <ConsentModeHead />
   </head>
 
   <body class="antialiased text-default bg-page tracking-tight">
+    {
+      gtmId && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(gtmId)}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+            title="Google Tag Manager"
+          ></iframe>
+        </noscript>
+      )
+    }
     <Announcement />
     <Header {...headerData} isSticky />
     <main>
       <slot />
     </main>
     <Footer {...footerData} />
+    <CookieConsentBanner />
     <BasicScripts />
   </body>
 </html>

@@ -1,0 +1,165 @@
+---
+const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
+const consentWaitForUpdate = Number(import.meta.env.PUBLIC_GTM_WAIT_FOR_UPDATE ?? '500') || 500;
+const consentVersion = '2026-04-30';
+---
+
+{
+  gtmId && (
+    <script is:inline define:vars={{ gtmId, consentWaitForUpdate, consentVersion }}>
+      (() => {
+        if (window.__concConsentBootstrapped) {
+          return;
+        }
+
+        window.__concConsentBootstrapped = true;
+
+        const storageKey = 'conc_cookie_consent';
+        const defaultState = {
+          analytics: false,
+          ads: false,
+        };
+        const normalizeState = (input) => ({
+          analytics: input?.analytics === true,
+          ads: input?.ads === true,
+        });
+
+        const mapState = (state) => ({
+          analytics_storage: state.analytics ? 'granted' : 'denied',
+          ad_storage: state.ads ? 'granted' : 'denied',
+          ad_user_data: state.ads ? 'granted' : 'denied',
+          ad_personalization: state.ads ? 'granted' : 'denied',
+        });
+
+        const readStoredState = () => {
+          try {
+            const raw = window.localStorage.getItem(storageKey);
+            if (!raw) {
+              return null;
+            }
+
+            const parsed = JSON.parse(raw);
+            if (!parsed || parsed.version !== consentVersion || !parsed.preferences) {
+              return null;
+            }
+
+            return normalizeState(parsed.preferences);
+          } catch {
+            return null;
+          }
+        };
+
+        const writeStoredState = (state) => {
+          try {
+            window.localStorage.setItem(
+              storageKey,
+              JSON.stringify({
+                version: consentVersion,
+                updatedAt: new Date().toISOString(),
+                preferences: normalizeState(state),
+              }),
+            );
+          } catch {
+            // Ignore storage failures so consent updates still reach Google tags.
+          }
+        };
+
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+
+        window.gtag = window.gtag || gtag;
+
+        let currentState = defaultState;
+
+        const pushEvent = (eventName, payload = {}) => {
+          window.dataLayer.push({
+            event: eventName,
+            ...payload,
+          });
+        };
+
+        const applyConsentUpdate = (nextState, options = {}) => {
+          const normalized = normalizeState(nextState);
+
+          window.gtag('consent', 'update', mapState(normalized));
+          currentState = normalized;
+
+          if (options.persist !== false) {
+            writeStoredState(normalized);
+          }
+
+          pushEvent('consent_updated', {
+            consent_analytics: normalized.analytics ? 'granted' : 'denied',
+            consent_ads: normalized.ads ? 'granted' : 'denied',
+          });
+
+          return normalized;
+        };
+
+        const pushPageView = () => {
+          pushEvent('consent_page_view', {
+            page_title: document.title,
+            page_location: window.location.href,
+            page_path: window.location.pathname + window.location.search,
+            page_referrer: document.referrer || '',
+          });
+        };
+
+        window.__concConsent = {
+          storageKey,
+          version: consentVersion,
+          normalizeState,
+          mapState,
+          readStoredState,
+          writeStoredState,
+          getState: () => currentState,
+          applyConsentUpdate,
+          pushEvent,
+          pushPageView,
+          trackAdsConversion: (payload = {}) => {
+            pushEvent('ads_conversion', payload);
+          },
+        };
+
+        window.gtag('set', 'ads_data_redaction', true);
+        window.gtag('set', 'url_passthrough', true);
+
+        const defaultConsent = {
+          ...mapState(defaultState),
+          wait_for_update: consentWaitForUpdate,
+        };
+
+        window.gtag('consent', 'default', defaultConsent);
+
+        const storedState = readStoredState();
+        if (storedState) {
+          currentState = storedState;
+          window.gtag('consent', 'update', mapState(storedState));
+        }
+
+        if (!window.__concConsentPageViewBound) {
+          window.__concConsentPageViewBound = true;
+          document.addEventListener('DOMContentLoaded', pushPageView);
+          document.addEventListener('astro:after-swap', pushPageView);
+        }
+
+        if (!window.__concGtmLoaded) {
+          window.__concGtmLoaded = true;
+          pushEvent('gtm.js', {
+            'gtm.start': new Date().getTime(),
+          });
+
+          const firstScript = document.getElementsByTagName('script')[0];
+          const gtmScript = document.createElement('script');
+          gtmScript.id = `gtm-script-${gtmId}`;
+          gtmScript.async = true;
+          gtmScript.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(gtmId)}`;
+          firstScript?.parentNode?.insertBefore(gtmScript, firstScript);
+        }
+      })();
+    </script>
+  )
+}

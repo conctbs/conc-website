@@ -1,0 +1,26 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  fit?: 'cover' | 'contain';
+}
+
+const { src, alt, fit = 'contain' } = Astro.props as Props;
+---
+
+<figure
+  class:list={[
+    'overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]',
+    fit === 'contain' ? 'p-4 lg:aspect-[3/2] lg:p-6' : null,
+  ]}
+>
+  <img
+    class:list={[
+      'w-full',
+      fit === 'contain' ? 'h-full object-contain object-center' : 'h-full object-cover',
+    ]}
+    src={src}
+    alt={alt}
+    loading="eager"
+  />
+</figure>

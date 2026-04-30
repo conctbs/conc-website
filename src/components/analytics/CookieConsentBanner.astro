@@ -1,0 +1,213 @@
+---
+const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
+---
+
+{
+  gtmId && (
+    <>
+      <div
+        id="cookie-consent-banner"
+        hidden
+        class="fixed inset-x-4 bottom-4 z-[120] mx-auto max-w-4xl rounded-[1.75rem] border border-stone-200 bg-white p-5 shadow-[0_30px_90px_-36px_rgba(41,37,36,0.45)] md:inset-x-6 md:p-6"
+        aria-live="polite"
+        aria-label="Cookie consent banner"
+      >
+        <div class="flex flex-col gap-5">
+          <div class="space-y-3">
+            <div class="text-sm font-semibold uppercase tracking-[0.24em] text-red-700">Privacy Controls</div>
+            <h2 class="text-xl font-semibold text-stone-950 md:text-2xl">Choose how Google tags can use data on this site</h2>
+            <p class="text-sm leading-7 text-stone-600 md:text-base">
+              Essential storage remains enabled for site security and core functionality. Analytics and advertising tags stay
+              denied by default until you grant consent. See our
+              <a href="/privacy-policy" class="font-semibold text-red-700 underline underline-offset-4">Privacy Policy</a>.
+            </p>
+          </div>
+
+          <div id="cookie-consent-details" hidden class="grid gap-3 md:grid-cols-2">
+            <label class="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+              <span class="flex items-start justify-between gap-4">
+                <span>
+                  <span class="block text-base font-semibold text-stone-900">Analytics cookies</span>
+                  <span class="mt-1 block text-sm leading-6 text-stone-600">
+                    Enables Google Analytics 4 measurement after consent.
+                  </span>
+                </span>
+                <input
+                  id="cookie-consent-analytics"
+                  type="checkbox"
+                  class="mt-1 h-5 w-5 rounded border-stone-300 text-red-700 focus:ring-red-700"
+                />
+              </span>
+            </label>
+
+            <label class="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+              <span class="flex items-start justify-between gap-4">
+                <span>
+                  <span class="block text-base font-semibold text-stone-900">Advertising cookies</span>
+                  <span class="mt-1 block text-sm leading-6 text-stone-600">
+                    Enables Google Ads storage, user data, personalization, and conversion tracking.
+                  </span>
+                </span>
+                <input
+                  id="cookie-consent-ads"
+                  type="checkbox"
+                  class="mt-1 h-5 w-5 rounded border-stone-300 text-red-700 focus:ring-red-700"
+                />
+              </span>
+            </label>
+          </div>
+
+          <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <button
+              id="cookie-consent-customize"
+              type="button"
+              class="inline-flex items-center justify-center rounded-full border border-stone-300 px-5 py-3 text-sm font-semibold text-stone-700 transition hover:border-stone-400 hover:text-stone-950"
+            >
+              Customize
+            </button>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <button
+                id="cookie-consent-reject"
+                type="button"
+                class="inline-flex items-center justify-center rounded-full border border-stone-300 px-5 py-3 text-sm font-semibold text-stone-700 transition hover:border-stone-400 hover:text-stone-950"
+              >
+                Reject all
+              </button>
+              <button
+                id="cookie-consent-save"
+                type="button"
+                hidden
+                class="inline-flex items-center justify-center rounded-full border border-red-700 px-5 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+              >
+                Save preferences
+              </button>
+              <button
+                id="cookie-consent-accept"
+                type="button"
+                class="inline-flex items-center justify-center rounded-full bg-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-800"
+              >
+                Accept all
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        id="cookie-consent-open"
+        type="button"
+        hidden
+        class="fixed bottom-4 left-4 z-[110] inline-flex items-center justify-center rounded-full border border-stone-300 bg-white px-4 py-3 text-sm font-semibold text-stone-700 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.35)] transition hover:border-stone-400 hover:text-stone-950"
+      >
+        Cookie settings
+      </button>
+
+      <script is:inline>
+        (() => {
+          const initConsentBanner = () => {
+            const consentApi = window.__concConsent;
+            const banner = document.getElementById('cookie-consent-banner');
+            const openButton = document.getElementById('cookie-consent-open');
+            const customizeButton = document.getElementById('cookie-consent-customize');
+            const rejectButton = document.getElementById('cookie-consent-reject');
+            const acceptButton = document.getElementById('cookie-consent-accept');
+            const saveButton = document.getElementById('cookie-consent-save');
+            const details = document.getElementById('cookie-consent-details');
+            const analyticsInput = document.getElementById('cookie-consent-analytics');
+            const adsInput = document.getElementById('cookie-consent-ads');
+
+            if (
+              !consentApi ||
+              !banner ||
+              !openButton ||
+              !customizeButton ||
+              !rejectButton ||
+              !acceptButton ||
+              !saveButton ||
+              !details ||
+              !(analyticsInput instanceof HTMLInputElement) ||
+              !(adsInput instanceof HTMLInputElement) ||
+              banner.dataset.bound === 'true'
+            ) {
+              return;
+            }
+
+            banner.dataset.bound = 'true';
+
+            const syncInputs = (state) => {
+              analyticsInput.checked = state.analytics === true;
+              adsInput.checked = state.ads === true;
+            };
+
+            const showDetails = (expanded) => {
+              details.hidden = !expanded;
+              saveButton.hidden = !expanded;
+              customizeButton.textContent = expanded ? 'Hide options' : 'Customize';
+            };
+
+            const showBanner = (expanded = false) => {
+              const stored = consentApi.readStoredState();
+              syncInputs(stored || consentApi.getState());
+              banner.hidden = false;
+              openButton.hidden = true;
+              showDetails(expanded);
+            };
+
+            const hideBanner = () => {
+              banner.hidden = true;
+              openButton.hidden = false;
+              showDetails(false);
+            };
+
+            const applyPreferences = (state) => {
+              const updatedState = consentApi.applyConsentUpdate(state, { persist: true });
+              syncInputs(updatedState);
+              hideBanner();
+            };
+
+            customizeButton.addEventListener('click', () => {
+              showDetails(details.hidden);
+            });
+
+            rejectButton.addEventListener('click', () => {
+              applyPreferences({
+                analytics: false,
+                ads: false,
+              });
+            });
+
+            acceptButton.addEventListener('click', () => {
+              applyPreferences({
+                analytics: true,
+                ads: true,
+              });
+            });
+
+            saveButton.addEventListener('click', () => {
+              applyPreferences({
+                analytics: analyticsInput.checked,
+                ads: adsInput.checked,
+              });
+            });
+
+            openButton.addEventListener('click', () => {
+              showBanner(true);
+            });
+
+            const stored = consentApi.readStoredState();
+            if (stored) {
+              syncInputs(stored);
+              hideBanner();
+            } else {
+              showBanner(false);
+            }
+          };
+
+          initConsentBanner();
+          document.addEventListener('astro:after-swap', initConsentBanner);
+        })();
+      </script>
+    </>
+  )
+}

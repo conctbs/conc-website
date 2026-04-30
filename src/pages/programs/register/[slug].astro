@@ -470,6 +470,14 @@ if (!program) {
               window.localStorage.setItem(authTokenStorageKey, result.data.memberAuth.token);
             }
             const registrationId = result?.data?.id;
+            window.__concConsent?.trackAdsConversion({
+              value: 1,
+              currency: 'THB',
+              transaction_id: registrationId ? String(registrationId) : `${programSlug}-${Date.now()}`,
+              registration_id: registrationId ? String(registrationId) : '',
+              program_slug: programSlug,
+              registration_kind: String(payload.registrationKind || 'program'),
+            });
             showNotification('Registration submitted. Redirecting you to the payment page.', 'success');
             window.setTimeout(() => {
               window.location.href = registrationId ? `/member-payment?registrationId=${encodeURIComponent(String(registrationId))}` : '/member-portal';

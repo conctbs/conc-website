@@ -1,7 +1,9 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import PageCover from '../../components/PageCover.astro';
+import ProgramHeroFigure from '../../components/ProgramHeroFigure.astro';
 import { getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../lib/api';
+import { programHeroImageBySlug } from '../../lib/program-hero-images';
 
 export async function getStaticPaths() {
   const slugs = await getProgramSlugs();
@@ -14,6 +16,7 @@ const backHref = program?.isForumEvent ? '/life-long-learning/conc-thammasat-for
 const backLabel = program?.isForumEvent ? 'Back to CONC Thammasat Forum' : 'Back to programs';
 const testimonialCarouselId = program ? `testimonial-carousel-${program.slug}` : '';
 const agendaHeading = program?.isForumEvent ? 'Forum flow' : 'Learning modules';
+const heroImage = program ? programHeroImageBySlug[program.slug] ?? null : null;
 
 if (!program) {
   Astro.response.status = 404;
@@ -53,14 +56,13 @@ if (!program) {
 
         <div class="grid gap-6">
           {program.coverImage?.url ? (
-            <figure class="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-white shadow-[0_28px_80px_-32px_rgba(12,10,9,0.18)]">
-              <img
-                class="h-full w-full object-cover"
-                src={program.coverImage.url}
-                alt={program.coverImage.alternativeText ?? program.title}
-                loading="eager"
-              />
-            </figure>
+            <ProgramHeroFigure
+              src={program.coverImage.url}
+              alt={program.coverImage.alternativeText ?? program.title}
+              fit="cover"
+            />
+          ) : heroImage ? (
+            <ProgramHeroFigure src={heroImage.src} alt={heroImage.alt} fit="contain" />
           ) : (
             <PageCover eyebrow={program.category ?? 'Program'} title={program.title} theme="programs" />
           )}

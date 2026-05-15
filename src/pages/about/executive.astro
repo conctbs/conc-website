@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,28 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Executive | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="About Us" fallbackTitle="Executive" />
   ) : (
-    <InfoPage
-      eyebrow="About Us"
-      title="Executive"
-      intro="CONC brings together academic credibility and market-facing experience to support executive development, strategic communication, and capability building across leadership teams."
-      sections={[
-        {
-          title: "Strategic Direction",
-          body: "Executive oversight focuses on keeping consulting, coaching, and learning services aligned with institutional goals and the practical needs of partner organizations.",
-        },
-        {
-          title: "Cross-Disciplinary Expertise",
-          body: "The center operates with a mix of academic, advisory, and operational perspectives so programs can address leadership, communication, and transformation work in one place.",
-        },
-        {
-          title: "Partnership Stewardship",
-          body: "Leadership maintains relationships with university stakeholders, industry partners, and client organizations to ensure quality, continuity, and long-term relevance.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">About Us</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Executive</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              A page for executive roles, leadership structure, and the people responsible for strategic direction.
+            </p>
+          </div>
+          <PageCover eyebrow="Leadership" title="Executive oversight, institutional direction, and leadership stewardship" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Leadership Profile</p>
+          <p class="mt-4 text-base leading-8 text-stone-600">Use this page to present named executives, leadership responsibilities, and the institutional structure behind CONC programs and partnerships.</p>
+        </article>
+      </section>
+    </>
   )}
 </MainLayout>

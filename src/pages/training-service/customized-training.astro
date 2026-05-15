@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,40 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Customized Training | CONC
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Training Service" fallbackTitle="Customized Training" />
   ) : (
-    <InfoPage
-      eyebrow="Training Service"
-      title="Customized Training"
-      intro="This page can be used to describe in-house or partner-specific training programs designed around an organization's goals, participant profile, and delivery constraints."
-      sections={[
-        {
-          title: "Needs-Based Design",
-          body: "Customized training can be scoped from specific business challenges, capability gaps, or leadership objectives instead of forcing teams into a fixed public curriculum.",
-        },
-        {
-          title: "Flexible Delivery",
-          body: "Programs may be delivered on campus, on site, or in blended format with timing, activities, and facilitation adjusted to the audience and operating context.",
-        },
-        {
-          title: "Coordination Process",
-          body: "This page can outline how clients submit a brief, define outcomes, and coordinate content, speakers, scheduling, and participant support with the CONC team.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Training Service</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Customized Training</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              Tailored learning engagements for organizations that need a program built around specific goals, participants, and delivery conditions.
+            </p>
+          </div>
+          <PageCover eyebrow="Customized" title="Training design shaped to business context, audience needs, and delivery scope" theme="services" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Program Scope</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Designed around the organization, not around a fixed catalog</h2>
+            <p class="mt-4 text-base leading-8 text-stone-600">
+              This page can present how CONC shapes an engagement from problem framing and curriculum scoping through facilitation, scheduling, and post-session follow-through.
+            </p>
+          </article>
+          <aside class="grid gap-4 rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6">
+            <div class="rounded-2xl bg-white px-4 py-4">
+              <p class="text-sm font-semibold text-stone-900">Typical use</p>
+              <p class="mt-2 text-sm leading-7 text-stone-600">Leadership development, team capability building, partner workshops, and institution-specific learning design.</p>
+            </div>
+            <a class="btn-primary !rounded-md !px-6 !py-3" href="/contact">Discuss a training brief</a>
+          </aside>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

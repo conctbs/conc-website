@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,28 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Past Project | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Consulting Service" fallbackTitle="Past Project" />
   ) : (
-    <InfoPage
-      eyebrow="Consulting Service"
-      title="Past Project"
-      intro="Selected past projects can be summarized here to show the range of consulting, coaching, and learning initiatives delivered by the center."
-      sections={[
-        {
-          title: "Leadership Programs",
-          body: "Past work may include executive learning series, coaching engagements, and cross-functional workshops designed to improve leadership communication and decision quality.",
-        },
-        {
-          title: "Consulting Initiatives",
-          body: "Projects can span service design, communication frameworks, organizational capability planning, and implementation roadmaps tailored to partner needs.",
-        },
-        {
-          title: "Integrated Delivery",
-          body: "Many engagements combine advisory work, facilitation, and follow-through support so recommendations are translated into usable tools, routines, and next-step actions.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Consulting Service</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Past Project</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              A reference route for previously completed projects and older engagement examples that still matter as case references.
+            </p>
+          </div>
+          <PageCover eyebrow="Archive" title="Completed work, historical references, and past delivery examples" theme="services" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Past Work</p>
+          <p class="mt-4 text-base leading-8 text-stone-600">Use this page to summarize selected past engagements, preserve historical references, and connect archived work with current service conversations.</p>
+        </article>
+      </section>
+    </>
   )}
 </MainLayout>

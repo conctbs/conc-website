@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../components/InfoPage.astro";
-import SectionRenderer from "../components/SectionRenderer.astro";
+import PageCover from "../components/PageCover.astro";
+import StructuredPageContent from "../components/StructuredPageContent.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../lib/api";
 
@@ -10,32 +10,37 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Announcement | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="News & Events" fallbackTitle="Announcement" />
   ) : (
-    <InfoPage
-      eyebrow="News & Events"
-      title="Announcement"
-      intro="This page can be used for official announcements, public notices, registration windows, and important updates related to CONC activities and programs."
-      quickLinks={[
-        { text: "News", href: "/news" },
-        { text: "Event Calendar", href: "/event-calendar" },
-        { text: "Event Programs", href: "/event-programs" },
-        { text: "Programs", href: "/programs" },
-      ]}
-      sections={[
-        {
-          title: "Public Notices",
-          body: "Announcements can cover opening and closing dates, participation requirements, venue updates, and service information that visitors should see quickly.",
-        },
-        {
-          title: "Program Updates",
-          body: "Use this section for schedule changes, new opportunities, speaker confirmations, or any update that directly affects participants and partners.",
-        },
-        {
-          title: "Institutional Communication",
-          body: "The page can also support formal communication from the center when information needs to remain visible outside the standard news feed format.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">News & Events</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Announcement</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              Official notices, scheduling updates, registration windows, and public information that should remain visible outside the standard news feed.
+            </p>
+          </div>
+          <PageCover eyebrow="Announcements" title="Important updates, participation notices, and public service information" theme="programs" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Current Updates</p>
+            <p class="mt-4 text-base leading-8 text-stone-600">
+              Use this page for time-sensitive notices such as schedule changes, open calls, registration deadlines, or service-related public updates.
+            </p>
+          </article>
+          <div class="grid gap-4">
+            <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/news">News</a>
+            <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/event-calendar">Event Calendar</a>
+            <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/programs">Programs</a>
+          </div>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

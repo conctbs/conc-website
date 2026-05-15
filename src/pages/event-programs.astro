@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../components/InfoPage.astro";
-import SectionRenderer from "../components/SectionRenderer.astro";
+import PageCover from "../components/PageCover.astro";
+import StructuredPageContent from "../components/StructuredPageContent.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../lib/api";
 
@@ -10,32 +10,30 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Event Programs | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="News & Events" fallbackTitle="Event Programs" />
   ) : (
-    <InfoPage
-      eyebrow="News & Events"
-      title="Event Programs"
-      intro="This page can summarize special event programs, speaker sessions, themed series, and public-facing activities beyond the standard consulting and learning catalog."
-      quickLinks={[
-        { text: "Event Calendar", href: "/event-calendar" },
-        { text: "Announcements", href: "/announcement" },
-        { text: "News", href: "/news" },
-        { text: "Contact Us", href: "/contact" },
-      ]}
-      sections={[
-        {
-          title: "Special Sessions",
-          body: "Event programs may include keynote talks, invited expert sessions, thematic panels, and short-format learning experiences built for broader audiences.",
-        },
-        {
-          title: "Series Design",
-          body: "When activities are part of a recurring series, this page can show the structure, themes, and progression across multiple sessions or cohorts.",
-        },
-        {
-          title: "Participation Details",
-          body: "Program descriptions can make expectations clear by outlining audience fit, format, and any registration or attendance requirements.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">News & Events</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Event Programs</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              A dedicated route for event-based programs, special sessions, and public activities that sit outside the regular program catalog.
+            </p>
+          </div>
+          <PageCover eyebrow="Events" title="Special sessions, public programs, and themed activity series" theme="programs" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/event-calendar">Event Calendar</a>
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/announcement">Announcements</a>
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/news">News</a>
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/contact">Contact Us</a>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

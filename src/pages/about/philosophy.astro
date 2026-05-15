@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,29 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Philosophy | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="About Us" fallbackTitle="Philosophy" />
   ) : (
-    <InfoPage
-      eyebrow="About Us"
-      title="Philosophy"
-      intro="CONC works as a university-linked consulting and coaching center that values disciplined thinking, practical execution, and measurable development for leaders, teams, and organizations."
-      sections={[
-        {
-          title: "Learning Through Practice",
-          body: "Programs are designed around real organizational challenges so participants can translate frameworks into decisions, communication, and delivery habits that hold up in actual work.",
-        },
-        {
-          title: "Evidence Before Assumption",
-          body: "We favor structured diagnosis, stakeholder listening, and clear success criteria before recommending interventions, content strategy, or executive coaching pathways.",
-        },
-        {
-          title: "Growth With Accountability",
-          body: "Coaching and consulting are paired with explicit outcomes, follow-through checkpoints, and operational clarity so development work does not stop at inspiration.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">About Us</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Philosophy</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              The principles and working philosophy that shape how CONC approaches learning, consulting, and partner-facing work.
+            </p>
+          </div>
+          <PageCover eyebrow="Philosophy" title="Practical thinking, evidence-based work, and disciplined delivery" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 md:grid-cols-3">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6"><p class="text-sm font-semibold text-stone-900">Practicality</p><p class="mt-3 text-sm leading-7 text-stone-600">Work should produce usable decisions, not abstract framing alone.</p></article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6"><p class="text-sm font-semibold text-stone-900">Evidence</p><p class="mt-3 text-sm leading-7 text-stone-600">Recommendations should be grounded in structured understanding and observable needs.</p></article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6"><p class="text-sm font-semibold text-stone-900">Accountability</p><p class="mt-3 text-sm leading-7 text-stone-600">Programs and advisory work should connect to clear outcomes and follow-through.</p></article>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

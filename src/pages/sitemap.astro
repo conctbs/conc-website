@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../components/InfoPage.astro";
-import SectionRenderer from "../components/SectionRenderer.astro";
+import PageCover from "../components/PageCover.astro";
+import StructuredPageContent from "../components/StructuredPageContent.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../lib/api";
 
@@ -10,34 +10,20 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Sitemap | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="About Us" fallbackTitle="Sitemap" />
   ) : (
-    <InfoPage
-      eyebrow="About Us"
-      title="Sitemap"
-      intro="A quick reference for the main public sections of the CONC website."
-      quickLinks={[
-        { text: "About", href: "/about" },
-        { text: "Services", href: "/services" },
-        { text: "Programs", href: "/programs" },
-        { text: "CONC Knowledge", href: "/life-long-learning/conc-knowledge" },
-        { text: "News", href: "/news" },
-      ]}
-      sections={[
-        {
-          title: "Main Pages",
-          body: "Home, About, Services, Programs, Projects, News, and Contact provide the primary public navigation experience across the site.",
-        },
-        {
-          title: "About Us",
-          body: "Philosophy, Executive, Facilities, Sitemap, and Privacy Policy are grouped under About Us for institutional information and public reference material.",
-        },
-        {
-          title: "Program and Content Detail Pages",
-          body: "The site also includes generated detail pages for individual services, programs, projects, news articles, and program registration flows.",
-        },
-      ]}
-    />
+    <section class="border-b border-stone-200 bg-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+        <div class="max-w-4xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">About Us</p>
+          <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Sitemap</h1>
+          <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+            A direct index of the main public sections and utility routes across the CONC website.
+          </p>
+        </div>
+        <PageCover eyebrow="Sitemap" title="Main routes, supporting pages, and public navigation reference" />
+      </div>
+    </section>
   )}
 
   <section class="mx-auto max-w-7xl px-4 pb-16 md:px-6 md:pb-20">

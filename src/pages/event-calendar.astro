@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../components/InfoPage.astro";
-import SectionRenderer from "../components/SectionRenderer.astro";
+import PageCover from "../components/PageCover.astro";
+import StructuredPageContent from "../components/StructuredPageContent.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../lib/api";
 
@@ -10,32 +10,30 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Event Calendar | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="News & Events" fallbackTitle="Event Calendar" />
   ) : (
-    <InfoPage
-      eyebrow="News & Events"
-      title="Event Calendar"
-      intro="The event calendar can present upcoming public sessions, forums, workshops, and special activities in a single reference point for visitors and participants."
-      quickLinks={[
-        { text: "Event Programs", href: "/event-programs" },
-        { text: "Announcements", href: "/announcement" },
-        { text: "News", href: "/news" },
-        { text: "Programs", href: "/programs" },
-      ]}
-      sections={[
-        {
-          title: "Upcoming Dates",
-          body: "Use this space to show scheduled events, registration periods, and milestone dates so visitors can plan participation with minimal friction.",
-        },
-        {
-          title: "Program Timing",
-          body: "Calendar entries can clarify duration, delivery format, and whether each activity is public, invitation-only, or partner-specific.",
-        },
-        {
-          title: "Planning Reference",
-          body: "A visible event calendar helps organizations and participants coordinate attendance, staffing, and follow-up preparation more effectively.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">News & Events</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Event Calendar</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              A calendar-style route for upcoming CONC events, workshops, forums, and special activities.
+            </p>
+          </div>
+          <PageCover eyebrow="Calendar" title="Dates, timing, and program visibility for upcoming events" theme="programs" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/event-programs">Event Programs</a>
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/announcement">Announcements</a>
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/news">News</a>
+          <a class="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 font-semibold text-stone-900 transition hover:border-red-700 hover:text-red-700" href="/programs">Programs</a>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

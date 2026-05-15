@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../components/InfoPage.astro";
-import SectionRenderer from "../components/SectionRenderer.astro";
+import PageCover from "../components/PageCover.astro";
+import StructuredPageContent from "../components/StructuredPageContent.astro";
 import MainLayout from "../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../lib/api";
 
@@ -10,26 +10,38 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Life Long Learning | CONC"
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Life Long Learning" fallbackTitle="Life Long Learning" />
   ) : (
-    <InfoPage
-      eyebrow="Life Long Learning"
-      title="Life Long Learning"
-      intro="CONC extends learning beyond single programs through recurring forums, knowledge-sharing formats, and observation-based experiences that help participants keep developing over time."
-      sections={[
-        {
-          title: "Forum-Based Exchange",
-          body: "Public and partner forums create space for leaders, faculty, and professionals to examine emerging issues through structured discussion and applied reflection.",
-        },
-        {
-          title: "Knowledge Resources",
-          body: "Learning is reinforced through curated content, practical insights, and follow-on materials that participants can use after formal sessions end.",
-        },
-        {
-          title: "Observation and Practice",
-          body: "Selected formats allow participants to learn by observing instruction, facilitation, and decision-making processes in realistic academic and professional settings.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Life Long Learning</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Life Long Learning</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              Continuing learning formats, knowledge resources, and forum-based activity designed to extend learning beyond a single course.
+            </p>
+          </div>
+          <PageCover eyebrow="Learning" title="Forums, knowledge resources, and observation-based development paths" theme="programs" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 md:grid-cols-3">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6">
+            <p class="text-sm font-semibold text-stone-900">Forum series</p>
+            <p class="mt-3 text-sm leading-7 text-stone-600">Recurring dialogue formats that keep participants engaged with current issues and cross-sector perspectives.</p>
+          </article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6">
+            <p class="text-sm font-semibold text-stone-900">Knowledge content</p>
+            <p class="mt-3 text-sm leading-7 text-stone-600">Published articles, frameworks, and references that support continued reflection after a formal session ends.</p>
+          </article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6">
+            <p class="text-sm font-semibold text-stone-900">Observation formats</p>
+            <p class="mt-3 text-sm leading-7 text-stone-600">Learning-by-observation routes focused on teaching practice, facilitation, and discussion design.</p>
+          </article>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,34 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Class Observation | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Life Long Learning" fallbackTitle="Class Observation" />
   ) : (
-    <InfoPage
-      eyebrow="Life Long Learning"
-      title="Class Observation"
-      intro="Class observation creates learning value by allowing participants to watch teaching, facilitation, and discussion design in action, then reflect on what makes those formats effective."
-      sections={[
-        {
-          title: "Observe Practice in Context",
-          body: "Participants can study how instructors frame problems, guide discussion, and manage participation instead of learning those techniques only in abstract form.",
-        },
-        {
-          title: "Reflection After Observation",
-          body: "Observation works best when paired with structured debriefs that clarify what was intentional, what constraints were present, and what can be adapted elsewhere.",
-        },
-        {
-          title: "Transfer to Professional Use",
-          body: "The format helps leaders, facilitators, and educators bring stronger design choices into their own classrooms, workshops, and organizational learning settings.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Life Long Learning</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Class Observation</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              Observation-based learning for participants who want to study teaching, facilitation, and discussion practice in context.
+            </p>
+          </div>
+          <PageCover eyebrow="Observation" title="Learning by watching structure, facilitation, and classroom design in action" theme="programs" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 lg:grid-cols-2">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7">
+            <h2 class="text-2xl font-semibold text-stone-900">How the format works</h2>
+            <p class="mt-4 text-base leading-8 text-stone-600">Use this page to explain how observation sessions are structured, what participants are asked to focus on, and how reflection is handled afterward.</p>
+          </article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-7">
+            <h2 class="text-2xl font-semibold text-stone-900">Who it is for</h2>
+            <p class="mt-4 text-base leading-8 text-stone-600">Suitable for facilitators, educators, leaders, or program designers who want to improve their own practice by observing real instructional dynamics.</p>
+          </article>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

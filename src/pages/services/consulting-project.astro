@@ -1,5 +1,5 @@
 ---
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -13,7 +13,7 @@ if (!page) {
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Consulting Service" fallbackTitle="Consulting Project" />
   ) : (
     <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
       <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>

@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getForumPrograms, getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -18,26 +18,19 @@ const archivedPrograms = forumPrograms.filter(
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? <SectionRenderer sections={page.sections} /> : (
-    <InfoPage
-      eyebrow="Life Long Learning"
-      title="Past CONC Thammasat Forum"
-      intro="Past forum sessions can be archived here to document themes, speakers, and discussion topics that have shaped the center's continuing-education activity."
-      sections={[
-        {
-          title: "Session Archive",
-          body: "This section can present previous forum topics, dates, and thematic summaries so visitors can understand the scope and continuity of the initiative.",
-        },
-        {
-          title: "Speaker Highlights",
-          body: "Past contributors may be highlighted to show the range of expertise and institutional voices involved in forum conversations.",
-        },
-        {
-          title: "Learning Themes",
-          body: "Archived sessions can also reveal recurring concerns across leadership, communication, and capability development over time.",
-        },
-      ]}
-    />
+  {page ? <StructuredPageContent sections={page.sections} fallbackEyebrow="Life Long Learning" fallbackTitle="Past CONC Thammasat Forum" /> : (
+    <section class="border-b border-stone-200 bg-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+        <div class="max-w-4xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Life Long Learning</p>
+          <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Past CONC Thammasat Forum</h1>
+          <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+            An archive of previous CONC Thammasat Forum sessions, themes, and seminar records.
+          </p>
+        </div>
+        <PageCover eyebrow="Archive" title="Past forum themes, previous sessions, and archived program records" theme="programs" />
+      </div>
+    </section>
   )}
 
   <section class="mx-auto max-w-7xl px-4 pb-14 md:px-6 md:pb-20">

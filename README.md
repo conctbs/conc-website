@@ -106,3 +106,9 @@ GitHub Actions runs:
 - `npm run build`
 
 Set `PUBLIC_STRAPI_URL` in repository variables or secrets to point at the Strapi environment CI should verify.
+
+## Google Tag Manager
+
+Consent Mode v2 is implemented in the frontend. For container setup, use:
+
+- [docs/gtm-consent-mode-v2.md](/home/saton/conc-website/docs/gtm-consent-mode-v2.md)

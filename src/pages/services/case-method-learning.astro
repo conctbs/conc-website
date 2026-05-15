@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,34 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Case Method Learning | CON
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Consulting Service" fallbackTitle="Case Method Learning" />
   ) : (
-    <InfoPage
-      eyebrow="Consulting Service"
-      title="Case Method Learning"
-      intro="Case-based learning is used to connect strategic analysis with managerial judgment, giving participants a disciplined way to evaluate tradeoffs, context, and execution choices."
-      sections={[
-        {
-          title: "Decision-Focused Discussion",
-          body: "Sessions are structured around realistic decision points so participants practice diagnosing constraints, comparing options, and defending a course of action.",
-        },
-        {
-          title: "Applied Reflection",
-          body: "Case work is paired with facilitated reflection to help teams connect lessons from discussion back to their own operating realities and leadership behaviors.",
-        },
-        {
-          title: "Executive and Team Formats",
-          body: "The method can be adapted for executive briefings, management programs, and team-based workshops where judgment quality matters as much as technical skill.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Consulting Service</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Case Method Learning</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              A page for learning formats built around case discussion, executive judgment, and applied reflection.
+            </p>
+          </div>
+          <PageCover eyebrow="Case Method" title="Decision-focused learning through facilitated case discussion" theme="services" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 lg:grid-cols-2">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7">
+            <h2 class="text-2xl font-semibold text-stone-900">Discussion-based learning</h2>
+            <p class="mt-4 text-base leading-8 text-stone-600">Use this page to explain how case sessions are structured around tradeoffs, decisions, and facilitated interpretation rather than passive lecture.</p>
+          </article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-stone-50 p-7">
+            <h2 class="text-2xl font-semibold text-stone-900">Application to practice</h2>
+            <p class="mt-4 text-base leading-8 text-stone-600">This route can connect case work to executive learning, management development, or applied team workshops.</p>
+          </article>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

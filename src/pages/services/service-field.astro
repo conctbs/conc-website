@@ -1,6 +1,6 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
+import PageCover from "../../components/PageCover.astro";
+import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getPageBySlug, getSiteSetting } from "../../lib/api";
 
@@ -10,26 +10,29 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Service Field | CONC";
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <SectionRenderer sections={page.sections} />
+    <StructuredPageContent sections={page.sections} fallbackEyebrow="Consulting Service" fallbackTitle="Service Field" />
   ) : (
-    <InfoPage
-      eyebrow="Consulting Service"
-      title="Service Field"
-      intro="CONC supports consulting work across strategy, organizational capability, communication, and implementation design with an emphasis on practical decisions and structured delivery."
-      sections={[
-        {
-          title: "Strategic Communication",
-          body: "We help teams clarify positioning, executive messaging, and stakeholder communication structures that can support business, academic, and institutional goals.",
-        },
-        {
-          title: "Capability Development",
-          body: "Programs combine consulting and learning design to strengthen leadership practice, team operating rhythms, and project execution across changing environments.",
-        },
-        {
-          title: "Transformation Support",
-          body: "The center advises on service design, content operations, and implementation planning so organizations can move from abstract goals to workable operating models.",
-        },
-      ]}
-    />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Consulting Service</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Service Field</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              An overview page for the main consulting, coaching, and advisory categories covered by CONC.
+            </p>
+          </div>
+          <PageCover eyebrow="Fields" title="Service categories, practice areas, and capability-focused work" theme="services" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6"><p class="text-sm font-semibold text-stone-900">Advisory work</p><p class="mt-3 text-sm leading-7 text-stone-600">Strategic framing, diagnostic work, and decision support.</p></article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6"><p class="text-sm font-semibold text-stone-900">Capability building</p><p class="mt-3 text-sm leading-7 text-stone-600">Programs and interventions that strengthen leadership or operational practice.</p></article>
+          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-6"><p class="text-sm font-semibold text-stone-900">Facilitated delivery</p><p class="mt-3 text-sm leading-7 text-stone-600">Workshops, applied sessions, and structured engagement formats.</p></article>
+        </div>
+      </section>
+    </>
   )}
 </MainLayout>

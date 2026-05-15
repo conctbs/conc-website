@@ -1,35 +1,221 @@
 ---
-import InfoPage from "../../components/InfoPage.astro";
-import SectionRenderer from "../../components/SectionRenderer.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getPageBySlug, getSiteSetting } from "../../lib/api";
+import { BACKEND_DISABLED, getPageBySlug, getSiteSetting } from "../../lib/api";
 
 const [page, siteSetting] = await Promise.all([getPageBySlug("come-teach-with-us"), getSiteSetting()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? "Come teach with us | CONC";
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
+const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
-  {page ? (
-    <SectionRenderer sections={page.sections} />
-  ) : (
-    <InfoPage
-      eyebrow="Training Service"
-      title="Come teach with us"
-      intro="This page can invite instructors, facilitators, and subject-matter experts to collaborate with CONC on open-enrollment or customized training programs."
-      sections={[
-        {
-          title: "Instructor Profile",
-          body: "Potential teaching partners can review the center's focus areas, participant audiences, and delivery formats before proposing a topic or teaching role.",
-        },
-        {
-          title: "Submission Guidelines",
-          body: "The page can explain what information to submit, such as teaching background, expertise, sample topics, preferred formats, and availability.",
-        },
-        {
-          title: "Collaboration Path",
-          body: "A clear process for screening, curriculum alignment, and scheduling helps external instructors understand how to move from interest to confirmed delivery.",
-        },
-      ]}
-    />
+  <section class="mx-auto max-w-7xl px-4 pt-14 md:px-6 md:pt-20">
+    <div class="grid gap-5 rounded-[2rem] border border-stone-200 bg-stone-100 px-6 py-8 shadow-[0_24px_70px_-34px_rgba(28,25,23,0.22)] md:px-8 md:py-10">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Training Service</p>
+      <div class="max-w-4xl">
+        <h1 class="text-4xl font-semibold leading-tight text-stone-900 md:text-5xl lg:text-6xl">Come teach with us</h1>
+        <p class="mt-5 text-lg leading-8 text-stone-600">
+          Share your teaching profile, topic areas, and preferred delivery formats with CONC. This page is for instructors, facilitators, and subject-matter experts who want to collaborate on real training programs or learning experiences.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 pb-16 md:px-6 md:pb-24">
+    <div class="grid gap-8 rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_24px_70px_-34px_rgba(28,25,23,0.28)] md:p-8 lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)] lg:gap-10 xl:p-10">
+      <aside class="grid content-start gap-5 rounded-[1.5rem] bg-stone-100 p-6 text-stone-900">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Instructor Intake</p>
+          <h2 class="mt-3 text-3xl font-semibold leading-tight md:text-4xl">Propose your teaching profile</h2>
+          <p class="mt-4 text-base leading-8 text-stone-600">
+            Send your background, topic areas, and preferred delivery formats. The team can review fit for public programs, in-house training, or facilitated workshops.
+          </p>
+        </div>
+        <div class="grid gap-3 text-sm leading-7 text-stone-600">
+          <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+            <span class="font-semibold text-stone-900">Use cases:</span> keynote sessions, executive workshops, facilitation, case-method teaching, or topic-specific masterclasses.
+          </div>
+          <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+            <span class="font-semibold text-stone-900">What to include:</span> expertise, sample topics, delivery style, audience fit, and links to prior work.
+          </div>
+          <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+            <span class="font-semibold text-stone-900">Follow-up:</span> shortlisted instructors can be contacted for curriculum alignment, scheduling, and commercial terms.
+          </div>
+        </div>
+        <div class="grid gap-3 rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50 p-5 text-sm">
+          <p class="font-semibold uppercase tracking-[0.16em] text-stone-500">Contact</p>
+          <a class="font-semibold text-red-700 hover:text-red-800" href={`mailto:${supportEmail}`}>{supportEmail}</a>
+          <a class="font-semibold text-red-700 hover:text-red-800" href={`tel:${supportPhone.replace(/[^+\d]/g, "")}`}>{supportPhone}</a>
+        </div>
+      </aside>
+
+      <div class="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-6 md:p-7">
+        {BACKEND_DISABLED ? (
+          <div class="grid gap-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Temporarily unavailable</p>
+            <h3 class="text-3xl font-semibold leading-tight text-stone-900">Online instructor form is paused</h3>
+            <p class="max-w-2xl text-base leading-8 text-stone-600">
+              The backend is currently unavailable, so submissions cannot be stored right now. Please send your teaching profile directly to <a class="font-semibold text-red-700 underline" href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+            </p>
+          </div>
+        ) : (
+          <>
+            <form id="teaching-application-form" class="grid gap-5">
+              <div class="grid gap-5 md:grid-cols-2">
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Full name</span>
+                  <input name="fullName" type="text" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Email</span>
+                  <input name="email" type="email" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Phone</span>
+                  <input name="phone" type="tel" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Organization</span>
+                  <input name="organization" type="text" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Position / Job title</span>
+                  <input name="jobTitle" type="text" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Preferred teaching formats</span>
+                  <select name="teachingFormats" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700">
+                    <option value="">Select a format</option>
+                    <option value="In-person workshop">In-person workshop</option>
+                    <option value="Online workshop">Online workshop</option>
+                    <option value="Hybrid delivery">Hybrid delivery</option>
+                    <option value="Facilitation / moderation">Facilitation / moderation</option>
+                    <option value="Lecture / keynote">Lecture / keynote</option>
+                    <option value="Multiple formats">Multiple formats</option>
+                  </select>
+                </label>
+              </div>
+
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Area of expertise</span>
+                <textarea name="expertise" rows="4" required placeholder="Leadership, communication, public policy, digital transformation, negotiation, facilitation, or other specialist areas" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Topics you can teach</span>
+                <textarea name="teachingTopics" rows="4" required placeholder="Outline sample sessions, modules, or learning outcomes you can deliver" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Audience fit</span>
+                <textarea name="audienceTypes" rows="3" placeholder="Executives, public-sector teams, new managers, HR, educators, mixed cohorts, etc." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Teaching or facilitation experience</span>
+                <textarea name="teachingExperience" rows="4" placeholder="Summarize prior courses, institutions, clients, industries, speaking engagements, or facilitation work" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Availability</span>
+                <textarea name="availability" rows="3" required placeholder="Share your general availability, lead time, or preferred months / weekdays" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+
+              <div class="grid gap-5 md:grid-cols-2">
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Portfolio URL</span>
+                  <input name="portfolioUrl" type="url" placeholder="https://..." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>LinkedIn URL</span>
+                  <input name="linkedinUrl" type="url" placeholder="https://linkedin.com/in/..." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+              </div>
+
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Additional note</span>
+                <textarea name="additionalNote" rows="3" placeholder="Optional details about rates, materials, travel scope, or collaboration ideas" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+
+              <label class="flex items-start gap-3 text-sm leading-6 text-stone-700">
+                <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 rounded border-stone-300 text-red-700 focus:ring-red-700" />
+                <span>I agree to let CONC store and review this information for instructor recruitment and follow-up, in line with the <a class="font-semibold text-red-700 underline" href="/privacy-policy">privacy policy</a>.</span>
+              </label>
+
+              <button id="teaching-application-submit" class="btn-primary !rounded-md !border-0 !px-7 !py-3.5" type="submit">Submit teaching profile</button>
+            </form>
+
+            <div
+              id="teaching-application-notification"
+              class="fixed right-4 top-4 z-40 hidden max-w-[min(28rem,calc(100vw-2rem))] rounded-2xl bg-emerald-700 px-4 py-4 font-semibold leading-6 text-white shadow-[0_18px_40px_rgba(15,15,16,0.18)] data-[type=error]:bg-red-700"
+              hidden
+              aria-live="polite"
+            ></div>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+
+  {!BACKEND_DISABLED && (
+    <script is:inline define:vars={{ strapiBaseUrl }}>
+      const form = document.getElementById('teaching-application-form');
+      const submitButton = document.getElementById('teaching-application-submit');
+      const notification = document.getElementById('teaching-application-notification');
+      let notificationTimer = null;
+
+      function showNotification(message, type = 'success') {
+        if (!notification) return;
+        if (notificationTimer) {
+          window.clearTimeout(notificationTimer);
+        }
+
+        notification.hidden = false;
+        notification.classList.remove('hidden');
+        notification.textContent = message;
+        notification.dataset.type = type;
+        notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+        notificationTimer = window.setTimeout(() => {
+          notification.hidden = true;
+          notification.classList.add('hidden');
+          notification.textContent = '';
+          delete notification.dataset.type;
+        }, 3600);
+      }
+
+      form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Submitting...';
+        }
+
+        const payload = Object.fromEntries(new FormData(form).entries());
+
+        try {
+          const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/teaching-applications/public`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data: payload }),
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(result?.error?.message || result?.message || 'Unable to submit teaching profile');
+          }
+
+          form.reset();
+          showNotification('Teaching profile submitted. The CONC team can now review your information.', 'success');
+        } catch (error) {
+          showNotification(error instanceof Error ? error.message : 'Unable to submit teaching profile', 'error');
+        } finally {
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Submit teaching profile';
+          }
+        }
+      });
+    </script>
   )}
 </MainLayout>

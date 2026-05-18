@@ -107,8 +107,10 @@ export type Seo = {
 export type ProgramSpeaker = {
   id: number | null;
   name: string | null;
+  slug?: string | null;
   role: string | null;
   organization: string | null;
+  summary?: string | null;
   bio: string | null;
   photo: Media;
 };
@@ -203,6 +205,31 @@ export type Program = {
   speakers: ProgramSpeaker[];
   agendaItems: ProgramAgendaItem[];
   testimonials: ProgramTestimonial[];
+  seo: Seo;
+};
+
+export type SpeakerProgramSummary = {
+  id: number | null;
+  title: string | null;
+  slug: string | null;
+  category: string | null;
+  dateLabel: string | null;
+  startsAt: string | null;
+};
+
+export type Speaker = {
+  id: number;
+  name: string;
+  slug: string;
+  role: string | null;
+  organization: string | null;
+  summary: string | null;
+  bio: string | null;
+  focusAreas: string[];
+  featured: boolean;
+  order: number | null;
+  photo: Media;
+  programs: SpeakerProgramSummary[];
   seo: Seo;
 };
 
@@ -521,6 +548,11 @@ function getFallbackJson<T>(path: string): T | null {
     return (fallbackContent.programs.find((program) => program.slug === slug) ?? null) as T | null;
   }
 
+  if (path.startsWith("/speakers/by-slug/")) {
+    const slug = path.slice("/speakers/by-slug/".length);
+    return (fallbackContent.speakers.find((speaker) => speaker.slug === slug) ?? null) as T | null;
+  }
+
   if (path.startsWith("/services/by-slug/")) {
     const slug = path.slice("/services/by-slug/".length);
     return (fallbackContent.services.find((service) => service.slug === slug) ?? null) as T | null;
@@ -552,6 +584,10 @@ function getFallbackJson<T>(path: string): T | null {
 function getFallbackCollection<T>(path: string): T[] {
   if (path.startsWith("/programs")) {
     return [...fallbackContent.programs] as T[];
+  }
+
+  if (path.startsWith("/speakers")) {
+    return [...fallbackContent.speakers] as T[];
   }
 
   if (path.startsWith("/services")) {
@@ -712,6 +748,32 @@ export async function getForumPrograms(): Promise<Program[]> {
 
 export async function getProgramBySlug(slug: string): Promise<Program | null> {
   return fetchJson<Program>(`/programs/by-slug/${slug}`);
+}
+
+export async function getSpeakers(): Promise<Speaker[]> {
+  return fetchCollection<Speaker>("/speakers?sort[0]=featured:desc&sort[1]=order:asc&sort[2]=name:asc");
+}
+
+export async function getSpeakerBySlug(slug: string): Promise<Speaker | null> {
+  return fetchJson<Speaker>(`/speakers/by-slug/${slug}`);
+}
+
+export async function getSpeakerSlugs(): Promise<string[]> {
+  const entries = await fetchCollection<Record<string, unknown>>(
+    "/speakers?fields[0]=slug&pagination[pageSize]=100&sort[0]=slug:asc",
+  );
+
+  const slugs = entries
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
+
+  if (slugs.length > 0) {
+    return slugs;
+  }
+
+  return getFallbackCollection<Record<string, unknown>>("/speakers")
+    .map((entry) => extractSlug(entry))
+    .filter((slug): slug is string => Boolean(slug));
 }
 
 export async function getServices(): Promise<Service[]> {

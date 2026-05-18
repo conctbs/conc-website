@@ -1,0 +1,146 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import PageCover from '../../components/PageCover.astro';
+import { getSiteSetting, getSpeakers } from '../../lib/api';
+
+const [siteSetting, speakers] = await Promise.all([getSiteSetting(), getSpeakers()]);
+const featuredSpeakers = speakers.filter((speaker) => speaker.featured);
+---
+
+<MainLayout
+  title="Speakers | CONC"
+  seo={{
+    metaTitle: 'Speakers | CONC',
+    metaDescription: 'Database-backed speaker directory for CONC programs, facilitators, and forum contributors.',
+    canonicalUrl: 'https://conc.example/programs/speakers',
+    noIndex: false,
+    metaImage: null,
+  }}
+  siteSetting={siteSetting}
+>
+  <section class="border-b border-stone-200 bg-white">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+      <div class="max-w-4xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Programs Speaker Directory</p>
+        <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
+          Speakers, facilitators, and forum contributors managed from the CMS
+        </h1>
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+          This page reads from the new `Speaker` collection in Strapi so the team can manage profile cards, bios,
+          focus areas, and related programs from the backend instead of hardcoding presenter content in templates.
+        </p>
+      </div>
+      <PageCover eyebrow="Speakers" title="Profiles connected to program records and future speaker pages" theme="programs" />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
+      <article class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-7 shadow-[0_24px_70px_-38px_rgba(41,37,36,0.22)]">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Directory Snapshot</p>
+        <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Structured speaker data for the programs section</h2>
+        <div class="mt-6 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-2xl border border-stone-200 bg-white p-4">
+            <p class="text-sm text-stone-500">Profiles</p>
+            <p class="mt-2 text-3xl font-semibold text-stone-900">{speakers.length}</p>
+          </div>
+          <div class="rounded-2xl border border-stone-200 bg-white p-4">
+            <p class="text-sm text-stone-500">Featured</p>
+            <p class="mt-2 text-3xl font-semibold text-stone-900">{featuredSpeakers.length}</p>
+          </div>
+          <div class="rounded-2xl border border-stone-200 bg-white p-4">
+            <p class="text-sm text-stone-500">Linked programs</p>
+            <p class="mt-2 text-3xl font-semibold text-stone-900">
+              {speakers.reduce((total, speaker) => total + speaker.programs.length, 0)}
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="rounded-[1.75rem] border border-red-100 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_52%,#f5f5f4_100%)] p-7 shadow-[0_24px_70px_-38px_rgba(120,53,15,0.18)]">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Why this page exists</p>
+        <ul class="mt-5 space-y-3 pl-5 text-base leading-8 text-stone-700 marker:text-red-700">
+          <li>Editors can add or retire speakers from Strapi without touching Astro templates.</li>
+          <li>One speaker can be related to multiple programs instead of duplicating profile copy in each program entry.</li>
+          <li>The page is ready for expansion into speaker detail pages, filters, or featured landing sections later.</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="mt-10 grid gap-6 xl:grid-cols-2">
+      {speakers.map((speaker) => (
+        <article class="overflow-hidden rounded-[1.8rem] border border-stone-200 bg-white shadow-[0_22px_70px_-40px_rgba(41,37,36,0.34)]">
+          <div class="grid gap-0 md:grid-cols-[12rem_minmax(0,1fr)]">
+            <div class="border-b border-stone-200 bg-stone-100 md:border-b-0 md:border-r">
+              {speaker.photo?.url ? (
+                <img
+                  class="h-full min-h-[12rem] w-full object-cover"
+                  src={speaker.photo.url}
+                  alt={speaker.photo.alternativeText ?? speaker.name}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="flex min-h-[12rem] items-center justify-center text-sm font-semibold uppercase tracking-[0.16em] text-stone-500">
+                  {speaker.name
+                    .split(' ')
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0])
+                    .join('')}
+                </div>
+              )}
+            </div>
+
+            <div class="p-7">
+              <div class="flex flex-wrap items-center gap-3">
+                {speaker.featured && (
+                  <span class="rounded-full bg-red-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+                    Featured
+                  </span>
+                )}
+                {speaker.role && <span class="text-sm font-medium text-red-700">{speaker.role}</span>}
+                {speaker.organization && <span class="text-sm text-stone-500">{speaker.organization}</span>}
+              </div>
+
+              <h2 class="mt-4 text-2xl font-semibold text-stone-900">{speaker.name}</h2>
+              {speaker.summary && <p class="mt-3 text-sm leading-7 text-stone-600">{speaker.summary}</p>}
+
+              {speaker.focusAreas.length > 0 && (
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {speaker.focusAreas.map((area) => (
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-stone-700">
+                      {area}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {speaker.bio && (
+                <div class="prose prose-stone mt-5 max-w-none text-sm leading-7" set:html={speaker.bio} />
+              )}
+
+              {speaker.programs.length > 0 && (
+                <div class="mt-6 border-t border-stone-200 pt-5">
+                  <p class="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Related programs</p>
+                  <div class="mt-3 flex flex-wrap gap-3">
+                    {speaker.programs.map((program) => (
+                      <a
+                        class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 transition hover:border-red-700 hover:text-red-700"
+                        href={program.slug ? `/programs/${program.slug}` : '/programs'}
+                      >
+                        <span class="block font-semibold text-stone-900">{program.title ?? 'Program'}</span>
+                        <span class="mt-1 block text-xs text-stone-500">
+                          {[program.category, program.dateLabel].filter(Boolean).join(' | ')}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</MainLayout>

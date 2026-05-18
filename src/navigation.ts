@@ -18,6 +18,7 @@ export const headerData = {
       links: [
         { text: 'Open Enrollment Programs', href: '/programs' },
         { text: 'Customized Training', href: '/training-service/customized-training' },
+        { text: 'Speakers', href: '/programs/speakers' },
         { text: 'E-Documents', href: '/training-service/e-documents' },
         { text: 'Come teach with us', href: '/training-service/come-teach-with-us' },
       ],

@@ -1,0 +1,96 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import PageCover from '../../../components/PageCover.astro';
+import { getSpeakerBySlug, getSpeakerSlugs, getSiteSetting } from '../../../lib/api';
+
+export async function getStaticPaths() {
+  const slugs = await getSpeakerSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug = '' } = Astro.params;
+const [siteSetting, speaker] = await Promise.all([getSiteSetting(), getSpeakerBySlug(slug)]);
+
+if (!speaker) {
+  Astro.response.status = 404;
+}
+---
+
+<MainLayout title={speaker?.seo?.metaTitle ?? speaker?.name ?? 'Speaker'} seo={speaker?.seo} siteSetting={siteSetting}>
+  {speaker ? (
+    <article class="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+      <a class="inline-flex text-sm font-semibold text-red-700 transition hover:text-red-800" href="/programs/speakers">
+        Back to speakers
+      </a>
+
+      <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)]">
+        <div class="overflow-hidden rounded-[1.9rem] border border-stone-200 bg-stone-100 shadow-[0_28px_80px_-36px_rgba(41,37,36,0.25)]">
+          {speaker.photo?.url ? (
+            <img
+              class="h-full min-h-[22rem] w-full object-cover"
+              src={speaker.photo.url}
+              alt={speaker.photo.alternativeText ?? speaker.name}
+            />
+          ) : (
+            <PageCover eyebrow="Speaker" title={speaker.name} theme="programs" />
+          )}
+        </div>
+
+        <div class="rounded-[1.9rem] border border-stone-200 bg-white p-8 shadow-[0_24px_70px_-38px_rgba(41,37,36,0.22)]">
+          <div class="flex flex-wrap items-center gap-3">
+            {speaker.featured && (
+              <span class="rounded-full bg-red-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+                Featured speaker
+              </span>
+            )}
+            {speaker.role && <span class="text-sm font-semibold text-red-700">{speaker.role}</span>}
+            {speaker.organization && <span class="text-sm text-stone-500">{speaker.organization}</span>}
+          </div>
+
+          <h1 class="mt-5 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">{speaker.name}</h1>
+          {speaker.summary && <p class="mt-5 max-w-3xl text-lg leading-8 text-stone-600">{speaker.summary}</p>}
+
+          {speaker.focusAreas.length > 0 && (
+            <div class="mt-6 flex flex-wrap gap-2">
+              {speaker.focusAreas.map((area) => (
+                <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-stone-700">
+                  {area}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {speaker.bio && (
+            <div class="prose prose-stone mt-8 max-w-none" set:html={speaker.bio} />
+          )}
+        </div>
+      </section>
+
+      <section class="mt-8 rounded-[1.9rem] border border-stone-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_58%,#f5f5f4_100%)] p-8 shadow-[0_24px_70px_-38px_rgba(120,53,15,0.18)]">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Related Programs</p>
+        <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Sessions linked to this speaker</h2>
+        {speaker.programs.length > 0 ? (
+          <div class="mt-6 grid gap-4 lg:grid-cols-2">
+            {speaker.programs.map((program) => (
+              <a
+                class="rounded-[1.4rem] border border-stone-200 bg-white p-5 transition hover:-translate-y-1 hover:border-red-700"
+                href={program.slug ? `/programs/${program.slug}` : '/programs'}
+              >
+                <p class="text-lg font-semibold text-stone-900">{program.title ?? 'Program'}</p>
+                <p class="mt-2 text-sm leading-6 text-stone-600">{[program.category, program.dateLabel].filter(Boolean).join(' | ')}</p>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p class="mt-5 text-base leading-8 text-stone-600">No published program links are attached to this speaker yet.</p>
+        )}
+      </section>
+    </article>
+  ) : (
+    <section class="mx-auto max-w-5xl px-4 py-14 md:px-6 md:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">404</p>
+      <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-5xl">Speaker not found</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-stone-600">The requested speaker profile is not available.</p>
+    </section>
+  )}
+</MainLayout>

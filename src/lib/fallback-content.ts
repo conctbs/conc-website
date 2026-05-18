@@ -9,6 +9,7 @@ import type {
   Program,
   Project,
   ProjectListItem,
+  Speaker,
   Service,
   SiteSettingDto,
 } from "./api";
@@ -815,6 +816,137 @@ const programs: Program[] = [
       metaTitle: "CONC Thammasat Forum: Strategic Foresight for Public Sector Leaders",
       metaDescription: "A sample closed-registration CONC Thammasat Forum entry with 100 seats.",
       canonicalUrl: "https://conc.example/programs/conc-thammasat-forum-strategic-foresight-public-sector-leaders",
+      noIndex: false,
+      metaImage: null,
+    },
+  },
+];
+
+const speakers: Speaker[] = [
+  {
+    id: 1,
+    name: "Assoc. Prof. Dr. Narin Vachirakul",
+    slug: "narin-vachirakul",
+    role: "Faculty Moderator",
+    organization: "CONC Thammasat",
+    summary:
+      "Leads interdisciplinary executive sessions focused on leadership, public communication, and institutional change.",
+    bio:
+      "<p>Assoc. Prof. Dr. Narin Vachirakul facilitates executive learning formats that connect academic framing with practical implementation. His sessions often bridge leadership communication, strategy alignment, and public-sector transformation.</p>",
+    focusAreas: ["Leadership communication", "Public-sector transformation", "Executive facilitation"],
+    featured: true,
+    order: 1,
+    photo: buildAvatarMedia("NV", "#7c2d12", "#ffedd5", "Assoc. Prof. Dr. Narin Vachirakul avatar"),
+    programs: [
+      {
+        id: 5,
+        title: "CONC Thammasat Forum: Future-ready Leadership in the AI Era",
+        slug: "conc-thammasat-forum-future-ready-leadership-ai",
+        category: "Forum Program",
+        dateLabel: "10 June 2026",
+        startsAt: "2026-06-10",
+      },
+    ],
+    seo: {
+      metaTitle: "Assoc. Prof. Dr. Narin Vachirakul | CONC Speakers",
+      metaDescription: "Faculty moderator and leadership communication speaker for CONC executive programs.",
+      canonicalUrl: "https://conc.example/programs/speakers/narin-vachirakul",
+      noIndex: false,
+      metaImage: null,
+    },
+  },
+  {
+    id: 2,
+    name: "Ms. Ploy Chutima",
+    slug: "ploy-chutima",
+    role: "Transformation Advisor",
+    organization: "CONC Network",
+    summary:
+      "Advises communication, policy translation, and operating-model change for cross-functional leadership teams.",
+    bio:
+      "<p>Ms. Ploy Chutima works with organizations that need to turn strategy into communication routines, governance checkpoints, and collaborative working models across teams.</p>",
+    focusAreas: ["Change communication", "Policy translation", "Operating model design"],
+    featured: true,
+    order: 2,
+    photo: buildAvatarMedia("PC", "#1d4ed8", "#dbeafe", "Ms. Ploy Chutima avatar"),
+    programs: [
+      {
+        id: 5,
+        title: "CONC Thammasat Forum: Future-ready Leadership in the AI Era",
+        slug: "conc-thammasat-forum-future-ready-leadership-ai",
+        category: "Forum Program",
+        dateLabel: "10 June 2026",
+        startsAt: "2026-06-10",
+      },
+    ],
+    seo: {
+      metaTitle: "Ms. Ploy Chutima | CONC Speakers",
+      metaDescription: "Transformation advisor and speaker for CONC programs and leadership forums.",
+      canonicalUrl: "https://conc.example/programs/speakers/ploy-chutima",
+      noIndex: false,
+      metaImage: null,
+    },
+  },
+  {
+    id: 3,
+    name: "Dr. Kanokwan Siri",
+    slug: "kanokwan-siri",
+    role: "Crisis Communication Specialist",
+    organization: "Executive Communication Lab",
+    summary:
+      "Focuses on message discipline, public trust, and communication decisions under time pressure.",
+    bio:
+      "<p>Dr. Kanokwan Siri supports executive teams facing high-stakes communication environments. Her work centers on clarity, sequencing, and stakeholder response under pressure.</p>",
+    focusAreas: ["Crisis communication", "Executive messaging", "Stakeholder response"],
+    featured: false,
+    order: 3,
+    photo: buildAvatarMedia("KS", "#7f1d1d", "#fecaca", "Dr. Kanokwan Siri avatar"),
+    programs: [
+      {
+        id: 6,
+        title: "CONC Thammasat Forum: Public Communication Under Pressure",
+        slug: "conc-thammasat-forum-public-communication-under-pressure",
+        category: "Forum Program",
+        dateLabel: "24 June 2026",
+        startsAt: "2026-06-24",
+      },
+    ],
+    seo: {
+      metaTitle: "Dr. Kanokwan Siri | CONC Speakers",
+      metaDescription: "Crisis communication specialist featured in CONC forum programming.",
+      canonicalUrl: "https://conc.example/programs/speakers/kanokwan-siri",
+      noIndex: false,
+      metaImage: null,
+    },
+  },
+  {
+    id: 4,
+    name: "Dr. Suriya Anantakul",
+    slug: "suriya-anantakul",
+    role: "Strategic Foresight Advisor",
+    organization: "Public Leadership Futures Lab",
+    summary:
+      "Works with public leaders on foresight, uncertainty navigation, and long-range policy thinking.",
+    bio:
+      "<p>Dr. Suriya Anantakul helps leadership teams structure scenario-based discussion, identify strategic signals, and build practical responses to uncertainty in complex institutions.</p>",
+    focusAreas: ["Strategic foresight", "Scenario planning", "Public leadership"],
+    featured: false,
+    order: 4,
+    photo: buildAvatarMedia("SA", "#0f766e", "#ccfbf1", "Dr. Suriya Anantakul avatar"),
+    programs: [
+      {
+        id: 7,
+        title: "CONC Thammasat Forum: Strategic Foresight for Public-sector Leaders",
+        slug: "conc-thammasat-forum-strategic-foresight-public-sector-leaders",
+        category: "Forum Program",
+        dateLabel: "8 July 2026",
+        startsAt: "2026-07-08",
+      },
+    ],
+    seo: {
+      metaTitle: "Dr. Suriya Anantakul | CONC Speakers",
+      metaDescription: "Strategic foresight advisor featured in CONC public leadership programs.",
+      canonicalUrl: "https://conc.example/programs/speakers/suriya-anantakul",
       noIndex: false,
       metaImage: null,
     },
@@ -2083,6 +2215,7 @@ export const fallbackContent = {
   services,
   projects,
   programs,
+  speakers,
   newsEntries,
   knowledgeArticles,
   galleryEntries,

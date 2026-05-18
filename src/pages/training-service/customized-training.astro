@@ -1,49 +1,228 @@
 ---
+import MainLayout from "../../layouts/MainLayout.astro";
 import PageCover from "../../components/PageCover.astro";
 import StructuredPageContent from "../../components/StructuredPageContent.astro";
-import MainLayout from "../../layouts/MainLayout.astro";
-import { getPageBySlug, getSiteSetting } from "../../lib/api";
+import { BACKEND_DISABLED, getPageBySlug, getSiteSetting } from "../../lib/api";
 
 const [page, siteSetting] = await Promise.all([getPageBySlug("customized-training"), getSiteSetting()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? "Customized Training | CONC";
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
+const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
     <StructuredPageContent sections={page.sections} fallbackEyebrow="Training Service" fallbackTitle="Customized Training" />
   ) : (
-    <>
-      <section class="border-b border-stone-200 bg-white">
-        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
-          <div class="max-w-4xl">
-            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Training Service</p>
-            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Customized Training</h1>
-            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
-              Tailored learning engagements for organizations that need a program built around specific goals, participants, and delivery conditions.
+    <section class="border-b border-stone-200 bg-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+        <div class="max-w-4xl">
+          <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Training Service</p>
+          <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">Customized Training</h1>
+          <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+            Tailored learning engagements for organizations that need a program built around specific goals, participants, and delivery conditions.
+          </p>
+        </div>
+        <PageCover eyebrow="Customized" title="Training design shaped to business context, audience needs, and delivery scope" theme="services" />
+      </div>
+    </section>
+  )}
+
+  <section class="mx-auto max-w-7xl px-4 pb-16 pt-12 md:px-6 md:pb-24">
+    <div class="grid gap-8 rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_24px_70px_-34px_rgba(28,25,23,0.28)] md:p-8 lg:grid-cols-[minmax(18rem,0.82fr)_minmax(0,1.18fr)] lg:gap-10 xl:p-10">
+      <aside class="grid content-start gap-5 rounded-[1.5rem] bg-stone-100 p-6 text-stone-900">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Training Brief</p>
+          <h2 class="mt-3 text-3xl font-semibold leading-tight md:text-4xl">Tell us what your team needs</h2>
+          <p class="mt-4 text-base leading-8 text-stone-600">
+            Share the business goal, participant group, preferred format, and timing. The form stores your request in the backend so the CONC team can review and scope a customized program.
+          </p>
+        </div>
+        <div class="grid gap-3 text-sm leading-7 text-stone-600">
+          <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+            <span class="font-semibold text-stone-900">Typical requests:</span> leadership development, communication capability, facilitation, executive workshops, or institution-specific curriculum design.
+          </div>
+          <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+            <span class="font-semibold text-stone-900">Useful inputs:</span> target audience, participant count, desired outcomes, timing, delivery mode, and topic focus.
+          </div>
+          <div class="rounded-2xl border border-stone-200 bg-white px-4 py-3">
+            <span class="font-semibold text-stone-900">Auto reply:</span> once SMTP is configured on the backend, the system can automatically confirm receipt to the person who submitted the form.
+          </div>
+        </div>
+        <div class="grid gap-3 rounded-[1.5rem] border border-dashed border-stone-300 bg-stone-50 p-5 text-sm">
+          <p class="font-semibold uppercase tracking-[0.16em] text-stone-500">Contact</p>
+          <a class="font-semibold text-red-700 hover:text-red-800" href={`mailto:${supportEmail}`}>{supportEmail}</a>
+          <a class="font-semibold text-red-700 hover:text-red-800" href={`tel:${supportPhone.replace(/[^+\d]/g, "")}`}>{supportPhone}</a>
+        </div>
+      </aside>
+
+      <div class="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-6 md:p-7">
+        {BACKEND_DISABLED ? (
+          <div class="grid gap-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Temporarily unavailable</p>
+            <h3 class="text-3xl font-semibold leading-tight text-stone-900">Online customized training form is paused</h3>
+            <p class="max-w-2xl text-base leading-8 text-stone-600">
+              The backend is currently unavailable, so submissions cannot be stored right now. Please send your training brief directly to <a class="font-semibold text-red-700 underline" href={`mailto:${supportEmail}`}>{supportEmail}</a>.
             </p>
           </div>
-          <PageCover eyebrow="Customized" title="Training design shaped to business context, audience needs, and delivery scope" theme="services" />
-        </div>
-      </section>
+        ) : (
+          <>
+            <form id="customized-training-form" class="grid gap-5">
+              <div class="grid gap-5 md:grid-cols-2">
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Organization name</span>
+                  <input name="organizationName" type="text" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Contact name</span>
+                  <input name="contactName" type="text" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Email</span>
+                  <input name="email" type="email" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Phone</span>
+                  <input name="phone" type="tel" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Position / Job title</span>
+                  <input name="jobTitle" type="text" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Estimated participant count</span>
+                  <input name="participantCount" type="number" min="1" placeholder="e.g. 25" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Preferred format</span>
+                  <select name="preferredFormat" required class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700">
+                    <option value="">Select a format</option>
+                    <option value="in_person">In-person training</option>
+                    <option value="online">Online training</option>
+                    <option value="hybrid">Hybrid training</option>
+                    <option value="not_sure">Not sure yet</option>
+                  </select>
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Preferred timeframe</span>
+                  <input name="timeframe" type="text" placeholder="e.g. Q3 2026, August, within 6 weeks" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+              </div>
 
-      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
-          <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.22)]">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Program Scope</p>
-            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Designed around the organization, not around a fixed catalog</h2>
-            <p class="mt-4 text-base leading-8 text-stone-600">
-              This page can present how CONC shapes an engagement from problem framing and curriculum scoping through facilitation, scheduling, and post-session follow-through.
-            </p>
-          </article>
-          <aside class="grid gap-4 rounded-[1.75rem] border border-stone-200 bg-stone-50 p-6">
-            <div class="rounded-2xl bg-white px-4 py-4">
-              <p class="text-sm font-semibold text-stone-900">Typical use</p>
-              <p class="mt-2 text-sm leading-7 text-stone-600">Leadership development, team capability building, partner workshops, and institution-specific learning design.</p>
-            </div>
-            <a class="btn-primary !rounded-md !px-6 !py-3" href="/contact">Discuss a training brief</a>
-          </aside>
-        </div>
-      </section>
-    </>
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Training goal</span>
+                <textarea name="trainingGoal" rows="4" required placeholder="What problem should the training solve, or what capability should improve?" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Target audience</span>
+                <textarea name="targetAudience" rows="4" required placeholder="Who will attend? Executives, managers, faculty, frontline teams, mixed cohorts, etc." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Topic focus</span>
+                <textarea name="topicFocus" rows="4" required placeholder="Core subjects, modules, or themes you want covered" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+
+              <div class="grid gap-5 md:grid-cols-2">
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Budget range</span>
+                  <input name="budgetRange" type="text" placeholder="Optional" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+                <label class="grid gap-2 font-semibold text-stone-900">
+                  <span>Delivery location</span>
+                  <input name="deliveryLocation" type="text" placeholder="Bangkok, online, client site, campus, etc." class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700" />
+                </label>
+              </div>
+
+              <label class="grid gap-2 font-semibold text-stone-900">
+                <span>Additional note</span>
+                <textarea name="additionalNote" rows="3" placeholder="Optional constraints, decision timeline, sponsor context, or special requests" class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base text-stone-900 outline-none transition focus:border-red-700"></textarea>
+              </label>
+
+              <label class="flex items-start gap-3 text-sm leading-6 text-stone-700">
+                <input type="checkbox" name="consent" required class="mt-1 h-4 w-4 rounded border-stone-300 text-red-700 focus:ring-red-700" />
+                <span>I agree to let CONC store and review this information for customized training scoping and follow-up, in line with the <a class="font-semibold text-red-700 underline" href="/privacy-policy">privacy policy</a>.</span>
+              </label>
+
+              <button id="customized-training-submit" class="btn-primary !rounded-md !border-0 !px-7 !py-3.5" type="submit">Submit training brief</button>
+            </form>
+
+            <div
+              id="customized-training-notification"
+              class="fixed right-4 top-4 z-40 hidden max-w-[min(28rem,calc(100vw-2rem))] rounded-2xl bg-emerald-700 px-4 py-4 font-semibold leading-6 text-white shadow-[0_18px_40px_rgba(15,15,16,0.18)] data-[type=error]:bg-red-700"
+              hidden
+              aria-live="polite"
+            ></div>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+
+  {!BACKEND_DISABLED && (
+    <script is:inline define:vars={{ strapiBaseUrl }}>
+      const form = document.getElementById('customized-training-form');
+      const submitButton = document.getElementById('customized-training-submit');
+      const notification = document.getElementById('customized-training-notification');
+      let notificationTimer = null;
+
+      function showNotification(message, type = 'success') {
+        if (!notification) return;
+        if (notificationTimer) {
+          window.clearTimeout(notificationTimer);
+        }
+
+        notification.hidden = false;
+        notification.classList.remove('hidden');
+        notification.textContent = message;
+        notification.dataset.type = type;
+        notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
+
+        notificationTimer = window.setTimeout(() => {
+          notification.hidden = true;
+          notification.classList.add('hidden');
+          notification.textContent = '';
+          delete notification.dataset.type;
+        }, 3600);
+      }
+
+      form?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (submitButton instanceof HTMLButtonElement) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Submitting...';
+        }
+
+        const payload = Object.fromEntries(new FormData(form).entries());
+
+        try {
+          const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/customized-training-requests/public`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data: payload }),
+          });
+
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(result?.error?.message || result?.message || 'Unable to submit customized training request');
+          }
+
+          form.reset();
+          showNotification('Customized training request submitted. The CONC team can now review your brief.', 'success');
+        } catch (error) {
+          showNotification(error instanceof Error ? error.message : 'Unable to submit customized training request', 'error');
+        } finally {
+          if (submitButton instanceof HTMLButtonElement) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Submit training brief';
+          }
+        }
+      });
+    </script>
   )}
 </MainLayout>

@@ -1,16 +1,159 @@
 ---
 import PageCover from "../../components/PageCover.astro";
-import StructuredPageContent from "../../components/StructuredPageContent.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import { getPageBySlug, getSiteSetting } from "../../lib/api";
+import { getExecutives, getPageBySlug, getSiteSetting } from "../../lib/api";
 
-const [page, siteSetting] = await Promise.all([getPageBySlug("executive"), getSiteSetting()]);
+const [page, siteSetting, executives] = await Promise.all([
+  getPageBySlug("executive"),
+  getSiteSetting(),
+  getExecutives(),
+]);
 const title = page?.seo?.metaTitle ?? page?.title ?? "Executive | CONC";
+const featuredExecutives = executives.filter((executive) => executive.featured);
 ---
 
 <MainLayout title={title} seo={page?.seo} siteSetting={siteSetting}>
   {page ? (
-    <StructuredPageContent sections={page.sections} fallbackEyebrow="About Us" fallbackTitle="Executive" />
+    <>
+      <section class="border-b border-stone-200 bg-white">
+        <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 md:px-6 md:py-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,0.92fr)] lg:items-end">
+          <div class="max-w-4xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Executive Directory</p>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-stone-900 md:text-6xl">
+              Executive leadership profiles managed from the CMS
+            </h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-stone-700">
+              This page reads from the new `Executive` collection in Strapi so the team can manage leadership names,
+              roles, responsibilities, photos, and profile copy without editing Astro templates.
+            </p>
+          </div>
+          <PageCover eyebrow="Executive" title="Leadership records connected to the about section" theme="programs" />
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,0.74fr)_minmax(0,1.26fr)]">
+          <article class="rounded-[1.75rem] border border-stone-200 bg-stone-100 p-7 shadow-[0_24px_70px_-38px_rgba(41,37,36,0.22)]">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Executive Directory</p>
+            <h2 class="mt-4 text-3xl font-semibold leading-tight text-stone-900">Structured leadership data for the about section</h2>
+            <div class="mt-6 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Profiles</p>
+                <p class="mt-2 text-3xl font-semibold text-stone-900">{executives.length}</p>
+              </div>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Featured</p>
+                <p class="mt-2 text-3xl font-semibold text-stone-900">{featuredExecutives.length}</p>
+              </div>
+              <div class="rounded-2xl border border-stone-200 bg-white p-4">
+                <p class="text-sm text-stone-500">Responsibilities</p>
+                <p class="mt-2 text-3xl font-semibold text-stone-900">
+                  {executives.reduce((total, executive) => total + executive.responsibilities.length, 0)}
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-[1.75rem] border border-red-100 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_52%,#f5f5f4_100%)] p-7 shadow-[0_24px_70px_-38px_rgba(120,53,15,0.18)]">
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-red-700">Why this page exists</p>
+            <ul class="mt-5 space-y-3 pl-5 text-base leading-8 text-stone-700 marker:text-red-700">
+              <li>Editors can update executive profiles from Strapi without touching frontend code.</li>
+              <li>Responsibilities and expertise are stored as structured lists instead of one-off page copy.</li>
+              <li>The page can expand later into executive detail pages, filters, or governance sections.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="mt-10 grid gap-6 xl:grid-cols-2">
+          {executives.length > 0 ? (
+            executives.map((executive) => (
+              <article class="overflow-hidden rounded-[1.8rem] border border-stone-200 bg-white shadow-[0_22px_70px_-40px_rgba(41,37,36,0.34)]">
+                <div class="grid gap-0 md:grid-cols-[12rem_minmax(0,1fr)]">
+                  <div class="border-b border-stone-200 bg-stone-100 md:border-b-0 md:border-r">
+                    {executive.photo?.url ? (
+                      <img
+                        class="h-full min-h-[12rem] w-full object-cover"
+                        src={executive.photo.url}
+                        alt={executive.photo.alternativeText ?? executive.name}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div class="flex min-h-[12rem] items-center justify-center text-sm font-semibold uppercase tracking-[0.16em] text-stone-500">
+                        {executive.name
+                          .split(" ")
+                          .filter(Boolean)
+                          .slice(0, 2)
+                          .map((part) => part[0])
+                          .join("")}
+                      </div>
+                    )}
+                  </div>
+
+                  <div class="p-7">
+                    <div class="flex flex-wrap items-center gap-3">
+                      {executive.featured && (
+                        <span class="rounded-full bg-red-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white">
+                          Featured
+                        </span>
+                      )}
+                      <span class="text-sm font-medium text-red-700">{executive.position}</span>
+                      {executive.organization && <span class="text-sm text-stone-500">{executive.organization}</span>}
+                    </div>
+
+                    <h2 class="mt-4 text-2xl font-semibold text-stone-900">{executive.name}</h2>
+                    {executive.summary && <p class="mt-3 text-sm leading-7 text-stone-600">{executive.summary}</p>}
+
+                    {executive.expertise.length > 0 && (
+                      <div class="mt-5 flex flex-wrap gap-2">
+                        {executive.expertise.map((item) => (
+                          <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-stone-700">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {executive.bio && (
+                      <div class="prose prose-stone mt-5 max-w-none text-sm leading-7" set:html={executive.bio} />
+                    )}
+
+                    {executive.responsibilities.length > 0 && (
+                      <div class="mt-6 border-t border-stone-200 pt-5">
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Responsibilities</p>
+                        <ul class="mt-3 space-y-2 pl-5 text-sm leading-7 text-stone-600 marker:text-red-700">
+                          {executive.responsibilities.map((item) => (
+                            <li>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {(executive.email || executive.linkedinUrl) && (
+                      <div class="mt-6 flex flex-wrap gap-3 border-t border-stone-200 pt-5">
+                        {executive.email && (
+                          <a class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-stone-700 transition hover:border-red-700 hover:text-red-700" href={`mailto:${executive.email}`}>
+                            Email
+                          </a>
+                        )}
+                        {executive.linkedinUrl && (
+                          <a class="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-stone-700 transition hover:border-red-700 hover:text-red-700" href={executive.linkedinUrl}>
+                            LinkedIn
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))
+          ) : (
+            <article class="rounded-[1.8rem] border border-stone-200 bg-white p-7">
+              <p class="text-base leading-8 text-stone-600">No published executive profiles are available yet.</p>
+            </article>
+          )}
+        </div>
+      </section>
+    </>
   ) : (
     <>
       <section class="border-b border-stone-200 bg-white">
@@ -27,10 +170,15 @@ const title = page?.seo?.metaTitle ?? page?.title ?? "Executive | CONC";
       </section>
 
       <section class="mx-auto max-w-7xl px-4 py-14 md:px-6">
-        <article class="rounded-[1.75rem] border border-stone-200 bg-white p-7">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">Leadership Profile</p>
-          <p class="mt-4 text-base leading-8 text-stone-600">Use this page to present named executives, leadership responsibilities, and the institutional structure behind CONC programs and partnerships.</p>
-        </article>
+        <div class="grid gap-6 lg:grid-cols-2">
+          {executives.map((executive) => (
+            <article class="rounded-2xl border border-stone-200 bg-white p-7">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-red-700">{executive.position}</p>
+              <h2 class="mt-4 text-2xl font-semibold text-stone-900">{executive.name}</h2>
+              {executive.summary && <p class="mt-4 text-base leading-8 text-stone-600">{executive.summary}</p>}
+            </article>
+          ))}
+        </div>
       </section>
     </>
   )}

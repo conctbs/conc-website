@@ -233,6 +233,24 @@ export type Speaker = {
   seo: Seo;
 };
 
+export type Executive = {
+  id: number;
+  name: string;
+  slug: string;
+  position: string;
+  organization: string | null;
+  summary: string | null;
+  bio: string | null;
+  responsibilities: string[];
+  expertise: string[];
+  email: string | null;
+  linkedinUrl: string | null;
+  featured: boolean;
+  order: number | null;
+  photo: Media;
+  seo: Seo;
+};
+
 export type NewsEntry = {
   id: number;
   title: string;
@@ -553,6 +571,11 @@ function getFallbackJson<T>(path: string): T | null {
     return (fallbackContent.speakers.find((speaker) => speaker.slug === slug) ?? null) as T | null;
   }
 
+  if (path.startsWith("/executives/by-slug/")) {
+    const slug = path.slice("/executives/by-slug/".length);
+    return (fallbackContent.executives.find((executive) => executive.slug === slug) ?? null) as T | null;
+  }
+
   if (path.startsWith("/services/by-slug/")) {
     const slug = path.slice("/services/by-slug/".length);
     return (fallbackContent.services.find((service) => service.slug === slug) ?? null) as T | null;
@@ -588,6 +611,10 @@ function getFallbackCollection<T>(path: string): T[] {
 
   if (path.startsWith("/speakers")) {
     return [...fallbackContent.speakers] as T[];
+  }
+
+  if (path.startsWith("/executives")) {
+    return [...fallbackContent.executives] as T[];
   }
 
   if (path.startsWith("/services")) {
@@ -756,6 +783,14 @@ export async function getSpeakers(): Promise<Speaker[]> {
 
 export async function getSpeakerBySlug(slug: string): Promise<Speaker | null> {
   return fetchJson<Speaker>(`/speakers/by-slug/${slug}`);
+}
+
+export async function getExecutives(): Promise<Executive[]> {
+  return fetchCollection<Executive>("/executives?sort[0]=featured:desc&sort[1]=order:asc&sort[2]=name:asc");
+}
+
+export async function getExecutiveBySlug(slug: string): Promise<Executive | null> {
+  return fetchJson<Executive>(`/executives/by-slug/${slug}`);
 }
 
 export async function getSpeakerSlugs(): Promise<string[]> {

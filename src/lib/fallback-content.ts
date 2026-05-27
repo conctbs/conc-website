@@ -1,4 +1,5 @@
 import type {
+  Executive,
   GalleryEntry,
   KnowledgeArticle,
   KnowledgeArticleListItem,
@@ -947,6 +948,67 @@ const speakers: Speaker[] = [
       metaTitle: "Dr. Suriya Anantakul | CONC Speakers",
       metaDescription: "Strategic foresight advisor featured in CONC public leadership programs.",
       canonicalUrl: "https://conc.example/programs/speakers/suriya-anantakul",
+      noIndex: false,
+      metaImage: null,
+    },
+  },
+];
+
+const executives: Executive[] = [
+  {
+    id: 1,
+    name: "Assoc. Prof. Dr. Narin Vachirakul",
+    slug: "narin-vachirakul",
+    position: "Executive Director",
+    organization: "CONC Thammasat",
+    summary:
+      "Provides strategic direction for executive learning, applied communication programs, and institutional partnerships.",
+    bio:
+      "<p>Assoc. Prof. Dr. Narin Vachirakul oversees CONC program direction, partner engagement, and leadership development priorities. His work connects academic rigor with practical executive education formats for organizations and public-sector teams.</p>",
+    responsibilities: [
+      "Set strategic direction for CONC programs and partnerships",
+      "Oversee executive education quality and institutional alignment",
+      "Represent the center in senior stakeholder engagement",
+    ],
+    expertise: ["Executive education", "Leadership communication", "Institutional strategy"],
+    email: "executive@conc.example",
+    linkedinUrl: null,
+    featured: true,
+    order: 1,
+    photo: buildAvatarMedia("NV", "#7c2d12", "#ffedd5", "Assoc. Prof. Dr. Narin Vachirakul avatar"),
+    seo: {
+      metaTitle: "Assoc. Prof. Dr. Narin Vachirakul | CONC Executive",
+      metaDescription: "Executive Director profile for CONC Thammasat.",
+      canonicalUrl: "https://conc.example/about/executive/narin-vachirakul",
+      noIndex: false,
+      metaImage: null,
+    },
+  },
+  {
+    id: 2,
+    name: "Ms. Ploy Chutima",
+    slug: "ploy-chutima",
+    position: "Partnership and Transformation Lead",
+    organization: "CONC Network",
+    summary:
+      "Coordinates partner needs, implementation planning, and cross-functional program delivery for executive clients.",
+    bio:
+      "<p>Ms. Ploy Chutima works with partners to translate leadership priorities into practical program scopes, communication routines, and delivery plans that teams can act on.</p>",
+    responsibilities: [
+      "Coordinate institutional and business partner relationships",
+      "Shape implementation plans for customized executive programs",
+      "Connect program delivery with stakeholder communication needs",
+    ],
+    expertise: ["Partnership management", "Transformation planning", "Program delivery"],
+    email: "partnerships@conc.example",
+    linkedinUrl: null,
+    featured: false,
+    order: 2,
+    photo: buildAvatarMedia("PC", "#1d4ed8", "#dbeafe", "Ms. Ploy Chutima avatar"),
+    seo: {
+      metaTitle: "Ms. Ploy Chutima | CONC Executive",
+      metaDescription: "Partnership and Transformation Lead profile for CONC.",
+      canonicalUrl: "https://conc.example/about/executive/ploy-chutima",
       noIndex: false,
       metaImage: null,
     },
@@ -2216,6 +2278,7 @@ export const fallbackContent = {
   projects,
   programs,
   speakers,
+  executives,
   newsEntries,
   knowledgeArticles,
   galleryEntries,

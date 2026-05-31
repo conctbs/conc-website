@@ -1,0 +1,172 @@
+---
+const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337/api';
+const strapiOrigin = strapiBaseUrl.replace(/\/api\/?$/, '');
+const endpoint = `${strapiBaseUrl.replace(/\/$/, '')}/announcement-popup/active`;
+---
+
+<div
+  id="announcement-popup"
+  class="fixed inset-0 z-[140] hidden items-center justify-center bg-stone-950/70 px-4 py-6 backdrop-blur-sm"
+  data-endpoint={endpoint}
+  data-strapi-origin={strapiOrigin}
+  aria-modal="true"
+  role="dialog"
+  aria-label="Website announcement"
+>
+  <div class="relative w-full max-w-3xl overflow-hidden rounded-lg bg-stone-950 shadow-[0_30px_100px_-32px_rgba(0,0,0,0.65)]">
+    <button
+      id="announcement-popup-close"
+      type="button"
+      class="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-2xl leading-none text-white transition hover:bg-black/75 focus:outline-none focus:ring-2 focus:ring-white"
+      aria-label="Close announcement"
+    >
+      &times;
+    </button>
+
+    <a id="announcement-popup-link" class="group relative block">
+      <img
+        id="announcement-popup-image"
+        alt=""
+        class="max-h-[82vh] min-h-[320px] w-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+      <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/78 via-black/18 to-transparent p-5 sm:p-8">
+        <div class="max-w-2xl text-white">
+          <div
+            id="announcement-popup-text"
+            class="whitespace-pre-line text-2xl font-semibold leading-tight sm:text-4xl"
+          >
+          </div>
+          <div
+            id="announcement-popup-cta"
+            class="mt-4 hidden items-center rounded-full bg-red-700 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-red-800"
+          >
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const initAnnouncementPopup = () => {
+      const popup = document.getElementById('announcement-popup');
+      const closeButton = document.getElementById('announcement-popup-close');
+      const link = document.getElementById('announcement-popup-link');
+      const image = document.getElementById('announcement-popup-image');
+      const text = document.getElementById('announcement-popup-text');
+      const cta = document.getElementById('announcement-popup-cta');
+
+      if (
+        !popup ||
+        !closeButton ||
+        !(link instanceof HTMLAnchorElement) ||
+        !(image instanceof HTMLImageElement) ||
+        !text ||
+        !cta ||
+        popup.dataset.bound === 'true'
+      ) {
+        return;
+      }
+
+      popup.dataset.bound = 'true';
+
+      const resolveMediaUrl = (url) => {
+        if (!url) {
+          return null;
+        }
+
+        if (/^https?:\/\//i.test(url)) {
+          return url;
+        }
+
+        const origin = popup.dataset.strapiOrigin || '';
+        return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
+      };
+
+      let storageKey = 'conc-announcement-popup:current';
+
+      const closePopup = () => {
+        popup.classList.add('hidden');
+        popup.classList.remove('flex');
+
+        try {
+          window.localStorage.setItem(storageKey, 'dismissed');
+        } catch {
+          // Ignore storage failures; the close action should still work.
+        }
+      };
+
+      const hasDismissed = () => {
+        try {
+          return window.localStorage.getItem(storageKey) === 'dismissed';
+        } catch {
+          return false;
+        }
+      };
+
+      const showPopup = () => {
+        if (!hasDismissed()) {
+          popup.classList.remove('hidden');
+          popup.classList.add('flex');
+        }
+      };
+
+      closeButton.addEventListener('click', closePopup);
+      popup.addEventListener('click', (event) => {
+        if (event.target === popup) {
+          closePopup();
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !popup.classList.contains('hidden')) {
+          closePopup();
+        }
+      });
+
+      fetch(popup.dataset.endpoint || '', { headers: { Accept: 'application/json' } })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((json) => {
+          const data = json?.data;
+          const imageUrl = resolveMediaUrl(data?.image?.url);
+
+          if (!data || !imageUrl || !data.overlayText) {
+            console.info('[announcement-popup] No active popup returned from Strapi.');
+            return;
+          }
+
+          storageKey = `conc-announcement-popup:${[data.documentId || data.id || 'announcement', data.updatedAt || 'current']
+            .filter(Boolean)
+            .join(':')}`;
+
+          image.src = imageUrl;
+          image.alt = data.image?.alternativeText || data.overlayText || 'Website announcement';
+          text.textContent = data.overlayText;
+
+          if (data.linkUrl) {
+            link.href = data.linkUrl;
+            link.setAttribute('aria-label', data.linkLabel || 'อ่านรายละเอียด');
+            cta.textContent = data.linkLabel || 'อ่านรายละเอียด';
+            cta.classList.remove('hidden');
+            cta.classList.add('inline-flex');
+          } else {
+            link.removeAttribute('href');
+            link.classList.add('pointer-events-none');
+            link.removeAttribute('aria-label');
+            cta.classList.add('hidden');
+            cta.classList.remove('inline-flex');
+          }
+
+          showPopup();
+        })
+        .catch((error) => {
+          console.info('[announcement-popup] Failed to load popup from Strapi.', error);
+        });
+    };
+
+    initAnnouncementPopup();
+    document.addEventListener('astro:after-swap', initAnnouncementPopup);
+  })();
+</script>

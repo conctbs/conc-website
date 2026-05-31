@@ -3,6 +3,7 @@ import '../assets/styles/tailwind.css';
 
 import ConsentModeHead from '~/components/analytics/ConsentModeHead.astro';
 import CookieConsentBanner from '~/components/analytics/CookieConsentBanner.astro';
+import AnnouncementPopup from '~/components/AnnouncementPopup.astro';
 import Favicons from '~/components/Favicons.astro';
 import CustomStyles from '~/components/CustomStyles.astro';
 import BasicScripts from '~/components/common/BasicScripts.astro';
@@ -54,6 +55,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
       <slot />
     </main>
     <Footer {...footerData} />
+    <AnnouncementPopup />
     <CookieConsentBanner />
     <BasicScripts />
   </body>

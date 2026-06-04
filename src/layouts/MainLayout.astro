@@ -29,7 +29,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
     <title>{pageTitle}</title>
     {pageDescription && <meta name="description" content={pageDescription} />}
     {canonical && <link rel="canonical" href={canonical} />}
-    {seo?.noIndex && <meta name="robots" content="noindex,nofollow" />}
+    <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex" />
+    <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,noimageindex" />
     <Favicons />
     <CustomStyles />
     <ConsentModeHead />

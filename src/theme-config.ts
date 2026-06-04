@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'CONC Thammasat',
-  site: 'https://conc.tbs.tu.ac.th',
+  site: import.meta.env.PUBLIC_SITE_URL ?? 'https://conc-website.vercel.app',
   base: '/',
   trailingSlash: false,
 };

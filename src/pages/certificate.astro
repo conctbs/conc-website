@@ -304,6 +304,13 @@ const siteBaseUrl = SITE.site.replace(/\/+$/, "");
       window.history.replaceState({}, '', nextUrl);
     }
 
+    function buildVerificationUrl(rawUrl, code) {
+      const baseUrl = String(siteBaseUrl).replace(/\/+$/, '');
+      const fallbackPath = `/certificate?code=${encodeURIComponent(code)}`;
+      const parsedUrl = new URL(rawUrl || fallbackPath, baseUrl);
+      return `${baseUrl}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+    }
+
     async function loadCertificate(rawCode) {
       const code = String(rawCode || '').trim().toUpperCase();
       if (!code) {
@@ -332,7 +339,7 @@ const siteBaseUrl = SITE.site.replace(/\/+$/, "");
 
         const certificate = result.data;
         const program = certificate.program ?? {};
-        const verificationUrl = certificate.verificationUrl || `${String(siteBaseUrl).replace(/\/+$/, '')}/certificate?code=${encodeURIComponent(code)}`;
+        const verificationUrl = buildVerificationUrl(certificate.verificationUrl, code);
 
         setText(fieldTargets.recipient, certificate.recipientName || '-');
         setText(fieldTargets.programTitle, program.title || '-');

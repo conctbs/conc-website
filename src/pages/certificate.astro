@@ -1,10 +1,12 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import { getSiteSetting } from "../lib/api";
+import { SITE } from "../theme-config";
 
 const siteSetting = await getSiteSetting();
 const title = siteSetting?.siteName ? `Certificate | ${siteSetting.siteName}` : "Certificate | CONC";
 const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const siteBaseUrl = SITE.site.replace(/\/+$/, "");
 ---
 
 <MainLayout title={title} siteSetting={siteSetting}>
@@ -191,7 +193,7 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
     }
   </style>
 
-  <script is:inline define:vars={{ strapiBaseUrl }}>
+  <script is:inline define:vars={{ strapiBaseUrl, siteBaseUrl }}>
     const feedbackTarget = document.getElementById('certificate-feedback');
     const loadingTarget = document.getElementById('certificate-loading');
     const certificateCard = document.getElementById('certificate-card');
@@ -330,7 +332,7 @@ const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:133
 
         const certificate = result.data;
         const program = certificate.program ?? {};
-        const verificationUrl = certificate.verificationUrl || `${window.location.origin}/certificate?code=${encodeURIComponent(code)}`;
+        const verificationUrl = certificate.verificationUrl || `${String(siteBaseUrl).replace(/\/+$/, '')}/certificate?code=${encodeURIComponent(code)}`;
 
         setText(fieldTargets.recipient, certificate.recipientName || '-');
         setText(fieldTargets.programTitle, program.title || '-');

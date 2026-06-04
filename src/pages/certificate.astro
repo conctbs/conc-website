@@ -1,11 +1,11 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { getSiteSetting } from "../lib/api";
+import { STRAPI_BASE_URL, getSiteSetting } from "../lib/api";
 import { SITE } from "../theme-config";
 
 const siteSetting = await getSiteSetting();
 const title = siteSetting?.siteName ? `Certificate | ${siteSetting.siteName}` : "Certificate | CONC";
-const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const strapiBaseUrl = STRAPI_BASE_URL;
 const siteBaseUrl = SITE.site.replace(/\/+$/, "");
 ---
 

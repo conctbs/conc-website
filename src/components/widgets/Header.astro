@@ -78,13 +78,14 @@ const mobileContactHref = '/contact';
         <Logo />
       </a>
       <div class="flex items-center gap-2 md:hidden">
-        <Button
-          text="Member Login"
+        <a
           href="/member-login"
-          variant="primary"
-          icon="tabler:user-circle"
-          class="!border-0 !rounded-md !px-4 !py-2.5 !text-sm !font-semibold !shadow-none"
-        />
+          class="btn-primary inline-flex h-11 max-w-[13rem] items-center gap-2 !rounded-md !border-0 !px-4 !py-2.5 !text-sm !font-semibold !shadow-none"
+          data-member-account-link
+        >
+          <Icon name="tabler:user-circle" class="h-5 w-5 shrink-0" />
+          <span class="truncate" data-member-account-label>Member Login</span>
+        </a>
         <ToggleMenu />
       </div>
     </div>

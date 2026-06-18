@@ -1,5 +1,8 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { STRAPI_BASE_URL } from '../../lib/api';
+
+const strapiBaseUrl = STRAPI_BASE_URL;
 ---
 
 <div
@@ -16,11 +19,40 @@ import { Icon } from 'astro-icon/components';
   <a class="font-medium text-white/90 transition hover:text-white" href="tel:+66000000000">+66 (0)0 000 0000</a>
   <span class="text-white/40">|</span>
   <a
-    class="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 font-semibold text-white transition hover:border-white/45 hover:bg-white/15"
+    class="inline-flex max-w-xs items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 font-semibold text-white transition hover:border-white/45 hover:bg-white/15"
     href="/member-login"
+    data-member-account-link
   >
     <Icon name="tabler:user-circle" class="h-4 w-4 shrink-0" />
-    Member Login
+    <span class="truncate" data-member-account-label>Member Login</span>
   </a>
   <span class="ml-auto text-white/70">Executive education, consulting, and lifelong learning</span>
 </div>
+
+<script is:inline define:vars={{ strapiBaseUrl }}>
+  (() => {
+    const token = window.localStorage.getItem('concMemberToken');
+    if (!token) return;
+
+    fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(async (response) => {
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result?.data?.member?.email) throw new Error('Invalid member session');
+        return result.data.member.email;
+      })
+      .then((email) => {
+        document.querySelectorAll('[data-member-account-link]').forEach((link) => {
+          if (!(link instanceof HTMLAnchorElement)) return;
+          const label = link.querySelector('[data-member-account-label]');
+          if (label instanceof HTMLElement) label.textContent = email;
+          link.href = '/member-portal';
+          link.title = email;
+        });
+      })
+      .catch(() => {
+        window.localStorage.removeItem('concMemberToken');
+      });
+  })();
+</script>

@@ -1,6 +1,7 @@
 import { fallbackContent } from "./fallback-content";
 
-const STRAPI_BASE_URL = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+export const STRAPI_BASE_URL =
+  import.meta.env.PUBLIC_STRAPI_URL ?? "https://hospitable-festival-2e8897a132.strapiapp.com/api";
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
 export const BACKEND_DISABLED = import.meta.env.PUBLIC_DISABLE_BACKEND === "true";
 export const MEMBER_PORTAL_DISABLED =

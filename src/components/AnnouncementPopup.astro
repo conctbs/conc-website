@@ -1,5 +1,7 @@
 ---
-const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337/api';
+import { STRAPI_BASE_URL } from '../lib/api';
+
+const strapiBaseUrl = STRAPI_BASE_URL;
 const strapiOrigin = strapiBaseUrl.replace(/\/api\/?$/, '');
 const endpoint = `${strapiBaseUrl.replace(/\/$/, '')}/announcement-popup/active`;
 ---

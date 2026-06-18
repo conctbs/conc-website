@@ -1,10 +1,10 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { MEMBER_PORTAL_DISABLED, getSiteSetting } from "../lib/api";
+import { MEMBER_PORTAL_DISABLED, STRAPI_BASE_URL, getSiteSetting } from "../lib/api";
 
 const siteSetting = await getSiteSetting();
 const title = siteSetting?.siteName ? `Member Payment | ${siteSetting.siteName}` : "Member Payment | CONC";
-const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const strapiBaseUrl = STRAPI_BASE_URL;
 const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
 ---
 

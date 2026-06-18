@@ -1,10 +1,10 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-import { BACKEND_DISABLED, getPageBySlug, getSiteSetting } from "../../lib/api";
+import { BACKEND_DISABLED, STRAPI_BASE_URL, getPageBySlug, getSiteSetting } from "../../lib/api";
 
 const [page, siteSetting] = await Promise.all([getPageBySlug("come-teach-with-us"), getSiteSetting()]);
 const title = page?.seo?.metaTitle ?? page?.title ?? "Come teach with us | CONC";
-const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1338/api";
+const strapiBaseUrl = STRAPI_BASE_URL;
 const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
 const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
 ---

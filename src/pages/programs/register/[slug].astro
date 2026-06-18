@@ -2,7 +2,13 @@
 import MainLayout from '../../../layouts/MainLayout.astro';
 import PageCover from '../../../components/PageCover.astro';
 import ProgramHeroFigure from '../../../components/ProgramHeroFigure.astro';
-import { MEMBER_PORTAL_DISABLED, getProgramBySlug, getProgramSlugs, getSiteSetting } from '../../../lib/api';
+import {
+  MEMBER_PORTAL_DISABLED,
+  STRAPI_BASE_URL,
+  getProgramBySlug,
+  getProgramSlugs,
+  getSiteSetting,
+} from '../../../lib/api';
 import { programHeroImageBySlug } from '../../../lib/program-hero-images';
 
 export async function getStaticPaths() {
@@ -13,7 +19,7 @@ export async function getStaticPaths() {
 const { slug = '' } = Astro.params;
 const [siteSetting, program] = await Promise.all([getSiteSetting(), getProgramBySlug(slug)]);
 const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID ?? '';
-const strapiBaseUrl = import.meta.env.PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1338/api';
+const strapiBaseUrl = STRAPI_BASE_URL;
 const supportEmail = siteSetting?.contactEmail ?? 'contact@conc.th';
 const supportPhone = siteSetting?.contactPhone ?? '09-1119-4503';
 const registrationAvailable = Boolean(program?.registrationEnabled) && !MEMBER_PORTAL_DISABLED;

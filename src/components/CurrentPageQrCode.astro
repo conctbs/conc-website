@@ -1,0 +1,42 @@
+<aside
+  class="fixed bottom-4 right-4 z-[100] w-40 rounded-2xl border border-stone-200 bg-white p-3 text-center shadow-[0_20px_60px_-28px_rgba(41,37,36,0.45)]"
+  aria-label="QR code for this page"
+>
+  <p class="mb-2 text-sm font-semibold text-stone-900">Scan this page</p>
+  <div class="flex min-h-32 items-center justify-center rounded-xl bg-white">
+    <canvas
+      data-current-page-qr
+      class="h-32 w-32"
+      role="img"
+      aria-label="QR code linking to the current page"
+    ></canvas>
+    <p data-current-page-qr-error class="hidden px-2 text-xs text-red-700" role="status">
+      QR code unavailable
+    </p>
+  </div>
+</aside>
+
+<script>
+  import { renderCurrentPageQrCode } from '~/lib/current-page-qr';
+
+  const renderQrWidget = async () => {
+    const canvas = document.querySelector<HTMLCanvasElement>('[data-current-page-qr]');
+    const errorMessage = document.querySelector<HTMLElement>('[data-current-page-qr-error]');
+
+    if (!canvas || !errorMessage) return;
+
+    try {
+      await renderCurrentPageQrCode(canvas);
+
+      canvas.classList.remove('hidden');
+      errorMessage.classList.add('hidden');
+    } catch (error) {
+      console.error('Unable to render the current page QR code.', error);
+      canvas.classList.add('hidden');
+      errorMessage.classList.remove('hidden');
+    }
+  };
+
+  renderQrWidget();
+  document.addEventListener('astro:page-load', renderQrWidget);
+</script>

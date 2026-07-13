@@ -81,6 +81,11 @@ When `PUBLIC_DISABLE_BACKEND=false` and Strapi is unavailable during development
 | `npm run smoke:local` | Run endpoint smoke checks against `http://127.0.0.1:1338/api` |
 | `npm run smoke:local:e2e` | Start a sibling Strapi smoke instance, wait for it, run smoke checks, then stop it |
 
+## Reusable Current Page QR Code
+
+See [docs/current-page-qr-code.md](docs/current-page-qr-code.md) for the
+standalone rendering module and examples for npm-based projects and plain HTML.
+
 ## Smoke Testing
 
 If you want a one-command local integration smoke run:

@@ -1,7 +1,31 @@
 import { fallbackContent } from "./fallback-content";
 
-export const STRAPI_BASE_URL =
-  import.meta.env.PUBLIC_STRAPI_URL ?? "https://hospitable-festival-2e8897a132.strapiapp.com/api";
+const HOSTED_STRAPI_BASE_URL = "https://hospitable-festival-2e8897a132.strapiapp.com/api";
+
+function isLocalStrapiUrl(url: string) {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
+  } catch {
+    return false;
+  }
+}
+
+function getStrapiBaseUrl() {
+  const configuredUrl = import.meta.env.PUBLIC_STRAPI_URL;
+
+  if (!configuredUrl) {
+    return HOSTED_STRAPI_BASE_URL;
+  }
+
+  if (!import.meta.env.DEV && isLocalStrapiUrl(configuredUrl)) {
+    return HOSTED_STRAPI_BASE_URL;
+  }
+
+  return configuredUrl;
+}
+
+export const STRAPI_BASE_URL = getStrapiBaseUrl();
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
 export const BACKEND_DISABLED = import.meta.env.PUBLIC_DISABLE_BACKEND === "true";
 export const MEMBER_PORTAL_DISABLED =

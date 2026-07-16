@@ -204,6 +204,25 @@ export type NewsListItem = {
   publishedDate: string | null;
 };
 
+export type AnnouncementItem = {
+  id: number;
+  documentId?: string | null;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string | null;
+  category: "general" | "program" | "registration" | "service" | "urgent" | null;
+  priority: number | null;
+  featured: boolean;
+  publishedDate: string | null;
+  expiresAt: string | null;
+  linkUrl: string | null;
+  linkLabel: string | null;
+  coverImage: Media;
+  seo?: Seo;
+  updatedAt?: string | null;
+};
+
 export type Program = {
   id: number;
   title: string;
@@ -654,6 +673,10 @@ function getFallbackCollection<T>(path: string): T[] {
     return [...fallbackContent.newsList] as T[];
   }
 
+  if (path.startsWith("/announcements")) {
+    return [] as T[];
+  }
+
   if (path.startsWith("/knowledge-articles")) {
     return [...fallbackContent.knowledgeArticleList] as T[];
   }
@@ -858,6 +881,10 @@ export async function getNews(): Promise<NewsListItem[]> {
 
 export async function getNewsBySlug(slug: string): Promise<NewsEntry | null> {
   return fetchJson<NewsEntry>(`/news/by-slug/${slug}`);
+}
+
+export async function getAnnouncements(): Promise<AnnouncementItem[]> {
+  return fetchCollection<AnnouncementItem>("/announcements");
 }
 
 export async function getKnowledgeArticles(): Promise<KnowledgeArticleListItem[]> {

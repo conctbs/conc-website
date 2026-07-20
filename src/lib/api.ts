@@ -1,7 +1,31 @@
 import { fallbackContent } from "./fallback-content";
 
-export const STRAPI_BASE_URL =
-  import.meta.env.PUBLIC_STRAPI_URL ?? "https://hospitable-festival-2e8897a132.strapiapp.com/api";
+const HOSTED_STRAPI_BASE_URL = "https://hospitable-festival-2e8897a132.strapiapp.com/api";
+
+function isLocalStrapiUrl(url: string) {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
+  } catch {
+    return false;
+  }
+}
+
+function getStrapiBaseUrl() {
+  const configuredUrl = import.meta.env.PUBLIC_STRAPI_URL;
+
+  if (!configuredUrl) {
+    return HOSTED_STRAPI_BASE_URL;
+  }
+
+  if (!import.meta.env.DEV && isLocalStrapiUrl(configuredUrl)) {
+    return HOSTED_STRAPI_BASE_URL;
+  }
+
+  return configuredUrl;
+}
+
+export const STRAPI_BASE_URL = getStrapiBaseUrl();
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
 export const BACKEND_DISABLED = import.meta.env.PUBLIC_DISABLE_BACKEND === "true";
 export const MEMBER_PORTAL_DISABLED =
@@ -178,6 +202,25 @@ export type NewsListItem = {
   slug: string;
   content: string | null;
   publishedDate: string | null;
+};
+
+export type AnnouncementItem = {
+  id: number;
+  documentId?: string | null;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string | null;
+  category: "general" | "program" | "registration" | "service" | "urgent" | null;
+  priority: number | null;
+  featured: boolean;
+  publishedDate: string | null;
+  expiresAt: string | null;
+  linkUrl: string | null;
+  linkLabel: string | null;
+  coverImage: Media;
+  seo?: Seo;
+  updatedAt?: string | null;
 };
 
 export type Program = {
@@ -630,6 +673,10 @@ function getFallbackCollection<T>(path: string): T[] {
     return [...fallbackContent.newsList] as T[];
   }
 
+  if (path.startsWith("/announcements")) {
+    return [] as T[];
+  }
+
   if (path.startsWith("/knowledge-articles")) {
     return [...fallbackContent.knowledgeArticleList] as T[];
   }
@@ -834,6 +881,10 @@ export async function getNews(): Promise<NewsListItem[]> {
 
 export async function getNewsBySlug(slug: string): Promise<NewsEntry | null> {
   return fetchJson<NewsEntry>(`/news/by-slug/${slug}`);
+}
+
+export async function getAnnouncements(): Promise<AnnouncementItem[]> {
+  return fetchCollection<AnnouncementItem>("/announcements");
 }
 
 export async function getKnowledgeArticles(): Promise<KnowledgeArticleListItem[]> {

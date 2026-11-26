@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import PageCover from '../../components/PageCover.astro';
+import ProfilePortrait from '../../components/ProfilePortrait.astro';
 import { getSiteSetting, getSpeakers } from '../../lib/api';
 
 const [siteSetting, speakers] = await Promise.all([getSiteSetting(), getSpeakers()]);
@@ -70,28 +71,10 @@ const featuredSpeakers = speakers.filter((speaker) => speaker.featured);
     <div class="mt-10 grid gap-6 xl:grid-cols-2">
       {speakers.map((speaker) => (
         <article class="overflow-hidden rounded-[1.8rem] border border-stone-200 bg-white shadow-[0_22px_70px_-40px_rgba(41,37,36,0.34)]">
-          <div class="grid gap-0 md:grid-cols-[12rem_minmax(0,1fr)]">
-            <div class="border-b border-stone-200 bg-stone-100 md:border-b-0 md:border-r">
-              {speaker.photo?.url ? (
-                <img
-                  class="h-full min-h-[12rem] w-full object-cover"
-                  src={speaker.photo.url}
-                  alt={speaker.photo.alternativeText ?? speaker.name}
-                  loading="lazy"
-                />
-              ) : (
-                <div class="flex min-h-[12rem] items-center justify-center text-sm font-semibold uppercase tracking-[0.16em] text-stone-500">
-                  {speaker.name
-                    .split(' ')
-                    .filter(Boolean)
-                    .slice(0, 2)
-                    .map((part) => part[0])
-                    .join('')}
-                </div>
-              )}
-            </div>
+          <div class="grid md:grid-cols-[auto_minmax(0,1fr)]">
+            <ProfilePortrait name={speaker.name} photo={speaker.photo} />
 
-            <div class="p-7">
+            <div class="min-w-0 p-7 pt-4 md:pt-7">
               <div class="flex flex-wrap items-center gap-3">
                 {speaker.featured && (
                   <span class="rounded-full bg-red-700 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-white">

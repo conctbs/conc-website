@@ -1,0 +1,28 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Media } from '../lib/api';
+
+interface Props {
+  name: string;
+  photo?: Media;
+}
+
+const { name, photo } = Astro.props;
+---
+
+<div class="px-7 pt-7 md:pr-0">
+  <div class="grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-stone-200 bg-stone-50 text-stone-500">
+    {photo?.url && !photo.url.startsWith("data:image/svg+xml") ? (
+      <img
+        class="h-full w-full object-cover object-top grayscale"
+        src={photo.url}
+        alt={photo.alternativeText || name}
+        loading="lazy"
+        width="80"
+        height="80"
+      />
+    ) : (
+      <Icon name="tabler:user" class="h-8 w-8" aria-hidden="true" />
+    )}
+  </div>
+</div>

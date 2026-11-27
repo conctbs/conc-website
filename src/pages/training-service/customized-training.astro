@@ -199,7 +199,7 @@ const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
         const payload = Object.fromEntries(new FormData(form).entries());
 
         try {
-          const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/customized-training-requests/public`, {
+          const response = await (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/customized-training-requests/public`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -213,7 +213,7 @@ const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
           }
 
           form.reset();
-          showNotification('Customized training request submitted. The CONC team can now review your brief.', 'success');
+          showNotification(window.concDemoFetch ? 'Training request preview complete. No information was sent.' : 'Customized training request submitted. The CONC team can now review your brief.', 'success');
         } catch (error) {
           showNotification(error instanceof Error ? error.message : 'Unable to submit customized training request', 'error');
         } finally {

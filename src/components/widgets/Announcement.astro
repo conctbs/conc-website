@@ -31,10 +31,10 @@ const strapiBaseUrl = STRAPI_BASE_URL;
 
 <script is:inline define:vars={{ strapiBaseUrl }}>
   (() => {
-    const token = window.localStorage.getItem('concMemberToken');
+    const token = (window.concDemoFetch ? window.sessionStorage : window.localStorage).getItem('concMemberToken');
     if (!token) return;
 
-    fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
+    (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async (response) => {
@@ -52,7 +52,7 @@ const strapiBaseUrl = STRAPI_BASE_URL;
         });
       })
       .catch(() => {
-        window.localStorage.removeItem('concMemberToken');
+        (window.concDemoFetch ? window.sessionStorage : window.localStorage).removeItem('concMemberToken');
       });
   })();
 </script>

@@ -12,6 +12,7 @@ import Header from '~/components/widgets/Header.astro';
 import Footer from '~/components/widgets/Footer.astro';
 import { headerData, footerData } from '~/navigation';
 import { I18N, SITE } from '~/theme-config';
+import { DEMO_MODE } from '~/lib/api';
 import { getCanonical } from '~/utils/permalinks';
 
 const { title, seo = null, siteSetting = null } = Astro.props;
@@ -21,7 +22,7 @@ const canonicalPath = seo?.canonicalUrl
   ? `${new URL(seo.canonicalUrl, SITE.site).pathname}${new URL(seo.canonicalUrl, SITE.site).search}`
   : String(Astro.url.pathname);
 const canonical = String(getCanonical(canonicalPath));
-const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
+const gtmId = DEMO_MODE ? '' : (import.meta.env.PUBLIC_GTM_ID?.trim() ?? '');
 ---
 
 <!doctype html>
@@ -36,7 +37,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
     <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet,noimageindex" />
     <Favicons />
     <CustomStyles />
-    <ConsentModeHead />
+    {DEMO_MODE ? <script is:inline src="/conc-demo.js"></script> : <ConsentModeHead />}
   </head>
 
   <body class="antialiased text-default bg-page tracking-tight">
@@ -53,14 +54,23 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID?.trim() ?? '';
         </noscript>
       )
     }
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-3 focus:text-red-800">Skip to content</a>
     <Announcement />
     <Header {...headerData} isSticky />
-    <main>
+    <main id="main-content">
+      {DEMO_MODE && (
+        <div class="border-b border-red-100 bg-red-50 text-stone-800">
+          <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-5 gap-y-2 px-4 py-3 text-sm md:px-6">
+            <p><strong class="text-red-800">Demo mode</strong> <span class="ml-2">Use sample information only. No emails or payments are sent.</span></p>
+            <a class="font-semibold text-red-800 underline underline-offset-4" href="/member-login">Try the member portal</a>
+          </div>
+        </div>
+      )}
       <slot />
     </main>
     <Footer {...footerData} />
     <AnnouncementPopup />
-    <CookieConsentBanner />
+    {!DEMO_MODE && <CookieConsentBanner />}
     <BasicScripts />
   </body>
 </html>

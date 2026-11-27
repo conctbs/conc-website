@@ -133,7 +133,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
 
       <script is:inline define:vars={{ strapiBaseUrl }}>
         const authTokenStorageKey = 'concMemberToken';
-        const token = window.localStorage.getItem(authTokenStorageKey);
+        const token = (window.concDemoFetch ? window.sessionStorage : window.localStorage).getItem(authTokenStorageKey);
         const profileTarget = document.getElementById('member-profile');
         const registrationsTarget = document.getElementById('member-registrations');
         const loadingTarget = document.getElementById('member-portal-loading');
@@ -404,14 +404,14 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         }
 
         logoutButton?.addEventListener('click', () => {
-          window.localStorage.removeItem(authTokenStorageKey);
+          (window.concDemoFetch ? window.sessionStorage : window.localStorage).removeItem(authTokenStorageKey);
           redirectToLogin();
         });
 
         if (!token) {
           redirectToLogin();
         } else {
-          fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
+          (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/me-public`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -441,7 +441,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
               renderRegistrations(data.registrations);
             })
             .catch((error) => {
-              window.localStorage.removeItem(authTokenStorageKey);
+              (window.concDemoFetch ? window.sessionStorage : window.localStorage).removeItem(authTokenStorageKey);
               showError(error instanceof Error ? error.message : 'Unable to load member data');
               window.setTimeout(() => {
                 redirectToLogin();
@@ -452,7 +452,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         profileForm?.addEventListener('submit', async (event) => {
           event.preventDefault();
           try {
-            const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/profile-public`, {
+            const response = await (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/profile-public`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -474,7 +474,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         passwordForm?.addEventListener('submit', async (event) => {
           event.preventDefault();
           try {
-            const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/change-password-public`, {
+            const response = await (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-accounts/change-password-public`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

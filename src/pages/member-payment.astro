@@ -196,7 +196,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
 
       <script is:inline define:vars={{ strapiBaseUrl }}>
         const authTokenStorageKey = 'concMemberToken';
-        const token = window.localStorage.getItem(authTokenStorageKey);
+        const token = (window.concDemoFetch ? window.sessionStorage : window.localStorage).getItem(authTokenStorageKey);
         const params = new URLSearchParams(window.location.search);
         const registrationId = params.get('registrationId');
         const summaryTarget = document.getElementById('payment-summary');
@@ -453,9 +453,9 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">Receipt</p>
-                <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900">Official payment receipt</h2>
+                <h2 class="mt-3 text-3xl font-semibold leading-tight text-stone-900">${window.concDemoFetch ? 'Sample payment receipt' : 'Official payment receipt'}</h2>
                 <p class="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
-                  This receipt confirms that CONC has marked this registration payment as settled.
+                  ${window.concDemoFetch ? 'Demonstration only. No payment was collected.' : 'This receipt confirms that CONC has marked this registration payment as settled.'}
                 </p>
               </div>
               <div class="text-left md:text-right">
@@ -520,7 +520,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
             summaryTarget.innerHTML = '<p class="text-sm leading-7 text-stone-600">A registration ID is required to load payment details.</p>';
           }
         } else {
-          fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}`, {
+          (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -588,7 +588,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
               const uploadData = new FormData();
               uploadData.append('file', slipFile);
 
-              const uploadResponse = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}/upload-slip`, {
+              const uploadResponse = await (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}/upload-slip`, {
                 method: 'POST',
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -602,7 +602,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
               }
             }
 
-            const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}/submit`, {
+            const response = await (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/member-payments/by-registration-public/${encodeURIComponent(registrationId)}/submit`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -621,7 +621,7 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
             if (slipAttachmentInput instanceof HTMLInputElement) {
               slipAttachmentInput.value = '';
             }
-            showNotification('Payment confirmation submitted. The team can now verify your fee.', 'success');
+            showNotification(window.concDemoFetch ? 'Demo payment completed. No money was transferred.' : 'Payment confirmation submitted. The team can now verify your fee.', 'success');
           } catch (error) {
             showNotification(error instanceof Error ? error.message : 'Payment submission failed');
           } finally {

@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import MainLayout from "../layouts/MainLayout.astro";
 import { MEMBER_PORTAL_DISABLED, STRAPI_BASE_URL, getSiteSetting } from "../lib/api";
 
@@ -28,6 +29,23 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
           Submit the transfer reference after registration so the team can verify your seat and reconcile the payment with your member account.
         </p>
       </div>
+
+      <dialog
+        id="payment-notification"
+        aria-labelledby="payment-notification-title"
+        aria-describedby="payment-notification-message"
+        class="m-auto max-h-[calc(100%-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-stone-200 bg-white p-6 text-stone-900 shadow-xl backdrop:bg-stone-950/50 sm:p-8 print:hidden"
+      >
+        <div id="payment-notification-icon" class="grid h-12 w-12 place-items-center rounded-full" aria-hidden="true">
+          <Icon name="tabler:check" class="h-6 w-6" data-payment-success />
+          <Icon name="tabler:alert-circle" class="h-6 w-6" data-payment-error />
+        </div>
+        <h2 id="payment-notification-title" class="mt-4 text-xl font-semibold"></h2>
+        <p id="payment-notification-message" class="mt-2 break-words text-base leading-7 text-stone-600"></p>
+        <form method="dialog" class="mt-6 flex flex-wrap justify-end gap-3">
+          <button class="btn-primary !rounded-md !border-0 !px-5 !py-2.5" autofocus>Close</button>
+        </form>
+      </dialog>
 
       <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(18rem,0.82fr)_minmax(0,1.18fr)]">
         <aside class="grid gap-6">
@@ -104,8 +122,6 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         </aside>
 
         <div class="rounded-[1.75rem] border border-stone-200 bg-white p-8 shadow-[0_20px_60px_-34px_rgba(41,37,36,0.38)]">
-          <div id="payment-notification" class="hidden rounded-2xl bg-red-700 px-4 py-4 text-sm font-semibold leading-6 text-white" hidden></div>
-
           <form id="member-payment-form" class="mt-2 grid gap-5">
             <label class="grid gap-2 font-semibold text-stone-900">
               <span>Payment method</span>
@@ -202,6 +218,9 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         const summaryTarget = document.getElementById('payment-summary');
         const form = document.getElementById('member-payment-form');
         const notification = document.getElementById('payment-notification');
+        const notificationTitle = document.getElementById('payment-notification-title');
+        const notificationMessage = document.getElementById('payment-notification-message');
+        const notificationIcon = document.getElementById('payment-notification-icon');
         const submitButton = document.getElementById('member-payment-submit');
         const slipAttachmentInput = document.getElementById('slipAttachment');
         const paymentMethodInput = form instanceof HTMLFormElement ? form.elements.namedItem('paymentMethod') : null;
@@ -263,17 +282,17 @@ const supportEmail = siteSetting?.contactEmail ?? "contact@conc.th";
         }
 
         function showNotification(message, type = 'error') {
-          if (!notification) return;
-          notification.hidden = false;
-          notification.classList.remove('hidden');
-          notification.textContent = message;
-          if (type === 'success') {
-            notification.classList.remove('bg-red-700');
-            notification.classList.add('bg-emerald-700');
-          } else {
-            notification.classList.remove('bg-emerald-700');
-            notification.classList.add('bg-red-700');
-          }
+          if (!(notification instanceof HTMLDialogElement)) return;
+          const success = type === 'success';
+          notificationTitle.textContent = success ? 'Success' : 'Action needed';
+          notificationMessage.textContent = message;
+          notificationIcon.classList.toggle('bg-emerald-100', success);
+          notificationIcon.classList.toggle('text-emerald-800', success);
+          notificationIcon.classList.toggle('bg-red-100', !success);
+          notificationIcon.classList.toggle('text-red-800', !success);
+          notificationIcon.querySelector('[data-payment-success]').classList.toggle('hidden', !success);
+          notificationIcon.querySelector('[data-payment-error]').classList.toggle('hidden', success);
+          if (!notification.open) notification.showModal();
         }
 
         function setElementText(target, value) {

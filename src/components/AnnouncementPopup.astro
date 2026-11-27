@@ -128,7 +128,7 @@ const endpoint = `${strapiBaseUrl.replace(/\/$/, '')}/announcement-popup/active`
         }
       });
 
-      fetch(popup.dataset.endpoint || '', { headers: { Accept: 'application/json' } })
+      (window.concDemoFetch ?? fetch)(popup.dataset.endpoint || '', { headers: { Accept: 'application/json' } })
         .then((response) => (response.ok ? response.json() : null))
         .then((json) => {
           const data = json?.data;

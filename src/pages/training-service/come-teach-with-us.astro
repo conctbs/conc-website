@@ -192,7 +192,7 @@ const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
         const payload = Object.fromEntries(new FormData(form).entries());
 
         try {
-          const response = await fetch(`${String(strapiBaseUrl).replace(/\/+$/, '')}/teaching-applications/public`, {
+          const response = await (window.concDemoFetch ?? fetch)(`${String(strapiBaseUrl).replace(/\/+$/, '')}/teaching-applications/public`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ const supportPhone = siteSetting?.contactPhone ?? "09-1119-4503";
           }
 
           form.reset();
-          showNotification('Teaching profile submitted. The CONC team can now review your information.', 'success');
+          showNotification(window.concDemoFetch ? 'Teaching application preview complete. No information was sent.' : 'Teaching profile submitted. The CONC team can now review your information.', 'success');
         } catch (error) {
           showNotification(error instanceof Error ? error.message : 'Unable to submit teaching profile', 'error');
         } finally {

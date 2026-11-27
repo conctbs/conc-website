@@ -14,6 +14,12 @@ This repository contains frontend code, bundled fallback content, and smoke tool
 
 If you clone this repo, you can run it immediately with fallback content, or connect it to your own Strapi instance.
 
+## Frontend demo
+
+The site defaults to demo mode. Programs and editorial pages use the bundled content. Open **Member Login → Open demo account** to try the portal, or register for an open program to try the registration and payment screens. Demo receipts and certificates are marked as samples. Use fictional information for all forms.
+
+Demo session state stays in the current browser tab. Demo forms do not submit to Strapi or send email. Set `PUBLIC_DEMO_MODE=false` in the build environment when connecting to a real Strapi instance.
+
 ## Requirements
 
 - Node.js `>=20`

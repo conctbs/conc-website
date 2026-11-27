@@ -25,11 +25,12 @@ function getStrapiBaseUrl() {
   return configuredUrl;
 }
 
-export const STRAPI_BASE_URL = getStrapiBaseUrl();
+export const DEMO_MODE = import.meta.env.PUBLIC_DEMO_MODE !== "false";
+export const STRAPI_BASE_URL = DEMO_MODE ? "/__conc-demo/api" : getStrapiBaseUrl();
 const STRAPI_ORIGIN = STRAPI_BASE_URL.replace(/\/api\/?$/, "");
 export const BACKEND_DISABLED = import.meta.env.PUBLIC_DISABLE_BACKEND === "true";
 export const MEMBER_PORTAL_DISABLED =
-  BACKEND_DISABLED || import.meta.env.PUBLIC_DISABLE_MEMBER_PORTAL === "true";
+  !DEMO_MODE && (BACKEND_DISABLED || import.meta.env.PUBLIC_DISABLE_MEMBER_PORTAL === "true");
 const FALLBACK_LOG_TTL_MS = 15_000;
 const fallbackLogTimestamps = new Map<string, number>();
 // Keep local dev usable with fallback content when Strapi is offline,
@@ -697,7 +698,7 @@ function getFallbackCollection<T>(path: string): T[] {
 }
 
 async function fetchJson<T>(path: string): Promise<T | null> {
-  if (BACKEND_DISABLED) {
+  if (DEMO_MODE || BACKEND_DISABLED) {
     return getFallbackJson<T>(path);
   }
 
@@ -723,7 +724,7 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 }
 
 async function fetchCollection<T>(path: string): Promise<T[]> {
-  if (BACKEND_DISABLED) {
+  if (DEMO_MODE || BACKEND_DISABLED) {
     return getFallbackCollection<T>(path);
   }
 
